@@ -34,6 +34,7 @@ REPRESENTANTS = prm.REPRESENTANTS
 PARCOURS = prm.PARCOURS
 INCERTITUDE = prm.INCERTITUDE
 
+
 class data(object):
     """A helper class to encapsulate objects for symbolic comparison
 

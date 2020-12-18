@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import midi as md
 import algo_cog as ac
 import interface as ui
-import front_decouverte as fdec
+import discovery_front as dfront
 import parameters as prm
 
 
@@ -90,8 +90,8 @@ def df_comparison(diag_midi, diag_audio, data_size, data_length, hop_length):
     """ The function clear_matrix is applied, then the discovery front are computed. From that """
     copy_diag_audio, copy_diag_midi, ns_lines = clear_matrix(diag_audio, diag_midi, data_size, data_length, hop_length)
 
-    df_midi = fdec.discovery_front_computing(copy_diag_midi, BACKGROUND)
-    df_audio = fdec.discovery_front_computing(copy_diag_audio, BACKGROUND)
+    df_midi = dfront.discovery_front_computing(copy_diag_midi, BACKGROUND)
+    df_audio = dfront.discovery_front_computing(copy_diag_audio, BACKGROUND)
 
     print("[INFO] Comparing matrices...")
     copy_diag_err = []

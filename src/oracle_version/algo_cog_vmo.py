@@ -138,9 +138,10 @@ def algo_cog(audio_path, hop_length, nb_values, teta, init, fmin=FMIN):
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))
+
     # initialise matrix of each hop coordinates
     nb_sil_frames = nb_points/hop_length
-    nb_hop = int(data_size/hop_length + nb_sil_frames) + 1  # nb of hop, not supposed to be known it in realtime
+    nb_hop = int(data_size/hop_length + nb_sil_frames) + 1
     data_length = data_length + nb_points/rate
     if data_size % hop_length < init:
         nb_hop = int(data_size/hop_length)

@@ -66,7 +66,7 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
 
     start_time = time.time()
 
-    for i_hop in range(1, nb_hop):  # while
+    for i_hop in range(1, nb_hop):
         j_mat = sf.comparison(i_hop, teta, s_tab, v_tab, mat, audio_path)
         prev_mat = prev2_mat = prev3_mat = 0
         value = 255 - v_tab[i_hop]*255

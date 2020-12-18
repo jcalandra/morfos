@@ -2,7 +2,7 @@ import time
 import numpy as np
 import midi as md
 import algo_cog as ac
-import front_decouverte as fd
+import discovery_front as df
 import interface as ui
 import parameters as prm
 import matplotlib.pyplot as plt
@@ -16,8 +16,8 @@ BACKGROUND = (255, 255, 255)
 def compute_replace(matrix_midi, matrix_audio):
     """ replace the frames in audio matrix according to the MIDI matrix."""
 
-    df_midi = fd.discovery_front_computing(matrix_midi, BACKGROUND)
-    df_audio = fd.discovery_front_computing(matrix_audio, BACKGROUND)
+    df_midi = df.discovery_front_computing(matrix_midi, BACKGROUND)
+    df_audio = df.discovery_front_computing(matrix_audio, BACKGROUND)
 
     print("[INFO] Modifying audio matrix according to MIDI matrix...")
     copy_matrix_audio = matrix_audio.copy()
@@ -26,8 +26,8 @@ def compute_replace(matrix_midi, matrix_audio):
     err = 0
     nb_mat_audio = len(df_audio)
     nb_mat_midi = len(df_midi)
-    print("len fd midi =" + str(nb_mat_midi))
-    print("len fd audio =" + str(nb_mat_audio))
+    print("len df midi =" + str(nb_mat_midi))
+    print("len df audio =" + str(nb_mat_audio))
 
     error_line = np.ones((1, len(copy_matrix_audio[0]), 3), np.uint8)
     for i in range(len(copy_matrix_audio[0])):
