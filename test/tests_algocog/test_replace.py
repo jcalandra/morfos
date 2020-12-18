@@ -4,7 +4,6 @@ import midi as md
 import algo_cog as ac
 import discovery_front as df
 import interface as ui
-import parameters as prm
 import matplotlib.pyplot as plt
 
 BACKGROUND = (255, 255, 255)

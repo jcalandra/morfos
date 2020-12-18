@@ -5,8 +5,6 @@ import numpy as np
 import cv2
 import time
 import oracle_ac
-import plot
-import synthesis_vmo as svmo
 
 # TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
 

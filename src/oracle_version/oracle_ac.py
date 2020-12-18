@@ -25,7 +25,6 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import numpy as np
-import scipy.spatial.distance as dist
 import misc as utl
 import sim_functions as sf
 import parameters as prm

@@ -3,11 +3,12 @@
 
 # ------------- MAIN -----------------
 
-NAME = "Geisslerlied_tenues"
+NAME = "Geisslerlied"
 FORMAT = '.wav'
 
-PATH_OBJ = '../../data/songs/Geisslerlied/'
-PATH_RESULT = "../../results/"
+PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
+PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
 
 SR = 22050
 HOP_LENGTH = 1024  # cqt : 512
@@ -44,7 +45,7 @@ else:
 # --------- INTERFACE ---------------
 
 TO_SAVE_BMP = 1
-TO_SHOW_BMP = 0
+TO_SHOW_BMP = 1
 TO_SAVE_PYP = 1
 TO_SHOW_PYP = 1
 
