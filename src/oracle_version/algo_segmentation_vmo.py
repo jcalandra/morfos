@@ -59,7 +59,7 @@ def rule_3_existing_object(history_next, concat_obj):
 
 
 # The function is developed without the Factor Oracle. The Factor oracle would induce faster computing.
-def rule_4_recomputed_object(oracles, level, data_length, actual_char_ind):
+def rule_4_recomputed_object_old(oracles, level, data_length, actual_char_ind):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     structures structured_char, new_char and history_next has to be modify in consequences such as the substring become
@@ -72,7 +72,7 @@ def rule_4_recomputed_object(oracles, level, data_length, actual_char_ind):
     concat_obj = oracles[1][level][3]
     nb_elements = len(concat_obj)
 
-    # Comparisons between concat_obj and the string startinf from the suffixe of the first char of concat_obj
+    # Comparisons between concat_obj and the string starting from the suffix of the first char of concat_obj
     # if there is only one character in concat_obj, that is already seen, it's rule 1
     if nb_elements <= 1:
         return 0
@@ -210,6 +210,116 @@ def rule_4_recomputed_object(oracles, level, data_length, actual_char_ind):
     return 1
 
 
+def rule_4_recomputed_object(oracles, level, actual_char_ind):
+    """This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
+    with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar,
+     the previous recognized string is structured and the algorithm rebuild the different FOs and structures back to
+     this state and returns 1, otherwise returns 0."""
+    # allocation of structures of actual level
+    f_oracle = oracles[1][level][0]
+    link = oracles[1][level][1]
+    history_next = oracles[1][level][2]
+    concat_obj = oracles[1][level][3]
+    nb_elements = len(concat_obj)
+
+    # Comparisons between concat_obj and the string starting from the suffix of the first char of concat_obj
+    # if there is only one character in concat_obj, that is already seen, it's rule 1
+    if nb_elements <= 1:
+        return 0
+
+    for j in range(nb_elements):
+        # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
+        if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] \
+                != f_oracle.data[actual_char_ind - nb_elements + j]:
+            return 0
+
+    # if the actual concat_obj is not the longest common string :
+    if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
+        return 0
+
+    if len(oracles[1]) > level + 1:
+
+        # allocation of structures of level sup
+        f_oracle_sup = oracles[1][level + 1][0]
+
+        real_ind = link[f_oracle.sfx[actual_char_ind - nb_elements]]
+        real_value = f_oracle_sup.data[real_ind]
+
+        # if concat_obj corresponds to an already known object, return 0.
+        if history_next[real_value - 1][1] == concat_obj:
+            return 0
+
+    # else, we are in the required conditions and we rebuild the oracles
+    # First we go back to the new already-seen state with concat obj as
+    level_up = level
+    level_tmp = -1
+    ind = f_oracle.sfx[actual_char_ind - nb_elements]
+
+    # pour chaque niveau n :
+    while level_up < len(oracles[1]) and level_tmp != level_up:
+        print("NUMBER ORACLE " + str(level_up))
+        oracles[1][level_up][3] = ''
+        new_fo = oracle_ac.create_oracle('f')
+
+        # f_oracle
+        i = 1
+        while i < ind:
+            new_state = f_oracle.data[i]
+            new_fo.add_state(new_state)
+            i += 1
+
+        # link and formal diagram
+        if len(oracles[1][level_up][1]) > ind + 1:
+            obj = oracles[1][level_up][1][ind]
+            new_ind = oracles[1][level_up][1][ind]
+        else:
+            obj = 0
+            new_ind = oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1] + 1
+
+        print(oracles[1][level_up][1])
+        while i < len(oracles[1][level_up][1]):
+            oracles[1][level_up][1].pop(i)
+            oracles[1][level_up][4][oracles[1][level_up][0].data[i] - 1][i - 1] = 1
+        if level_up != level:
+            if obj != 0 and obj == oracles[1][level_up][1][ind - 1]:
+                tmp_concat_obj = ''
+                while oracles[1][level_up][1][len(oracles[1][level_up][1])] == obj:
+                    tmp_concat_obj = chr(oracles[1][level_up][0].data(len(oracles[1][level_up][1])) + letter_diff)\
+                                     + tmp_concat_obj
+                    oracles[1][level_up][1].pop(len(oracles[1][level_up][1]))
+
+                # concat_obj
+                oracles[1][level_up][3].append(tmp_concat_obj)
+
+        else:
+            # concat_obj
+            for j in range(nb_elements):
+                element = chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
+                oracles[1][level_up][3] += element
+
+        oracles[1][level_up][0] = new_fo
+
+        # next level
+        level_tmp = level_up
+        if level_up < len(oracles[1]) - 1:
+            # history_next
+            next_ind = oracles[1][level_up + 1][0].data[oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1]] - 1
+            while next_ind < len(oracles[1][level_up][2]):
+                oracles[1][level_up][2].pop(next_ind)
+
+            print(ind)
+            ind = new_ind
+            print("ind", ind)
+
+            print(oracles[1][level_up][1])
+            print(oracles[1][level_up + 1][1])
+            level_up = level_up + 1
+
+    # Then we go back to the main loop of the structuration function with the correct structure to rebuilt the oracles
+
+    return 1
+
+
 def rule_5_regathering(concat_obj):
     """ The function returns 1 if the length of the string corresponding to  the concatenated object that are not
     structured in the actual level is higher than one. It returns 0 if the length of the string is equal or less than
@@ -299,7 +409,7 @@ def print_formal_diagram_update(fig_number, formal_diagram, data_length):
     print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
     plt.imshow(formal_diagram, extent=[0, data_length, len(formal_diagram), 0])
-    plt.pause(1)
+    plt.pause(0.1)
     return fig.number
 
 
@@ -390,7 +500,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             test_1 = 0
             test_2 = 0
         if RULE_4:
-            test_4 = rule_4_recomputed_object(oracles, level, data_length, actual_char_ind)
+            test_4 = rule_4_recomputed_object_old(oracles, level, actual_char_ind)
         else:
             test_4 = 0
         if RULE_3:
