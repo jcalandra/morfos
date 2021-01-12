@@ -444,6 +444,21 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
 
+def structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk):
+    print("Structuring")
+    # Labelling upper level string and updating the different structures
+    new_char = char_next_level_similarity(history_next, concat_obj)
+    if len(oracles[1]) > level + 1:
+        node = len(oracles[1][level + 1][0].data)
+    else:
+        node = 1
+    for ind in range(len(concat_obj)):
+        link.append(node)
+
+    # send to the next f_oracle the node corresponding to concat_obj
+    fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+
+
 def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_mk=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user. It returns the structured char which is a tab of substring representing upper level object, the
@@ -539,19 +554,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or test_3 or test_4) and test_5 and \
                 (end_mk == 0 or (end_mk == 1 and len(concat_obj) != 0)):
-            print("Structuring")
-
-            # Labelling upper level string and updating the different structures
-            new_char = char_next_level_similarity(history_next, concat_obj)
-            if len(oracles[1]) > level + 1:
-                node = len(oracles[1][level + 1][0].data)
-            else:
-                node = 1
-            for ind in range(len(concat_obj)):
-                link.append(node)
-
-            # send to the next f_oracle the node corresponding to concat_obj
-            fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+            structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             print("[INFO] PROCESS IN LEVEL " + str(level))
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
@@ -561,15 +564,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level == 0 and i == len(str_obj) - 1:
             end_mk = 1
         if end_mk == 1:
-            print("Structuring for the last time at this level...")
-            new_char = char_next_level_similarity(history_next, concat_obj)
-            if len(oracles[1]) > level + 1:
-                node = len(oracles[1][level + 1][0].data)
-            else:
-                node = 1
-            for ind in range(len(concat_obj)):
-                link.append(node)
-            fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+            structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             concat_obj = ''
             oracles[1][level][3] = concat_obj
         i += 1
