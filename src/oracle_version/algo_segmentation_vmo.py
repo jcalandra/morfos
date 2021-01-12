@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import oracle_ac
+import random
 
 letter_diff = 96
 # ================================================= RULES ==============================================================
@@ -164,10 +165,10 @@ def rule_4_recomputed_object_old(oracles, level, data_length, actual_char_ind):
         # TODO : mettre à jour le diagramme formel de niveau sup ici :
         # update of the formal diagram at next level
         formal_diagram_sup = []
-        formal_diagram_init(formal_diagram_sup, data_length)
+        formal_diagram_init(formal_diagram_sup, data_length, oracles, level)
         for i in range(2, len(new_fo_sup.data)):
             actual_char = new_fo_sup.data[i]
-            formal_diagram_update(formal_diagram_sup, data_length, actual_char, i)
+            formal_diagram_update(formal_diagram_sup, data_length, actual_char, i, oracles, level)
         oracles[1][level + 1][4] = formal_diagram_sup
 
         # update of link_sup and history_next_sup if necessary
@@ -254,6 +255,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
     level_up = level
     level_tmp = -1
     ind = f_oracle.sfx[actual_char_ind - nb_elements] - 1
+    k_init = ind
 
     # pour chaque niveau n :
     while len(oracles[1]) > level_up != level_tmp:
@@ -267,7 +269,14 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
             new_fo.add_state(new_state)
             i += 1
 
-        # link and formal diagram
+        # formal diagram
+        data_length = len(oracles[1][level_up][4][0])
+        for j in range(len(oracles[1][level_up][4])):
+            for k in range(k_init, data_length):
+                oracles[1][level_up][4][j][k] = 1
+        print_formal_diagram_update(oracles[1][level_up][5], oracles[1][level_up][4], data_length)
+
+        # link
         if len(oracles[1][level_up][1]) > ind:
             new_ind = oracles[1][level_up][1][ind]
             print("new ind 1", new_ind)
@@ -280,7 +289,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
         print(oracles[1][level_up][1])
         while i < len(oracles[1][level_up][1]):
             oracles[1][level_up][1].pop(i)
-            oracles[1][level_up][4][oracles[1][level_up][0].data[i] - 1][i - 1] = 1
         if level_up != level:
             tmp_concat_obj = ''
             if seg == 0 and len(oracles[1][level_up][1]) > 1:
@@ -296,10 +304,15 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
         else:
             # concat_obj
             for j in range(nb_elements):
-                element = chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
+                actual_char = f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j]
+                element = chr(actual_char + letter_diff)
                 oracles[1][level_up][3] += element
                 new_state = oracles[1][level_up][0].data[i + j]
                 new_fo.add_state(new_state)
+                # formal diagram
+                char_ind = ind + j + 1
+                formal_diagram_update(oracles[1][level_up][4], data_length, actual_char, char_ind, oracles, level_up)
+                print_formal_diagram_update(oracles[1][level_up][5], oracles[1][level_up][4], data_length)
 
         oracles[1][level_up][0] = new_fo
 
@@ -402,9 +415,9 @@ def graph_cognitive_algorithm(char, matrix, data_length):
 # Second implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
     print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(10, 4))
+    fig = plt.figure(figsize=(8, 4))
     plt.title("Formal diagram of level " + str(level))
-    plt.xlabel("time in number of states (formal memory)")
+    plt.xlabel("time in number of states at level 0 (formal memory)")
     plt.ylabel("material (material memory)")
     plt.gray()
     print("fig.number :", fig.number)
@@ -423,22 +436,54 @@ def print_formal_diagram_update(fig_number, formal_diagram, data_length):
     return fig.number
 
 
-def formal_diagram_init(formal_diagram, data_length):
+def formal_diagram_init(formal_diagram, data_length, oracles, level):
     print("formal diagram init")
     new_mat = [1 for i in range(data_length)]
     formal_diagram.append(new_mat)
-    formal_diagram[0][0] = 0
+    if level == 0:
+        n = 1
+    else:
+        k_end = 1
+        lv = level - 1
+        while lv >= 0:
+            link = oracles[1][lv][1]
+            link_r = link.copy()
+            link_r.reverse()
+            k_end = len(link_r) - link_r.index(k_end) - 1
+            lv = lv - 1
+        n = k_end
+    for i in range(n):
+        formal_diagram[0][i] = 1.1/4
     return 1
 
 
-def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind):
+def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
     print("formal diagram update")
+    k_init = actual_char_ind
+    if level == 0:
+        n = 1
+    else:
+        k_end = k_init
+        lv = level - 1
+        while lv >= 0:
+            link = oracles[1][lv][1]
+            link_r = link.copy()
+            link_r.reverse()
+            print("link ", link)
+            print("link_r ", link_r)
+            k_init = link.index(k_init)
+            k_end = len(link) - link_r.index(k_end) - 1
+            lv = lv - 1
+        n = k_end - k_init + 1
+    color = (actual_char_ind % 4 + 0.1)/4
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-        formal_diagram[len(formal_diagram) - 1][actual_char_ind - 1] = 0
+        for i in range(n):
+            formal_diagram[len(formal_diagram) - 1][k_init + i - 1] = color
     else:
-        formal_diagram[actual_char - 1][actual_char_ind - 1] = 0
+        for i in range(n):
+            formal_diagram[actual_char - 1][k_init + i - 1] = color
     return 0
 
 
@@ -478,6 +523,9 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
         history_next = oracles[1][level][2]
         concat_obj = oracles[1][level][3]
         formal_diagram = oracles[1][level][4]
+        data_length = len(formal_diagram[0])
+        formal_diagram_update(formal_diagram, data_length, actual_char, i + 1, oracles, level)
+        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, formal_diagram, data_length)
         formal_diagram_graph = oracles[1][level][5]
         f_oracle.add_state(actual_char)
     return test_1, test_2, test_3, test_4, test_5, \
@@ -543,9 +591,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:
-            formal_diagram_init(formal_diagram, data_length)
+            formal_diagram_init(formal_diagram, data_length, oracles, level)
         else:
-            formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind)
+            formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
         oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, formal_diagram, data_length)
 
@@ -570,7 +618,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if end_mk == 1:
             structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             concat_obj = ''
-            oracles[1][level][3] = concat_obj
+        oracles[1][level][3] = concat_obj
         i += 1
 
     return 1
