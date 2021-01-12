@@ -179,7 +179,7 @@ def rule_4_recomputed_object_old(oracles, level, data_length, actual_char_ind):
         print("real_value : ", real_value)
         if len(link_sup) >= real_ind + 1:
             history_next_sup_value = oracles[1][level + 1][0].data[real_value - 1]
-            print("history next sup value : ",  history_next_sup_value)
+            print("history next sup value : ", history_next_sup_value)
             link_temp = link_sup[real_ind]
             new_letter = history_next_sup[history_next_sup_value][0]
             string = history_next_sup[history_next_sup_value][1]
@@ -206,7 +206,6 @@ def rule_4_recomputed_object_old(oracles, level, data_length, actual_char_ind):
         for i in range(len(concat_obj_sup)):
             new_concat_obj_sup += chr(new_fo_sup.data[len(new_fo_sup.data) - len(concat_obj_sup) + i] + letter_diff)
         oracles[1][level + 1][3] = new_concat_obj_sup
-
     return 1
 
 
@@ -222,9 +221,10 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
     concat_obj = oracles[1][level][3]
     nb_elements = len(concat_obj)
 
+    print("concat obj", concat_obj)
     # Comparisons between concat_obj and the string starting from the suffix of the first char of concat_obj
     # if there is only one character in concat_obj, that is already seen, it's rule 1
-    if nb_elements <= 1:
+    if nb_elements <= 1 or level != 0:
         return 0
 
     for j in range(nb_elements):
@@ -253,66 +253,70 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
     # First we go back to the new already-seen state with concat obj as
     level_up = level
     level_tmp = -1
-    ind = f_oracle.sfx[actual_char_ind - nb_elements]
+    ind = f_oracle.sfx[actual_char_ind - nb_elements] - 1
 
     # pour chaque niveau n :
-    while level_up < len(oracles[1]) and level_tmp != level_up:
+    while len(oracles[1]) > level_up != level_tmp:
         print("NUMBER ORACLE " + str(level_up))
-        oracles[1][level_up][3] = ''
         new_fo = oracle_ac.create_oracle('f')
 
         # f_oracle
         i = 1
-        while i < ind:
-            new_state = f_oracle.data[i]
+        while i < ind + 1:
+            new_state = oracles[1][level_up][0].data[i]
             new_fo.add_state(new_state)
             i += 1
 
         # link and formal diagram
-        if len(oracles[1][level_up][1]) > ind + 1:
-            obj = oracles[1][level_up][1][ind]
+        if len(oracles[1][level_up][1]) > ind:
             new_ind = oracles[1][level_up][1][ind]
+            print("new ind 1", new_ind)
+            seg = 0
+            oracles[1][level_up][3] = ''
         else:
-            obj = 0
-            new_ind = oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1] + 1
-
+            new_ind = max(oracles[1][level_up][1])
+            print("new ind 2", new_ind)
+            seg = 1
         print(oracles[1][level_up][1])
         while i < len(oracles[1][level_up][1]):
             oracles[1][level_up][1].pop(i)
             oracles[1][level_up][4][oracles[1][level_up][0].data[i] - 1][i - 1] = 1
         if level_up != level:
-            if obj != 0 and obj == oracles[1][level_up][1][ind - 1]:
-                tmp_concat_obj = ''
-                while oracles[1][level_up][1][len(oracles[1][level_up][1])] == obj:
-                    tmp_concat_obj = chr(oracles[1][level_up][0].data(len(oracles[1][level_up][1])) + letter_diff)\
+            tmp_concat_obj = ''
+            if seg == 0 and len(oracles[1][level_up][1]) > 1:
+                while  oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1] == new_ind:
+                    tmp_concat_obj = chr(oracles[1][level_up][0].data[len(oracles[1][level_up][1]) - 1] + letter_diff) \
                                      + tmp_concat_obj
-                    oracles[1][level_up][1].pop(len(oracles[1][level_up][1]))
+                    oracles[1][level_up][1].pop(len(oracles[1][level_up][1]) - 1)
 
-                # concat_obj
-                oracles[1][level_up][3].append(tmp_concat_obj)
+                    # concat_obj
+                new_ind = max(oracles[1][level_up][1])
+                oracles[1][level_up][3] += tmp_concat_obj
 
         else:
             # concat_obj
             for j in range(nb_elements):
                 element = chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
                 oracles[1][level_up][3] += element
+                new_state = oracles[1][level_up][0].data[i + j]
+                new_fo.add_state(new_state)
 
         oracles[1][level_up][0] = new_fo
 
+        print(oracles[1][level_up][0].data)
+        print(oracles[1][level_up][1])
+        print(oracles[1][level_up][3])
         # next level
         level_tmp = level_up
         if level_up < len(oracles[1]) - 1:
             # history_next
-            next_ind = oracles[1][level_up + 1][0].data[oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1]] - 1
-            while next_ind < len(oracles[1][level_up][2]):
-                oracles[1][level_up][2].pop(next_ind)
+            next_ind = max(oracles[1][level_up + 1][0].data[:new_ind + 1])
+            len_max = len(oracles[1][level_up][2])
+            for j in range(len_max - next_ind):
+                oracles[1][level_up][2].pop(len(oracles[1][level_up][2]) - 1)
+            print(oracles[1][level_up][2])
 
-            print(ind)
             ind = new_ind
-            print("ind", ind)
-
-            print(oracles[1][level_up][1])
-            print(oracles[1][level_up + 1][1])
             level_up = level_up + 1
 
     # Then we go back to the main loop of the structuration function with the correct structure to rebuilt the oracles
@@ -398,8 +402,10 @@ def graph_cognitive_algorithm(char, matrix, data_length):
 # Second implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
     print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(4, 2))
+    fig = plt.figure(figsize=(10, 4))
     plt.title("Formal diagram of level " + str(level))
+    plt.xlabel("time in number of states (formal memory)")
+    plt.ylabel("material (material memory)")
     plt.gray()
     print("fig.number :", fig.number)
     return fig.number
@@ -408,8 +414,12 @@ def print_formal_diagram_init(level):
 def print_formal_diagram_update(fig_number, formal_diagram, data_length):
     print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
+    string = ""
+    for i in range(len(formal_diagram)):
+        string += chr(i + letter_diff + 1)
+    plt.yticks(range(len(formal_diagram)), string)
     plt.imshow(formal_diagram, extent=[0, data_length, len(formal_diagram), 0])
-    plt.pause(0.1)
+    plt.pause(0.01)
     return fig.number
 
 
@@ -472,11 +482,13 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
     k = len(f_oracle.data) - 1
     # Every new character is analysed.
-    for i in range(len(str_obj)):
+    i = 0
+    while i < len(str_obj):
         print("[INFO] PROCESS IN LEVEL " + str(level))
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
+        nb_elements = len(concat_obj)
         print("Actual char processed is " + chr(actual_char + letter_diff))
 
         # formal diagram is updated with the new char
@@ -500,7 +512,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             test_1 = 0
             test_2 = 0
         if RULE_4:
-            test_4 = rule_4_recomputed_object_old(oracles, level, actual_char_ind)
+            test_4 = rule_4_recomputed_object(oracles, level, actual_char_ind)
         else:
             test_4 = 0
         if RULE_3:
@@ -511,6 +523,18 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             test_5 = rule_5_regathering(concat_obj)
         else:
             test_5 = 1
+
+        if test_4:
+            i = f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements - 1
+            actual_char = f_oracle.data[i + 1]
+            f_oracle = oracles[1][level][0]
+            link = oracles[1][level][1]
+            history_next = oracles[1][level][2]
+            concat_obj = oracles[1][level][3]
+            formal_diagram = oracles[1][level][4]
+            formal_diagram_graph = oracles[1][level][5]
+            print("input data", actual_char)
+            f_oracle.add_state(actual_char)
 
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or test_3 or test_4) and test_5 and \
@@ -548,6 +572,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
             concat_obj = ''
             oracles[1][level][3] = concat_obj
+        i += 1
 
     return 1
 
