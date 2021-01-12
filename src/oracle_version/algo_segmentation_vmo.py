@@ -284,7 +284,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
         if level_up != level:
             tmp_concat_obj = ''
             if seg == 0 and len(oracles[1][level_up][1]) > 1:
-                while  oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1] == new_ind:
+                while oracles[1][level_up][1][len(oracles[1][level_up][1]) - 1] == new_ind:
                     tmp_concat_obj = chr(oracles[1][level_up][0].data[len(oracles[1][level_up][1]) - 1] + letter_diff) \
                                      + tmp_concat_obj
                     oracles[1][level_up][1].pop(len(oracles[1][level_up][1]) - 1)
@@ -444,7 +444,47 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
 
-def structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk):
+def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles, level, i,
+                          history_next, concat_obj, nb_elements, formal_diagram, formal_diagram_graph):
+    if RULE_1:
+        test_1 = rule_1_similarity(f_oracle, actual_char_ind)
+    else:
+        test_1 = 1
+    if RULE_2:
+        test_2 = rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
+    else:
+        test_2 = 1
+    if not RULE_1 and not RULE_2:
+        test_1 = 0
+        test_2 = 0
+    if RULE_4:
+        test_4 = rule_4_recomputed_object(oracles, level, actual_char_ind)
+    else:
+        test_4 = 0
+    if RULE_3:
+        test_3 = rule_3_existing_object(history_next, concat_obj)
+    else:
+        test_3 = 0
+    if RULE_5:
+        test_5 = rule_5_regathering(concat_obj)
+    else:
+        test_5 = 1
+
+    if test_4:
+        i = f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements - 1
+        actual_char = f_oracle.data[i + 1]
+        f_oracle = oracles[1][level][0]
+        link = oracles[1][level][1]
+        history_next = oracles[1][level][2]
+        concat_obj = oracles[1][level][3]
+        formal_diagram = oracles[1][level][4]
+        formal_diagram_graph = oracles[1][level][5]
+        f_oracle.add_state(actual_char)
+    return test_1, test_2, test_3, test_4, test_5, \
+        i, actual_char, f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph
+
+
+def structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk):
     print("Structuring")
     # Labelling upper level string and updating the different structures
     new_char = char_next_level_similarity(history_next, concat_obj)
@@ -457,6 +497,7 @@ def structuration(history_next, concat_obj, oracles, level, link, data_length, l
 
     # send to the next f_oracle the node corresponding to concat_obj
     fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+    return 0
 
 
 def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_mk=0):
@@ -464,21 +505,14 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     by the extern user. It returns the structured char which is a tab of substring representing upper level object, the
     new string wew_char of upper level with adequated letters and the tab history[] of objects that are seen in this
     level."""
-
-    input_data = [ord(str_obj[i]) - letter_diff for i in range(len(str_obj))]
+    # end of the recursive loop
     if level > oracles[0] and end_mk == 1:
         return 0
+
+    #  Initialisation of the structures
     if level > oracles[0]:
-        # Initialisation of the structures
         print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
-        weights = None
-        feature = None
-
         flag = 'f'
-
-        if weights is None:
-            weights = {}
-            weights.setdefault(feature, 1.0)
 
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph = \
             structure_init(flag, level)
@@ -495,8 +529,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         formal_diagram = oracles[1][level][4]
         formal_diagram_graph = oracles[1][level][5]
 
-    k = len(f_oracle.data) - 1
     # Every new character is analysed.
+    input_data = [ord(str_obj[i]) - letter_diff for i in range(len(str_obj))]
+    k = len(f_oracle.data) - 1
     i = 0
     while i < len(str_obj):
         print("[INFO] PROCESS IN LEVEL " + str(level))
@@ -515,46 +550,15 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, formal_diagram, data_length)
 
         # First is the parametrisation of the rules according to the external settings.
-        if RULE_1:
-            test_1 = rule_1_similarity(f_oracle, actual_char_ind)
-        else:
-            test_1 = 1
-        if RULE_2:
-            test_2 = rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
-        else:
-            test_2 = 1
-        if not RULE_1 and not RULE_2:
-            test_1 = 0
-            test_2 = 0
-        if RULE_4:
-            test_4 = rule_4_recomputed_object(oracles, level, actual_char_ind)
-        else:
-            test_4 = 0
-        if RULE_3:
-            test_3 = rule_3_existing_object(history_next, concat_obj)
-        else:
-            test_3 = 0
-        if RULE_5:
-            test_5 = rule_5_regathering(concat_obj)
-        else:
-            test_5 = 1
-
-        if test_4:
-            i = f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements - 1
-            actual_char = f_oracle.data[i + 1]
-            f_oracle = oracles[1][level][0]
-            link = oracles[1][level][1]
-            history_next = oracles[1][level][2]
-            concat_obj = oracles[1][level][3]
-            formal_diagram = oracles[1][level][4]
-            formal_diagram_graph = oracles[1][level][5]
-            print("input data", actual_char)
-            f_oracle.add_state(actual_char)
+        test_1, test_2, test_3, test_4, test_5, i, actual_char, f_oracle, link, history_next, concat_obj, \
+            formal_diagram, formal_diagram_graph = rules_parametrization(
+                f_oracle, actual_char, actual_char_ind, link, oracles, level, i, history_next, concat_obj, nb_elements,
+                formal_diagram, formal_diagram_graph)
 
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or test_3 or test_4) and test_5 and \
                 (end_mk == 0 or (end_mk == 1 and len(concat_obj) != 0)):
-            structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             print("[INFO] PROCESS IN LEVEL " + str(level))
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
@@ -564,7 +568,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level == 0 and i == len(str_obj) - 1:
             end_mk = 1
         if end_mk == 1:
-            structuration(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             concat_obj = ''
             oracles[1][level][3] = concat_obj
         i += 1
