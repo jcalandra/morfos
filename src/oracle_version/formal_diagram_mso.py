@@ -1,4 +1,8 @@
 import matplotlib.pyplot as plt
+import parameters as prm
+
+SR = prm.SR
+HOP_LENGTH = prm.HOP_LENGTH
 
 letter_diff = 96
 
@@ -52,11 +56,12 @@ def print_formal_diagram_init(level):
 def print_formal_diagram_update(fig_number, formal_diagram, data_length):
     print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
+    plt.clf()
     string = ""
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
     plt.yticks(range(len(formal_diagram)), string)
-    plt.imshow(formal_diagram, extent=[0, data_length, len(formal_diagram), 0])
+    plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
     plt.pause(0.01)
     return fig.number
 

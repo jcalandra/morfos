@@ -2,7 +2,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import midi as md
-import signal as sig
+import signal_ac as sig
 import interface as ui
 import discovery_front as dfront
 import parameters as prm

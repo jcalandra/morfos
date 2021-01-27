@@ -1,5 +1,5 @@
 import time
-import signal as sig
+import signal_ac as sig
 import interface as ui
 
 HOP_LENGTH = 1024
