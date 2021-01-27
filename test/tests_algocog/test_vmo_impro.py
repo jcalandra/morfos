@@ -1,5 +1,5 @@
 import numpy as np
-import oracle_ac
+import oracle_mso
 import generate as vge
 import matplotlib.pyplot as plt
 import time
@@ -46,9 +46,9 @@ if CHROMA == 1:
     chroma_frames = feature.transpose()
     volume_data = [1 for i in range(len(chroma_frames))]
     r = (0.00, 1.01, 0.01)
-    ideal_t = oracle_ac.find_threshold(chroma_frames, r=r, flag='a', dim=12)
+    ideal_t = oracle_mso.find_threshold(chroma_frames, r=r, flag='a', dim=12)
     print(ideal_t[0][1])
-    oracle_t = oracle_ac.build_oracle(
+    oracle_t = oracle_mso.build_oracle(
         chroma_frames, volume_data, flag='a', threshold=ideal_t[0][1], feature='chroma', dim=12)
     print(oracle_t.data)
 
@@ -72,8 +72,8 @@ elif CQT == 1:
     volume_data = [1 for i in range(len(cqt_frames))]
     print("cqt frames :", cqt_frames)
     r = (0.00, 1.01, 0.01)
-    ideal_t = oracle_ac.find_threshold(cqt_frames, r=r, flag='a', dim=DIM)
-    oracle_t = oracle_ac.build_oracle(
+    ideal_t = oracle_mso.find_threshold(cqt_frames, r=r, flag='a', dim=DIM)
+    oracle_t = oracle_mso.build_oracle(
         cqt_frames, volume_data, flag='a', threshold=0.028, dfunc='cosine', suffix_method='inc', dim=DIM)
 
 
@@ -87,8 +87,8 @@ else:
     mfcc_frames = feature.transpose()
     volume_data = [1 for i in range(len(mfcc_frames))]
     r = (0.0, 1.01, 0.01)
-    ideal_t = oracle_ac.find_threshold(mfcc_frames, r=r, flag='a', dim=20)
-    oracle_t = oracle_ac.build_oracle(
+    ideal_t = oracle_mso.find_threshold(mfcc_frames, r=r, flag='a', dim=20)
+    oracle_t = oracle_mso.build_oracle(
         mfcc_frames, volume_data, flag='a', threshold=ideal_t[0][1], feature='mfcc', dim=20)
 
 print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))

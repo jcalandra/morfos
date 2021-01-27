@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import midi as md
-import algo_cog as ac
+import signal as sig
 import discovery_front as df
 import interface as ui
 import matplotlib.pyplot as plt
@@ -133,7 +133,7 @@ def test_replace(name, hop_length, nb_mfcc, teta, init, tempo):
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
     start_time = time.time()
-    matrix_audio, data_length, data_size, distance = ac.algo_cog(path_wav, hop_length, nb_mfcc, teta, init)
+    matrix_audio, data_length, data_size, distance = sig.algo_cog(path_wav, hop_length, nb_mfcc, teta, init)
     print("[INFO] Execution time audio : %s secondes ---" % (time.time() - start_time))
     ui.graph_algo_cogn(name + "-audio", "",  matrix_audio, nb_mfcc, data_length, teta, hop_length, init)
 

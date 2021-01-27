@@ -3,12 +3,12 @@
 
 # ------------- MAIN -----------------
 
-NAME = "Geisslerlied"
+NAME = "MozartK545_rondo"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
+PATH_OBJ = PATH_OBJ_BASIS + 'Mozart/'
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/signal/"
 
 SR = 22050
 HOP_LENGTH = 1024  # cqt : 512
@@ -44,8 +44,8 @@ else:
 
 # --------- INTERFACE ---------------
 
-TO_SAVE_BMP = 1
-TO_SHOW_BMP = 1
+TO_SAVE_BMP = 0
+TO_SHOW_BMP = 0
 TO_SAVE_PYP = 1
 TO_SHOW_PYP = 1
 
@@ -78,7 +78,7 @@ CLASS_ERROR = (60, 255, 150)  # dark green
 
 CORRECTION_BIT = 1
 CORRECTION_BIT_COLOR = 0
-SEGMENTATION_BIT = 1
+SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0
 
 NB_SILENCE = 1024*16

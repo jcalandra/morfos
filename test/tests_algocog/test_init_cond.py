@@ -1,5 +1,5 @@
 import time
-import algo_cog as ac
+import signal as sig
 import interface as ui
 
 HOP_LENGTH = 1024
@@ -15,7 +15,7 @@ def test_init_cond(name):
     init = INIT
     while init < HOP_LENGTH:
         print("[INFO] INIT = ", init)
-        matrix, data_length, data_size, distance = ac.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, init)
+        matrix, data_length, data_size, distance = sig.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, init)
         ui.graph_algo_cogn(name, path_result, matrix, NB_MFCC, data_length, TETA, HOP_LENGTH, init)
         init = init + 10
 
@@ -27,7 +27,7 @@ def test_tempo(name):
     path_result = PATH_RESULTS + "tempo/" + name + "/"
     while actual_tempo < 151:
         print("[INFO] TEMPO = ", actual_tempo)
-        matrix, data_length, data_size, distance = ac.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, INIT)
+        matrix, data_length, data_size, distance = sig.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, INIT)
         ui.graph_algo_cogn(actual_name, path_result, matrix, NB_MFCC, data_length, TETA, HOP_LENGTH, INIT)
         actual_tempo = actual_tempo + 50
         actual_name = name + str(actual_tempo)
@@ -43,7 +43,7 @@ def test_transpose(name):
     path_result = PATH_RESULTS + "transpo/" + name + "/"
     while actual_transpo_octave < 5 or actual_transpo_note < 5:
         print("[INFO] TRANSPOSITION = " + str(actual_transpo_octave) + "-" + note)
-        matrix, data_length, data_size, distance = ac.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, INIT)
+        matrix, data_length, data_size, distance = sig.algo_cog(path, HOP_LENGTH, NB_MFCC, TETA, INIT)
         ui.graph_algo_cogn(actual_name, path_result, matrix, NB_MFCC, data_length, TETA, HOP_LENGTH, INIT)
         if actual_transpo_note == 11:
             actual_transpo_note = 00

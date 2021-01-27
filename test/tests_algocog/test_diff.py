@@ -2,7 +2,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import midi as md
-import algo_cog as ac
+import signal as sig
 import interface as ui
 import discovery_front as dfront
 import parameters as prm
@@ -17,7 +17,7 @@ INIT = prm.INIT
 BACKGROUND = (255, 255, 255)
 
 
-def del_column(mtx_err, mtx, i, fd):
+def del_column(mtx_err, mtx, fd):
     """ Function to delete both columns of matrix and matrix_error. Might be deleted."""
     size = 1
     # size = 0
@@ -77,7 +77,7 @@ def clear_matrix(mtx_audio, mtx_midi, data_size, data_length, hop_length):
                 mtx_audio_clean[i][fd][1] == BACKGROUND[1] and mtx_audio_clean[i][fd][2] == BACKGROUND[2]:
             fd = fd + 1
         if fd < len(mtx_audio_clean[i]):
-            mtx_audio_clean, mtx_midi_clean = del_column(mtx_audio_clean, mtx_midi_clean, i, fd)
+            mtx_audio_clean, mtx_midi_clean = del_column(mtx_audio_clean, mtx_midi_clean, fd)
 
         # Remove the lines of materials that are considered as non significants
         mtx_audio_clean = np.delete(mtx_audio_clean, i, axis=0)
@@ -149,7 +149,7 @@ def df_comparison(diag_midi, diag_audio, data_size, data_length, hop_length):
     while len(df_audio) > len(df_midi):
         n = len(df_audio) - 1
         i = df_audio[n][0]
-        copy_diag_audio, copy_diag_midi = del_column(copy_diag_audio, copy_diag_midi, n, i)
+        copy_diag_audio, copy_diag_midi = del_column(copy_diag_audio, copy_diag_midi, i)
 
         copy_diag_audio = np.delete(copy_diag_audio, df_audio[n][1], axis=0)
         df_audio.pop(n)
@@ -158,7 +158,7 @@ def df_comparison(diag_midi, diag_audio, data_size, data_length, hop_length):
     while len(df_midi) > len(df_audio):
         n = len(df_midi) - 1
         i = df_midi[n][0]
-        copy_diag_midi, copy_diag_audio = del_column(copy_diag_midi, copy_diag_audio, n, i)
+        copy_diag_midi, copy_diag_audio = del_column(copy_diag_midi, copy_diag_audio, i)
 
         copy_diag_midi = np.delete(copy_diag_midi, df_midi[n][1], axis=0)
         df_midi.pop(n)
@@ -229,7 +229,7 @@ def test_diff(name, hop_length, nb_values, teta, tempo, init):
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
     start_time = time.time()
-    matrix_audio, data_length, data_size, distance, t = ac.algo_cog(path_wav, hop_length, nb_values, teta, init)
+    matrix_audio, data_length, data_size, distance, t = sig.algo_cog(path_wav, hop_length, nb_values, teta, init)
     print("[INFO] Execution time audio : %s secondes ---" % (time.time() - start_time))
     ui.graph_algo_cogn(name + "-audio", "", matrix_audio, nb_values, data_length, teta, hop_length, init)
 
