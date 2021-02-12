@@ -103,6 +103,19 @@ def volume_dynamic_dissimilarities(v_tab, id_hop_a, id_hop_b):
     return vdd
 
 
+def volume_kullback_leibler(v_tab, id_hop_a, id_hop_b):
+    kl = 0
+    if v_tab[id_hop_b] > 0:
+        d = v_tab[id_hop_a] / v_tab[id_hop_b]
+    else:
+        d = 0
+    if d > 0:
+        kl = kl + v_tab[id_hop_a] * math.log(d, 10)
+    else:
+        kl = 0
+    return kl
+
+
 # Spectrum
 # FFT
 def get_diff_frequencies_fft(s_tab, id_hop_a, id_hop_b):

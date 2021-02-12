@@ -3,8 +3,10 @@ import parameters as prm
 
 SR = prm.SR
 HOP_LENGTH = prm.HOP_LENGTH
+TO_SAVE_PYP = prm.TO_SAVE_PYP
+path_results = prm.PATH_RESULT
 
-letter_diff = 96
+letter_diff = 30
 
 
 # ============================================ FORMAL DIAGRAM ==========================================================
@@ -44,25 +46,31 @@ def graph_cognitive_algorithm(char, matrix, data_length):
 # Second implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
     print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(8, 4))
+    fig = plt.figure(figsize=(32, 20))
     plt.title("Formal diagram of level " + str(level))
-    plt.xlabel("time in number of states at level 0 (formal memory)")
+    plt.xlabel("time in seconds (formal memory)")
     plt.ylabel("material (material memory)")
     plt.gray()
     print("fig.number :", fig.number)
     return fig.number
 
 
-def print_formal_diagram_update(fig_number, formal_diagram, data_length):
+def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
     plt.clf()
+    file_name_pyplot = "FD_level" + str(level)
+    plt.title("Formal diagram of level " + str(level))
+    plt.xlabel("time in seconds (formal memory)")
+    plt.ylabel("material (material memory)")
     string = ""
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
-    plt.yticks(range(len(formal_diagram)), string)
+    # plt.yticks(range(len(formal_diagram)), string)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
     plt.pause(0.01)
+    # if TO_SAVE_PYP:
+    #    plt.savefig(path_results + file_name_pyplot)
     return fig.number
 
 

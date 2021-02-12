@@ -8,7 +8,7 @@ FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/signal/"
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/src/dynamic/Geisslerlied/"
 
 SR = 22050
 HOP_LENGTH = 1024  # cqt : 512
@@ -23,7 +23,7 @@ ALGO_VMO = 1
 ALGO_REP = 0
 ALGO_USUAL = 0
 
-SUFFIX_METHOD = 'inc'  # 'inc' ou 'complete'
+SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 
 # ------------ SIM FUNCTIONS --------------
 
@@ -31,7 +31,7 @@ MFCC_BIT = 0
 CQT_BIT = 1
 FFT_BIT = 0
 
-AUDIBLE_THRESHOLD = 0.1
+AUDIBLE_THRESHOLD = 0.00001
 D_THRESHOLD = 140  # fft : 25; mfcc : 60 # cqt : 140
 GRAPH_COMPARISON = 0
 
@@ -46,7 +46,7 @@ else:
 
 TO_SAVE_BMP = 0
 TO_SHOW_BMP = 0
-TO_SAVE_PYP = 0
+TO_SAVE_PYP = 1
 TO_SHOW_PYP = 1
 
 # ------- DATA COMPUTING ------------
@@ -78,7 +78,7 @@ CLASS_ERROR = (60, 255, 150)  # dark green
 
 CORRECTION_BIT = 1
 CORRECTION_BIT_COLOR = 0
-SEGMENTATION_BIT = 1
+SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0
 
 NB_SILENCE = 1024*16

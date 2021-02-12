@@ -31,7 +31,7 @@ def get_data(audio_path):
     if audio_path.split('.')[-1] == 'mp3':  # mp3 files are converted into wave files.
         mp3 = pydub.AudioSegment.from_mp3(audio_path)
         print("[INFO] Converting audio from mp3 to wav...")
-        audio_path = "../../" + audio_path.split('.')[-2] + ".wav"
+        audio_path = audio_path.split('.')[-2] + ".wav"
         mp3.export(audio_path, format="wav")
     # rate, data = wave.read(audio_path)
     data, rate = librosa.load(audio_path, SR)

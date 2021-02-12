@@ -58,7 +58,7 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
         formal_diagram = oracles[1][level][4]
         data_length = len(formal_diagram[0])
         formal_diagram_update(formal_diagram, data_length, actual_char, i + 1, oracles, level)
-        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, formal_diagram, data_length)
+        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, data_length)
         formal_diagram_graph = oracles[1][level][5]
         f_oracle.add_state(actual_char)
     return test_1, test_2, test_3, test_4, test_5, \
@@ -128,7 +128,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         else:
             formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
-        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, formal_diagram, data_length)
+        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, data_length)
 
         # First is the parametrisation of the rules according to the external settings.
         test_1, test_2, test_3, test_4, test_5, i, actual_char, f_oracle, link, history_next, concat_obj, \

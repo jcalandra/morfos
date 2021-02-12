@@ -37,7 +37,8 @@ def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
      of an already known object of upper level. The function returns 1 then, 0 otherwise."""
     if len(f_oracle.data) > 2 and f_oracle.sfx[actual_char_ind - 1] != 0 \
             and f_oracle.data[f_oracle.sfx[actual_char_ind - 1] + 1] == actual_char \
-            and link[f_oracle.sfx[actual_char_ind - 1]] == link[f_oracle.sfx[actual_char_ind - 1] + 1]:
+            and (len(link) < f_oracle.sfx[actual_char_ind - 1] + 2
+                 or link[f_oracle.sfx[actual_char_ind - 1]] == link[f_oracle.sfx[actual_char_ind - 1] + 1]):
         return 1
     return 0
 
@@ -272,7 +273,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
         for j in range(len(oracles[1][level_up][4])):
             for k in range(k_init, data_length):
                 oracles[1][level_up][4][j][k] = 1
-        print_formal_diagram_update(oracles[1][level_up][5], oracles[1][level_up][4], data_length)
+        print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
 
         # link
         if len(oracles[1][level_up][1]) > ind:
@@ -311,7 +312,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
                 char_ind = ind + j + 1
                 formal_diagram_update(oracles[1][level_up][4], data_length, actual_char, char_ind, oracles,
                                       level_up)
-                print_formal_diagram_update(oracles[1][level_up][5], oracles[1][level_up][4], data_length)
+                print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
 
         oracles[1][level_up][0] = new_fo
 

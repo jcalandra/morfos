@@ -5,6 +5,7 @@ import signal_mso as sig_mso
 import interface as ui
 import parameters as prm
 
+
 NAME = prm.NAME
 FORMAT = prm.FORMAT
 
@@ -24,9 +25,12 @@ ALGO_USUAL = prm.ALGO_USUAL
 def main():
     path = PATH_OBJ + NAME + FORMAT
     start_time_full = time.time()
+    level_max = -1
+    tab_f_oracle = []
+    mso_oracle = [level_max, tab_f_oracle]
     matrix = data_length = None
     if ALGO_VMO:
-        matrix, data_length, data_size, distance, t = sig_mso.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
+        matrix, data_length, data_size, distance, t = sig_mso.algo_cog(path, mso_oracle, HOP_LENGTH, NB_VALUES, TETA, INIT)
     elif ALGO_REP:
         matrix, data_length, data_size, distance, t = sig_r.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
     elif ALGO_USUAL:

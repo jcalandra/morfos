@@ -4,9 +4,12 @@ import parameters as prm
 import numpy as np
 import cv2
 import time
+import plot
 from mso import *
 import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
+
+import compute_dynamics as cd
 
 # TODO : intégrer le timbre dans la représentation
 # TODO : homogénéiser avec la hiérarchisation
@@ -27,6 +30,9 @@ WRITE_RESULTS = prm.WRITE_RESULTS
 NB_SILENCE = prm.NB_SILENCE
 SUFFIX_METHOD = prm.SUFFIX_METHOD
 FMIN = prm.NOTE_MIN
+
+SYNTHESIS = 0
+PLOT_ORACLE = 0
 
 
 def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
@@ -157,7 +163,7 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
     return volume_data, suffix_method, input_data, oracle_t
 
 
-def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
+def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     here_time = time.time()
@@ -216,6 +222,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
 
     start_time = time.time()
 
+    vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
+
     for i_hop in range(nb_hop):  # while
         obs = input_data[i_hop]
         if flag == 'f' or flag == 'v':
@@ -225,15 +233,36 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
 
         j_mat = oracle_t.data[i_hop + 1]
         value = 255 - v_tab[i_hop] * 255
+
+        value_vsd = 255 - abs(vsd[i_hop]) * 255
+        value_vdd = 255 - abs(vdd[i_hop]) * 255
+        value_vkl = 255 - abs(vkl[i_hop]) * 255
+        value_fsd = 255 - abs(fsd[i_hop]) * 255
+        value_fdd = 255 - abs(fdd[i_hop]) * 255
+
         color3 = color2
         color2 = color
         color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
+
+        if i_hop > 2:
+            prev_mat = oracle_t.data[i_hop]
+            prev2_mat = oracle_t.data[i_hop - 1]
+            prev3_mat = oracle_t.data[i_hop - 2]
+
+        if i_hop == nb_hop - 1 and j_mat != prev_mat:
+            print("last frame")
+            modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
+            j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
+
+                if i_hop == nb_hop - 1:
+                    end_mk = 1
+                    concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(oracles[1]) > level + 1:
                     node = len(oracles[1][level + 1][0].data)
@@ -252,19 +281,30 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
-                as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1)
+                as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
         else:
             diff_mk = 0
-
-        if i_hop > 2:
-            prev_mat = oracle_t.data[i_hop]
-            prev2_mat = oracle_t.data[i_hop - 1]
-            prev3_mat = oracle_t.data[i_hop - 2]
-
-        if i_hop == nb_hop - 1 and j_mat != prev_mat:
-            print("last frame")
-            modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
-            j_mat = prev_mat
+            if i_hop == nb_hop - 1:
+                end_mk = 1
+                # link update
+                if len(oracles[1]) > level + 1:
+                    node = len(oracles[1][level + 1][0].data)
+                else:
+                    node = 1
+                for ind in range(len(concat_obj)):
+                    link.append(node)
+                new_char = concat_obj[0]
+                # history_next update
+                cnt = 0
+                for ind_history in range(len(history_next)):
+                    if new_char != history_next[ind_history][1]:
+                        cnt += 1
+                if cnt == len(history_next):
+                    history_next.append((new_char, concat_obj))
+                # concat_obj update
+                concat_obj = ""
+                diff_mk = 1
+                as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
 
         if j_mat > actual_max:
 
@@ -324,22 +364,26 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
         for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
             for k in range(len(mtx)):
                 mtx[k][j - 1] = BACKGROUND
-        mtx[oracle_t.data[j - 2]][j - 3] = color3
-        mtx[oracle_t.data[j - 1]][j - 2] = color2
-        mtx[oracle_t.data[j]][j - 1] = color
+        mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
+        mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
+        mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
         if len(concat_obj) >= 3:
-            concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[j - 2] + 1) + \
-                         chr(fd_mso.letter_diff + oracle_t.data[j - 1] + 1)
-        concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[j] + 1)
+            concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
+                         + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+        concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
 
         if temp_max > actual_max:
             actual_max = temp_max
         print("concat obj", concat_obj)
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
-        fd_mso.print_formal_diagram_update(formal_diagram_graph, formal_diagram, nb_hop)
+        fd_mso.print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, nb_hop)
 
-        oracles[1][level][0] = oracle_t
+        g_oracle = oracle_mso.create_oracle('f')
+        for ind in range(i_hop + 1):
+            g_oracle.add_state(oracle_t.data[ind + 1] + 1)
+        f_oracle = g_oracle
+        oracles[1][level][0] = f_oracle
         oracles[1][level][1] = link
         oracles[1][level][2] = history_next
         oracles[1][level][3] = concat_obj
@@ -356,25 +400,27 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN):
 
     algocog_time = time.time() - start_time
     print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
-    '''f_ac = open("../../results/algocog_computing.txt", "a")
-    f_ac.write(str(algocog_time) + "\n")
-    f_ac.close()'''
+    print("seg error = ", seg_error, " || class error = ", class_error)
+    print("distance = ", distance)
 
     if WRITE_RESULTS:
+        f_ac = open("../../results/algocog_computing.txt", "a")
+        f_ac.write(str(algocog_time) + "\n")
+        f_ac.close()
         name = audio_path.split('/')[-1]
         file = open("../results/error.txt", "a")
         file.write("\nERROR file " + name + ", " + str(hop_length) + ", " + str(nb_values) + ", " + str(teta) +
                    ", " + str(init) + "\nseg_error = " + str(seg_error) + "\nclass_error = " + str(class_error) +
                    "\ndistance = " + str(distance) + "\n")
         file.close()
-    print("seg error =", seg_error)
-    print("class error =", class_error)
-    print(oracle_t.data)
-    name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
-    print(name)
-    s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
-    # im = plot.start_draw(oracle_t, size=(900 * 4, 400 * 4))
-    # im.show()
-    t = time.time() - here_time
-    print("temps total total :", t)
-    return mtx, data_length, data_size, distance, t
+
+    if SYNTHESIS == 1:
+        name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
+        print("name : ", name)
+        s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
+
+    if PLOT_ORACLE == 1:
+        im = plot.start_draw(oracle_t, size=(900 * 4, 400 * 4))
+        im.show()
+
+    return mtx, data_length, data_size, distance, algocog_time

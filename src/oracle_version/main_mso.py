@@ -30,11 +30,12 @@ def main():
 
     # printing the results in the shell
     for i in range(len(mso_oracle[1])):
-        new_fd.append([chr(tab_f_oracle[i][0].data[j] + sig_mso.fd_mso.letter_diff) for j in range(1, len(tab_f_oracle[i][0].data))])
+        new_fd.append([chr(tab_f_oracle[i][0].data[j] + sig_mso.fd_mso.letter_diff)
+                       for j in range(1, len(tab_f_oracle[i][0].data))])
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", mso_oracle[1][i][1])
         print("history next : ", mso_oracle[1][i][2])
-    plt.pause(60)
+    plt.pause(1200)
+
 
 main()
-
