@@ -1,10 +1,11 @@
 import oracle_mso
+import alignements
 from formal_diagram_mso import *
 
 # ================================================= RULES ==============================================================
 
 # 5 rules are proposed :
-# RULE_1 : Structuring if the actual object has already be seen in the same level of structure.
+# RULE_1 : Structuring if the actual object has already been seen in the same level of structure.
 # RULE_2 : There is no structuring if an hypothesis about the upper level is validated.  RULE_2 is actually the
 # opposite of this rule, meaning that there is structuring if any hypothesis is validated.
 # RULE_3 : Structuring on this level if the concatenated object is an object already seen on the upper level.
@@ -48,12 +49,22 @@ def rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind
     return abs(1 - validated_hypothesis(f_oracle, link, actual_char, actual_char_ind))
 
 
-def rule_3_existing_object(history_next, concat_obj):
+def rule_3_existing_object_old(history_next, concat_obj):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
     the function returns 0."""
     for i in range(len(history_next)):
         if history_next[i][1] == concat_obj:
+            return 1
+    return 0
+
+
+def rule_3_existing_object(history_next, concat_obj,  matrix):
+    """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
+    with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
+    the function returns 0."""
+    for i in range(len(history_next)):
+        if alignements.scheme_alignement(history_next[i][1], concat_obj, matrix):
             return 1
     return 0
 
@@ -221,7 +232,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
     concat_obj = oracles[1][level][3]
     nb_elements = len(concat_obj)
 
-    print("concat obj", concat_obj)
     # Comparisons between concat_obj and the string starting from the suffix of the first char of concat_obj
     # if there is only one character in concat_obj, that is already seen, it's rule 1
     if nb_elements <= 1 or level != 0:
@@ -278,14 +288,11 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
         # link
         if len(oracles[1][level_up][1]) > ind:
             new_ind = oracles[1][level_up][1][ind]
-            print("new ind 1", new_ind)
             seg = 0
             oracles[1][level_up][3] = ''
         else:
             new_ind = max(oracles[1][level_up][1])
-            print("new ind 2", new_ind)
             seg = 1
-        print(oracles[1][level_up][1])
         while i < len(oracles[1][level_up][1]):
             oracles[1][level_up][1].pop(i)
         if level_up != level:
@@ -316,18 +323,19 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind):
 
         oracles[1][level_up][0] = new_fo
 
-        print(oracles[1][level_up][0].data)
-        print(oracles[1][level_up][1])
-        print(oracles[1][level_up][3])
         # next level
         level_tmp = level_up
         if level_up < len(oracles[1]) - 1:
-            # history_next
             next_ind = max(oracles[1][level_up + 1][0].data[:new_ind + 1])
             len_max = len(oracles[1][level_up][2])
             for j in range(len_max - next_ind):
+                # history_next
                 oracles[1][level_up][2].pop(len(oracles[1][level_up][2]) - 1)
-            print(oracles[1][level_up][2])
+                # matrix
+                oracles[1][level_up][6][0] = oracles[1][level_up][6][0][:-1]
+                oracles[1][level_up][6][1].pop()
+                for mat_line in range(len(oracles[1][level_up][6][1])):
+                    oracles[1][level_up][6][1][mat_line].pop()
 
             ind = new_ind
             level_up = level_up + 1

@@ -2,6 +2,7 @@ import time
 import matplotlib.pyplot as plt
 import signal_mso as sig_mso
 import parameters as prm
+import formal_diagram_mso as fd_mso
 
 NAME = prm.NAME
 FORMAT = prm.FORMAT
@@ -35,6 +36,9 @@ def main():
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", mso_oracle[1][i][1])
         print("history next : ", mso_oracle[1][i][2])
+        print("matrix_next : ", mso_oracle[1][i][6])
+
+    fd_mso.diagram3D(mso_oracle)
     plt.pause(1200)
 
 

@@ -26,7 +26,7 @@ def main(char_ex):
 def example():
     char_ex2 = 'abacabacdeabfgabachijklmabacdeabhinopqabacrsrsttu'
     char_ex = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    main(char_ex2)
+    #main(char_ex2)
     main(char_ex)
 
 

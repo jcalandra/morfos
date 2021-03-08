@@ -60,6 +60,9 @@ def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
     if (oracle_t.rep[j_mat][0] * oracle_t.rep[j_mat][1] - obs).all() == 0 and oracle_t.rep[j_mat][1] - 1 == 0:
         oracle_t.rep.pop(j_mat)
         oracle_t.latent.pop(j_mat)
+        oracle_t.vec.pop(j_mat - 1)
+        for ind in range(j_mat - 1, len(oracle_t.vec)):
+            oracle_t.vec[ind].pop(prev_mat - 1)
         for j in range(len(oracle_t.data) - 2, len(oracle_t.data)):
             if oracle_t.data[j] and oracle_t.data[j] > j_mat:
                 oracle_t.data[j] = oracle_t.data[j] - 1
@@ -109,6 +112,9 @@ def modify2_oracle(oracle_t, prev2_mat, prev_mat, j_mat, i_hop, input_data):
     if prev_mat != j_mat and (oracle_t.rep[j_mat][0] * oracle_t.rep[j_mat][1] - obs_1).all() == 0:
         oracle_t.rep.pop(j_mat)
         oracle_t.latent.pop(j_mat)
+        oracle_t.vec.pop(j_mat - 1)
+        for ind in range(j_mat - 1, len(oracle_t.vec)):
+            oracle_t.vec[ind].pop(prev_mat - 1)
         if prev_mat > j_mat:
             prev_mat = prev_mat - 1
         for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
@@ -121,6 +127,9 @@ def modify2_oracle(oracle_t, prev2_mat, prev_mat, j_mat, i_hop, input_data):
     if (oracle_t.rep[prev_mat][0] * oracle_t.rep[prev_mat][1] - obs_2).all() == 0:
         oracle_t.rep.pop(prev_mat)
         oracle_t.latent.pop(prev_mat)
+        oracle_t.vec.pop(prev_mat - 1)
+        for ind in range(prev_mat - 1, len(oracle_t.vec)):
+            oracle_t.vec[ind].pop(prev_mat - 1)
         for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
             if oracle_t.data[j] and oracle_t.data[j] > prev_mat:
                 oracle_t.data[j] = oracle_t.data[j] - 1
@@ -161,6 +170,24 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
         oracle_t = oracle_mso.create_oracle('a', threshold=threshold, dfunc=dfunc, dfunc_handle=dfunc_handle, dim=dim)
 
     return volume_data, suffix_method, input_data, oracle_t
+
+
+def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
+    blank_ind = 0
+    while mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
+            and mtx[prev_mat][blank_ind][2] == BACKGROUND[2]:
+        blank_ind += 1
+
+    if blank_ind == lim_ind and prev_mat == actual_max:
+        matrix[0] = matrix[0][:-1]
+        matrix[1].pop()
+        for i in range(len(matrix[1])):
+            matrix[1][i].pop()
+        actual_max = actual_max - 1
+        temp_max = temp_max - 1
+        mtx = np.delete(mtx, - 1, 0)
+        return 1, matrix, actual_max, temp_max, mtx
+    return 0, matrix, actual_max, temp_max, mtx
 
 
 def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, end_mk=0):
@@ -207,9 +234,14 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
     # ------- INITIALISATION OF OTHER STRUCTURES -------
     level = 0
-    f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph = structure_init(flag, level)
-    oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph])
+    f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
+        structure_init(flag, level)
+    oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
     oracles[0] = level
+    history = []
+    vec = [1]
+    matrix = [chr(as_mso.letter_diff + 1), [vec]]
+    history.append([chr(as_mso.letter_diff + 1), chr(as_mso.letter_diff + 1), vec])
 
     # ------- ALGORITHM -------
 
@@ -270,14 +302,9 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
-                new_char = concat_obj[3]  # TODO: mettre en place un calcul de distance d'edition.
                 # history_next update
-                cnt = 0
-                for ind_history in range(len(history_next)):
-                    if new_char != history_next[ind_history][1]:
-                        cnt += 1
-                if cnt == len(history_next):
-                    history_next.append((new_char, concat_obj))
+                new_char = as_mso.char_next_level_similarity(
+                    history_next, matrix, matrix_next, concat_obj)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
@@ -317,10 +344,13 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 if good_mat == j_mat:
                     modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
                     j_mat = oracle_t.data[i_hop]
-                    temp_max = j_mat
 
                 else:
                     modify_oracle(oracle_t, prev2_mat, prev_mat, i_hop - 1, input_data)
+                    digit, matrix, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                    if digit == 1:
+                        j_mat -= 1
 
             elif i_hop > 2 and prev_mat != prev3_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
@@ -330,13 +360,27 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                     modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
                     j_mat = oracle_t.data[i_hop]
                     temp_max = j_mat
-                    seg_error = seg_error + 1
                 else:
                     modify2_oracle(oracle_t, prev3_mat, prev2_mat, prev_mat, i_hop - 1, input_data)
+                    digit, matrix, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                    if digit == 1:
+                        j_mat -= 1
+                    digit, matrix, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
+                    if digit == 1:
+                        j_mat -= 1
                     seg_error = seg_error + 2
 
         if j_mat > actual_max:
             temp_max = j_mat
+            vec = oracle_t.vec[len(matrix[0]) - 1].copy()
+            print(vec)
+            vec.append(1)
+            matrix[0] += (chr(len(matrix[0]) + as_mso.letter_diff + 1))
+            matrix[1].append(vec)
+            for i in range(len(matrix[1]) - 1):
+                matrix[1][i].append(matrix[1][len(matrix[1]) - 1][i])
             new_mat_l = np.ones((1, nb_hop, 3), np.uint8)
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
@@ -353,6 +397,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 # ici, on dit que le meilleur est le précédent par défaut (car on ne peut pas pointer un suffixe vers
                 # l'élément suivant
                 modify_oracle(oracle_t, good_mat, prev_mat, i_hop - 1, input_data)
+                digit, matrix, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
 
             if i_hop > 2 and prev_mat == prev2_mat and prev_mat != prev3_mat and j_mat != prev_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
@@ -360,6 +406,10 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 class_error = class_error + 2
                 good_mat = sf.true_mat(i_hop - 1, i_hop, i_hop - 3, j_mat, prev3_mat, s_tab)
                 modify2_oracle(oracle_t, good_mat, prev2_mat, prev_mat, i_hop - 1, input_data)
+                digit, matrix, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                digit, matrix, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
 
         for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
             for k in range(len(mtx)):
@@ -368,6 +418,11 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
         mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
         mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
+        if len(concat_obj) == 1:
+            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+        if len(concat_obj) == 2:
+            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
+                         + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
         if len(concat_obj) >= 3:
             concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
                          + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
@@ -375,7 +430,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
         if temp_max > actual_max:
             actual_max = temp_max
-        print("concat obj", concat_obj)
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
         fd_mso.print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, nb_hop)
 
@@ -390,8 +444,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
         oracles[1][level][4] = formal_diagram
         oracles[1][level][5] = formal_diagram_graph
 
-    while len(oracle_t.rep) < len(mtx):
-        mtx = np.delete(mtx, - 1, 0)
     if flag != 'f' and flag != 'v':
         oracle_t.f_array.finalize()
 

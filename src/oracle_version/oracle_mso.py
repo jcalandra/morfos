@@ -113,6 +113,7 @@ class FactorOracle(object):
         self.lrs = []
         self.data = []
         self.rep = []
+        self.vec = []
 
         # Compression attributes
         self.compror = []
@@ -721,6 +722,9 @@ class MO(FactorOracle):
                 self.latent.append([i])  # il s'agit d'un nouveau matériau dont le premier indice est i
                 self.data.append(len(self.latent) - 1)  # Numéro du matériau correspondant (qui est un nv num ici)
                 self.rep.append([new_data, 1])
+                if len(self.rep) > 1:
+                    self.vec.append(comp_rep)
+
             else:  # Si on a un matériau déjà existant
                 # trie avec le 2e élément de chaque couple par ordre décroissant
                 sorted_suffix_candidates = sorted(suffix_candidate, key=lambda suffix: suffix[1], reverse=True)
@@ -745,6 +749,7 @@ class MO(FactorOracle):
                 self.latent.append([i])
                 self.data.append(len(self.latent) - 1)
                 self.rep.append([new_data, 1])
+                self.vec.append(comp_rep)
 
             else:
                 self.sfx[i] = suffix_candidate

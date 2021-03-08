@@ -11,4 +11,5 @@ def structure_init(flag, level):
     concat_obj = ''
     formal_diagram = []
     formal_diagram_graph = fd_mso.print_formal_diagram_init(level)
-    return f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph
+    matrix = ["", []]
+    return f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix
