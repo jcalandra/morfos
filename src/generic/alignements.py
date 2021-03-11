@@ -22,8 +22,8 @@ def scheme_alignement(string_compared, actual_string, mat):
         transpo = 1
 
     # NW parameters
-    gap_value = -2
-    extend_gap_value = -1
+    gap_value = -10
+    extend_gap_value = -5
     gap = chr(0)
 
     # creation of the similarity matrix

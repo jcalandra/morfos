@@ -56,7 +56,7 @@ def print_formal_diagram_init(level):
 
 
 def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
-    print("PRINT formal diagram update")
+    #print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
     plt.clf()
     file_name_pyplot = "FD_level" + str(level)
@@ -68,7 +68,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         string += chr(i + letter_diff + 1)
     #plt.yticks(range(len(formal_diagram)), string)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
-    #plt.pause(0.1)
+    # plt.pause(0.0001)
     #plt.savefig(path_results + file_name_pyplot)
     return fig.number
 
@@ -95,19 +95,33 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 
 
 def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
-    print("formal diagram update")
+    #print("formal diagram update")
     k_init = actual_char_ind
+    print("k_init", k_init)
     if level == 0:
         n = 1
     else:
         k_end = k_init
         lv = level - 1
+        print("level", level)
         while lv >= 0:
+            print("k_init", k_init)
+            print("k_end", k_end)
             link = oracles[1][lv][1]
             link_r = link.copy()
+            print("link", link)
             link_r.reverse()
             k_init = link.index(k_init)
-            k_end = len(link) - link_r.index(k_end) - 1
+            print("oracles[1][lv + 1][0].data", oracles[1][lv + 1][0].data)
+            print("len(oracles[1][lv + 1][0].data) - 1", len(oracles[1][lv + 1][0].data) - 1)
+            true_len = len(link) - link_r.index(len(oracles[1][lv + 1][0].data) - 1)
+            print("len", len(link))
+            print("true len", true_len)
+            sub_link_r = link.copy()
+            sub_link_r = sub_link_r[:true_len]
+            sub_link_r.reverse()
+            print("sub link r", sub_link_r)
+            k_end = true_len - sub_link_r.index(k_end) - 1
             lv = lv - 1
         n = k_end - k_init + 1
     color = (actual_char_ind % 4 + 0.1)/4

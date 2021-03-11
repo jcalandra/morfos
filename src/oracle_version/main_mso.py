@@ -37,8 +37,7 @@ def main():
         print("link_" + str(i) + ": ", mso_oracle[1][i][1])
         print("history next : ", mso_oracle[1][i][2])
         print("matrix_next : ", mso_oracle[1][i][6])
-
-    fd_mso.diagram3D(mso_oracle)
+    # fd_mso.diagram3D(mso_oracle)
     plt.pause(1200)
 
 

@@ -282,13 +282,13 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
             prev3_mat = oracle_t.data[i_hop - 2]
 
         if i_hop == nb_hop - 1 and j_mat != prev_mat:
-            print("last frame")
             modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
+                print("Segmentation...")
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
 
@@ -375,7 +375,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
         if j_mat > actual_max:
             temp_max = j_mat
             vec = oracle_t.vec[len(matrix[0]) - 1].copy()
-            print(vec)
             vec.append(1)
             matrix[0] += (chr(len(matrix[0]) + as_mso.letter_diff + 1))
             matrix[1].append(vec)
@@ -419,10 +418,29 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
         mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
         if len(concat_obj) == 1:
+            if len(history_next) > 0:
+                new_history_next_element = history_next[-1][1]
+                if ord(history_next[-1][1][-2]) - fd_mso.letter_diff > len(matrix[0]):
+                    tmp_char = history_next[-1][1][-1]
+                    new_history_next_element = new_history_next_element[:-2]
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                    new_history_next_element += tmp_char
+                if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
+                    new_history_next_element = new_history_next_element[:-1]
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                history_next[-1] = (history_next[-1][0], new_history_next_element)
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+
         if len(concat_obj) == 2:
+            if len(history_next) > 0:
+                new_history_next_element = history_next[-1][1]
+                if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
+                    new_history_next_element = new_history_next_element[:-1]
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                history_next[-1] = (history_next[-1][0], new_history_next_element)
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
                          + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+
         if len(concat_obj) >= 3:
             concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
                          + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
