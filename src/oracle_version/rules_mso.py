@@ -20,6 +20,9 @@ RULE_3 = 1
 RULE_4 = 1
 RULE_5 = 1
 
+ALIGNEMENT_rule3 = 1
+ALIGNEMENT_rule4 = 1
+
 
 def rule_1_similarity(f_oracle, actual_char_ind):
     """ Compare the actual char which is analysed actual_char with all objects that are already seen in the actual level
@@ -52,19 +55,14 @@ def rule_3_existing_object(history_next, concat_obj, matrix):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
     the function returns 0."""
-    for i in range(len(history_next)):
-        if history_next[i][1] == concat_obj:
-            return 1
-    return 0
-
-
-def rule_3_existing_object_new(history_next, concat_obj,  matrix):
-    """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
-    with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
-    the function returns 0."""
-    for i in range(len(history_next)):
-        if alignements.scheme_alignement(history_next[i][1], concat_obj, matrix)[0]:
-            return 1
+    if ALIGNEMENT_rule3:
+        for i in range(len(history_next)):
+            if alignements.scheme_alignement(history_next[i][1], concat_obj, matrix)[0]:
+                return 1
+    else:
+        for i in range(len(history_next)):
+            if history_next[i][1] == concat_obj:
+                return 1
     return 0
 
 
@@ -340,7 +338,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar,
      the previous recognized string is structured and the algorithm rebuild the different FOs and structures back to
      this state and returns 1, otherwise returns 0."""
-    print("HEY")
     # allocation of structures of actual level
     f_oracle = oracles[1][level][0]
     link = oracles[1][level][1]
@@ -348,55 +345,48 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
     concat_obj = oracles[1][level][3]
     nb_elements = len(concat_obj)
 
-    # Comparisons between concat_obj and the string starting from the suffix of the first char of concat_obj
-
     # if there is only one character in concat_obj, that is already seen, it's rule 1
     if nb_elements <= 1:
-        print("NONE 0")
         return 0, str_obj
 
-    # if the longest similar suffix is not an adequate value (1)
-    if f_oracle.sfx[actual_char_ind - nb_elements] is None:
-        print("NONE 0.2")
+    # if the longest similar suffix is not an adequate value
+    if f_oracle.sfx[actual_char_ind - nb_elements] is None or f_oracle.sfx[actual_char_ind - nb_elements] == 0 or \
+            f_oracle.sfx[actual_char_ind - nb_elements] == actual_char_ind - nb_elements - 1:
         return 0, str_obj
 
-    # if the longest similar suffix is not an adequate value (2)
-    if f_oracle.sfx[actual_char_ind - nb_elements] == (0 or actual_char_ind - nb_elements - 1):
-        print("NONE 0.5")
-        return 0, str_obj
-
-    for j in range(nb_elements):
-        # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
-        if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] \
-                != f_oracle.data[actual_char_ind - nb_elements + j]:
-            print("NONE 1")
+    # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
+    if ALIGNEMENT_rule4:
+        sub_suffix = ""
+        for j in range(nb_elements):
+            sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
+            # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
+        '''print("sub suffix", sub_suffix,
+              [ord(sub_suffix[ind_suffix]) - letter_diff for ind_suffix in range(len(sub_suffix))])
+        print("concat obj", concat_obj,
+              [ord(concat_obj[ind_concatobj]) - letter_diff for ind_concatobj in range(len(concat_obj))])
+        print("matrix", oracles[1][level - 1][6])
+        print("matrix numbers", [ord(oracles[1][level - 1][6][0][mat_suffix]) - letter_diff for mat_suffix in
+                                 range(len(oracles[1][level - 1][6][0]))])'''
+        if alignements.scheme_alignement(sub_suffix, concat_obj, oracles[1][level - 1][6])[0] == 0:
             return 0, str_obj
 
-    '''sub_suffix = ""
-    for j in range(nb_elements):
-        sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
-        # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
-    print("sub suffix", sub_suffix)
-    print("concat obj", concat_obj)
-    print("matrix", oracles[1][level - 1][6])
-    if alignements.scheme_alignement(sub_suffix, concat_obj, oracles[1][level - 1][6])[0] == 0:
-        print("NONE 1")
-        return 0, None'''
+    else:
+        for j in range(nb_elements):
+            if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] \
+                    != f_oracle.data[actual_char_ind - nb_elements + j]:
+                return 0, str_obj
 
     # if the the longest similar suffix is constitued of different materials
     for i in range(1, nb_elements):
         if link[f_oracle.sfx[actual_char_ind - nb_elements] + i - 1] != link[f_oracle.sfx[actual_char_ind - nb_elements] + i]:
-            print("NONE 1.5")
             return 0, str_obj
 
     # if the the longest similar suffix does not begin the corresponding material
     if link[f_oracle.sfx[actual_char_ind - nb_elements]] == link[f_oracle.sfx[actual_char_ind - nb_elements] - 1]:
-        print("NONE 1.8")
         return 0, str_obj
 
     # if the actual concat_obj is not the longest common string :
     if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
-        print("NONE 2")
         return 0, str_obj
 
     if len(oracles[1]) > level + 1:
@@ -408,15 +398,15 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
         real_value = f_oracle_sup.data[real_ind]
 
         # if concat_obj corresponds to an already known object, return 0.
-        '''if alignements.scheme_alignement(history_next[real_value - 1][1], concat_obj, oracles[1][level - 1][6])[0] == 1:
-            print("NONE 3")
-            return 0, str_obj'''
-        if history_next[real_value - 1][1] == concat_obj:
-            print("NONE 3")
-            return 0, str_obj
+        if ALIGNEMENT_rule4:
+            if alignements.scheme_alignement(history_next[real_value - 1][1], concat_obj, oracles[1][level - 1][6])[0] == 1:
+                return 0, str_obj
+        else:
+            if history_next[real_value - 1][1] == concat_obj:
+                return 0, str_obj
 
     # else, we are in the required conditions and we rebuild the oracles
-    # First we go back to the new already-seen state with concat obj as
+    # We go back to the new already-seen state
     print("YES")
     print("level", level)
 
@@ -434,14 +424,21 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
             k_init += 1
         frame_level -= 1
 
-    if len(f_oracle.data) - (ind + 1) > len(str_obj):
+    # compute the string that has to be rebuilt at actual level before going back to lower levels
+    if actual_char_ind > len(str_obj) + k:
         str_obj = ""
         for i in range(ind + 1, len(f_oracle.data)):
             str_obj += chr(f_oracle.data[i] + letter_diff)
     else:
-        str_obj = str_obj[ind - k:]
+        if ind >= k:
+            str_obj = str_obj[ind - k:]
+        else:
+            str_2apn = ""
+            for i in range(ind + 1, k + 1):
+                str_2apn += chr(f_oracle.data[i] + letter_diff)
+            str_obj = str_2apn + str_obj
 
-    # for each level n superior to actual level:
+    # for each level n superior or equal to actual level:
     while len(oracles[1]) > level_up != level_tmp:
         # print("NUMBER ORACLE " + str(level_up))
         new_fo = oracle_mso.create_oracle('f')
@@ -483,7 +480,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
                     oracles[1][level_up][1].pop(len(oracles[1][level_up][1]) - 1)
 
                     # concat_obj update
-                # new_ind = max(oracles[1][level_up][1])
                 oracles[1][level_up][3] = tmp_concat_obj
 
             elif seg == 1:
@@ -521,7 +517,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k):
                 for mat_line in range(len(oracles[1][level_up][6][1])):
                     oracles[1][level_up][6][1][mat_line].pop()
 
-            if len(oracles[1][level_up][1]) > 1 and level_up == level:
+            if len(oracles[1][level_up][1]) > 1 and level_up == level and to_struct:
                 cmp = 1
                 while oracles[1][level_up][1][-1] == oracles[1][level_up][1][-1 - cmp]:
                     cmp += 1

@@ -68,7 +68,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         string += chr(i + letter_diff + 1)
     #plt.yticks(range(len(formal_diagram)), string)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
-    plt.pause(0.0001)
+    #plt.pause(0.0001)
     #plt.savefig(path_results + file_name_pyplot)
     return fig.number
 
@@ -97,7 +97,6 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
     #print("formal diagram update")
     k_init = actual_char_ind
-    print("k_init", k_init)
     if level == 0:
         n = 1
     else:
