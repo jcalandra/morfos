@@ -297,7 +297,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                     concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(oracles[1]) > level + 1:
-                    node = len(oracles[1][level + 1][0].data)
+                    # node = len(oracles[1][level + 1][0].data)
+                    node = max(oracles[1][level][1]) + 1
                 else:
                     node = 1
                 for ind in range(len(concat_obj)):
@@ -335,7 +336,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
         if j_mat > actual_max:
 
-            # faire passer CORRECTION_BIT en argument de la fonction pour pouvoir choisir à chaque étape de l'algorithme
             if i_hop > 2 and prev_mat != prev2_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
                     color = SEG_ERROR
@@ -393,8 +393,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 class_error = class_error + 1
                 good_mat = sf.true_mat(i_hop - 1, i_hop, i_hop - 2, j_mat, prev2_mat, s_tab)
 
-                # ici, on dit que le meilleur est le précédent par défaut (car on ne peut pas pointer un suffixe vers
-                # l'élément suivant
+                # By default the best element is the previous one because FO cannot point on future objects
                 modify_oracle(oracle_t, good_mat, prev_mat, i_hop - 1, input_data)
                 digit, matrix, actual_max, temp_max, mtx = \
                     modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)

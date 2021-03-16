@@ -59,7 +59,7 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
         test_1 = 0
         test_2 = 0
     if RULE_4:
-        test_4, potential_obj = rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj)
+        test_4, potential_obj = rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k)
     else:
         test_4 = 0
     if RULE_3:
@@ -73,7 +73,6 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
 
     if test_4:
         f_oracle = oracles[1][level][0]
-        # i = f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements - 1
         link = oracles[1][level][1]
         history_next = oracles[1][level][2]
         concat_obj = oracles[1][level][3]
@@ -100,7 +99,8 @@ def structure(history_next, concat_obj, oracles, level, link, data_length, level
     # Labelling upper level string and updating the different structures
     new_char = char_next_level_similarity(history_next, oracles[1][level - 1][6], oracles[1][level][6], concat_obj)
     if len(oracles[1]) > level + 1:
-        node = len(oracles[1][level + 1][0].data)
+        # node = len(oracles[1][level + 1][0].data)
+        node = max(oracles[1][level][1]) + 1
     else:
         node = 1
     for ind in range(len(concat_obj)):
@@ -146,7 +146,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     k = len(f_oracle.data) - 1
     i = 0
     while i < len(str_obj):
-        print("[INFO] PROCESS IN LEVEL " + str(level))
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1

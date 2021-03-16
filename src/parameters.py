@@ -98,6 +98,3 @@ def test():
         print("ERROR : you must choose one type of analysis: MFCC, CQT or FFT")
     if SUFFIX_METHOD != ('complete' or 'inc'):
         print("WARNING : suffix method might be 'complete' or 'inc' ")
-
-
-test()
