@@ -46,7 +46,7 @@ def graph_cognitive_algorithm(char, matrix, data_length):
 
 # Second implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
-    print("PRINT formal diagram init")
+    # print("PRINT formal diagram init")
     fig = plt.figure(figsize=(60, 40))
     plt.title("Formal diagram of level " + str(level))
     plt.xlabel("time in seconds (formal memory)")
@@ -56,7 +56,7 @@ def print_formal_diagram_init(level):
 
 
 def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
-    #print("PRINT formal diagram update")
+    # print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
     plt.clf()
     file_name_pyplot = "FD_level" + str(level)
@@ -66,7 +66,6 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     string = ""
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
-    #plt.yticks(range(len(formal_diagram)), string)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
     #plt.pause(0.0001)
     #plt.savefig(path_results + file_name_pyplot)
@@ -74,7 +73,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
 
 
 def formal_diagram_init(formal_diagram, data_length, oracles, level):
-    print("formal diagram init")
+    # print("formal diagram init")
     new_mat = [1 for i in range(data_length)]
     formal_diagram.append(new_mat)
     if level == 0:
@@ -95,14 +94,13 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 
 
 def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
-    #print("formal diagram update")
+    # print("formal diagram update")
     k_init = actual_char_ind
     if level == 0:
         n = 1
     else:
         k_end = k_init
         lv = level - 1
-        print("level", level)
         while lv >= 0:
             link = oracles[1][lv][1]
             link_r = link.copy()
@@ -115,7 +113,6 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
             k_end = true_len - sub_link_r.index(k_end) - 1
             lv = lv - 1
         n = k_end - k_init + 1
-        # print("n", n)
     color = (actual_char_ind % 4 + 0.1)/4
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
@@ -134,7 +131,6 @@ from mpl_toolkits.mplot3d import Axes3D
 def diagram3D(oracles):
     z_len = len(oracles[1])
     y_len = len(oracles[1][0][4][0])
-    print("z_len", z_len)
     file_name_pyplot = "FD_3D"
 
     x_len = len(oracles[1][0][4])
