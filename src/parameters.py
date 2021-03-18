@@ -16,7 +16,7 @@ HOP_LENGTH = 1024  # cqt : 512
 PRECISION = 4
 NB_NOTES = 48*PRECISION
 NB_MFCC = 50
-TETA = 0.976  # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.903 à précision 2, 0.927 à précision 1
+TETA = 0.965  # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.903 à précision 2, 0.927 à précision 1
 INIT = 0
 QUOTIENT = 100
 
