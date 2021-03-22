@@ -14,8 +14,6 @@ def scheme_alignement(string_compared, actual_string, mat):
     if len(actual_string) == 0:
         return 0, 0
     min_len = min(len(string_compared), len(actual_string))
-    '''min_char = ord(min(min(string_compared), min(actual_string)))
-    max_char = ord(max(max(string_compared), max(actual_string)))'''
     if TRANSPOSITION:
         transpo = 1  # max_char - min_char
     else:
@@ -47,7 +45,7 @@ def scheme_alignement(string_compared, actual_string, mat):
         if nw_alignment > alignment:
             alignment = nw_alignment
 
-    similarity = alignment / min_len
+    similarity = (alignment - gap_value) / min_len
     if similarity >= threshold*quotient:
         return 1, similarity
     return 0, similarity

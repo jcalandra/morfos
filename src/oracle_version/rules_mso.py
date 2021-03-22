@@ -8,7 +8,7 @@ from formal_diagram_mso import *
 # 5 rules are proposed :
 # RULE_1 : Structuring if the actual object has already been seen in the same level of structure.
 # RULE_2 : There is no structuring if an hypothesis about the upper level is validated.  RULE_2 is actually the
-# opposite of this rule, meaning that there is structuring if any hypothesis is validated.
+# opposite of this rule, meaning that there is structuring if no hypothesis is validated.
 # RULE_3 : Structuring on this level if the concatenated object is an object already seen on the upper level.
 # RULE_4 : RULE_4 is the same rule as RULE_3 except that it takes account of previously unfinished objects that are
 # seen again and have then to be modified such as it become an object of upper level.
@@ -45,8 +45,8 @@ def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
      of an already known object of upper level. The function returns 1 then, 0 otherwise."""
     if len(f_oracle.data) > 2 and f_oracle.sfx[actual_char_ind - 1] != 0 \
             and f_oracle.data[f_oracle.sfx[actual_char_ind - 1] + 1] == actual_char \
-            and (len(link) < f_oracle.sfx[actual_char_ind - 1] + 2
-                 or link[f_oracle.sfx[actual_char_ind - 1]] == link[f_oracle.sfx[actual_char_ind - 1] + 1]):
+            and len(link) > f_oracle.sfx[actual_char_ind - 1] + 2\
+            and link[f_oracle.sfx[actual_char_ind - 1]] == link[f_oracle.sfx[actual_char_ind - 1] + 1]:
         return 1
     return 0
 
@@ -427,6 +427,11 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
             f_oracle.sfx[actual_char_ind - nb_elements] == actual_char_ind - nb_elements - 1:
         return 0, str_obj
 
+    # TODO: supprimer cette possibilité
+    # if the the longest similar suffix does not begin the corresponding material
+    if link[f_oracle.sfx[actual_char_ind - nb_elements]] == link[f_oracle.sfx[actual_char_ind - nb_elements] - 1]:
+        return 0, str_obj
+
     # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
     if ALIGNEMENT_rule4:
         for j in range(nb_elements):
@@ -502,14 +507,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
     ind_fo_init = 1
     ind_to_struct = 0
 
-    # compute k_init according to the adequate frame at level 0 for formal diagram representation
-    while frame_level > 0:
-        k_init = oracles[1][frame_level - 1][1].index(k_init)
-        while len(oracles[1][frame_level - 1][1]) > k_init + 1 and \
-                oracles[1][frame_level - 1][1][k_init] == oracles[1][frame_level - 1][1][k_init + 1]:
-            k_init += 1
-        frame_level -= 1
-
     # compute the string that has to be fully rebuilt at actual level before going back to lower levels
     if actual_char_ind > len(str_obj) + k:
         str_obj = ""
@@ -534,6 +531,16 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
             new_state = oracles[1][level_up][0].data[i]
             new_fo.add_state(new_state)
             i += 1
+
+        # compute k_init according to the adequate frame at level 0 for formal diagram representation
+        k_init = ind
+        frame_level = level_up
+        while frame_level > 0:
+            k_init = oracles[1][frame_level - 1][1].index(k_init)
+            while len(oracles[1][frame_level - 1][1]) > k_init + 1 and \
+                    oracles[1][frame_level - 1][1][k_init] == oracles[1][frame_level - 1][1][k_init + 1]:
+                k_init += 1
+            frame_level -= 1
 
         # formal diagram update
         for j in range(len(oracles[1][level_up][4])):
@@ -581,15 +588,15 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
 
                 new_fo = oracle_mso.create_oracle('f')
                 # f_oracle update
-                while ind_fo_init < ind + 1 - ind_to_struct:
+                while ind_fo_init < ind_init + 1 - ind_to_struct:
                     new_state = oracles[1][level][0].data[ind_fo_init]
                     new_fo.add_state(new_state)
                     ind_fo_init += 1
 
                 # formal diagram update
                 frame_level = level
-                former_k_init = k_init
-                k_init = ind_fo_init - 1
+                former_k_init = ind_init
+                k_init = ind_init - ind_to_struct
                 while frame_level > 0:
                     k_init = oracles[1][frame_level - 1][1].index(k_init)
                     while len(oracles[1][frame_level - 1][1]) > k_init + 1 and \
@@ -601,6 +608,9 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
                     for fd_ind in range(k_init, former_k_init):
                         oracles[1][level_up][4][j][fd_ind] = 1
                 print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
+
+                # str_obj
+                str_obj = str_obj[ind_fo_init:]
 
         new_ind = max(oracles[1][level_up][1])
         oracles[1][level_up][0] = new_fo
@@ -647,10 +657,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
         # formal diagram update at initial level
         formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
         print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
-
-    if level > 0 and end_mk == 1:
-        global wait
-        wait = 1
 
     # Then go back to the main loop of the structuring function with the correct structure to rebuilt the oracles
     return 1, str_obj

@@ -257,6 +257,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
 
     for i_hop in range(nb_hop):  # while
+        print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
         if flag == 'f' or flag == 'v':
             oracle_t.add_state(obs)
@@ -286,14 +287,14 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        if diff and len(concat_obj) > 3:
+        if diff:  # and len(concat_obj) > 3
             if diff_mk != 1:
-                print("Segmentation...")
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
 
                 if i_hop == nb_hop - 1:
                     end_mk = 1
+                    print("ou là")
                     concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(oracles[1]) > level + 1:
@@ -304,35 +305,32 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 for ind in range(len(concat_obj)):
                     link.append(node)
                 # history_next update
-                new_char = as_mso.char_next_level_similarity(
-                    history_next, matrix, matrix_next, concat_obj)
+                new_char = as_mso.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                print("[INFO] Process in level 0...")
         else:
             diff_mk = 0
             if i_hop == nb_hop - 1:
                 end_mk = 1
+                concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
+                print("ici")
                 # link update
                 if len(oracles[1]) > level + 1:
-                    node = len(oracles[1][level + 1][0].data)
+                    node = max(oracles[1][level][1]) + 1
                 else:
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
-                new_char = concat_obj[0]
                 # history_next update
-                cnt = 0
-                for ind_history in range(len(history_next)):
-                    if new_char != history_next[ind_history][1]:
-                        cnt += 1
-                if cnt == len(history_next):
-                    history_next.append((new_char, concat_obj))
+                new_char = as_mso.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                print("[INFO] Process in level 0...")
 
         if j_mat > actual_max:
 

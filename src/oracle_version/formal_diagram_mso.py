@@ -38,7 +38,7 @@ def graph_cognitive_algorithm(char, matrix, data_length):
     """ plot the picture of formal diagram matrix according to its length data_length. The picture is named ofter the
     string char."""
     name = char
-    plt.figure(figsize=(60, 40))
+    plt.figure(figsize=(30, 20))
     plt.title("Formal diagram of " + name)
     plt.gray()
     plt.imshow(matrix, extent=[0, data_length, len(matrix), 0])
@@ -48,7 +48,7 @@ def graph_cognitive_algorithm(char, matrix, data_length):
 # Second implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
     # print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(60, 40))
+    fig = plt.figure(figsize=(30, 20))
     plt.title("Formal diagram of level " + str(level))
     plt.xlabel("time in seconds (formal memory)")
     plt.ylabel("material (material memory)")
