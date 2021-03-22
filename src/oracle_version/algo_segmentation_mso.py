@@ -1,6 +1,11 @@
-from rules_mso import *
 import mso
 import alignements
+import parameters as prm
+import formal_diagram_mso as fd_mso
+import rules_mso
+
+letter_diff = prm.LETTER_DIFF
+wait = rules_mso.wait
 
 
 # ================================================ SIMILARITY ==========================================================
@@ -47,27 +52,28 @@ def char_next_level_similarity(history_next, matrix, matrix_next, concat_obj):
 def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
                           concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
     potential_obj = None
-    if RULE_1:
-        test_1 = rule_1_similarity(f_oracle, actual_char_ind)
+    if rules_mso.RULE_1:
+        test_1 = rules_mso.rule_1_similarity(f_oracle, actual_char_ind)
     else:
         test_1 = 1
-    if RULE_2:
-        test_2 = rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
+    if rules_mso.RULE_2:
+        test_2 = rules_mso.rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
     else:
         test_2 = 1
-    if not RULE_1 and not RULE_2:
+    if not rules_mso.RULE_1 and not rules_mso.RULE_2:
         test_1 = 0
         test_2 = 0
-    if RULE_4:
-        test_4, potential_obj = rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_max, end_mk)
+    if rules_mso.RULE_4:
+        test_4, potential_obj = rules_mso.rule_4_recomputed_object(
+            oracles, level, actual_char_ind, str_obj, k, level_max, end_mk)
     else:
         test_4 = 0
-    if RULE_3:
-        test_3 = rule_3_existing_object(history_next, concat_obj, oracles[1][level - 1][6])
+    if rules_mso.RULE_3:
+        test_3 = rules_mso.rule_3_existing_object(history_next, concat_obj, oracles[1][level - 1][6])
     else:
         test_3 = 0
-    if RULE_5:
-        test_5 = rule_5_regathering(concat_obj)
+    if rules_mso.RULE_5:
+        test_5 = rules_mso.rule_5_regathering(concat_obj)
     else:
         test_5 = 1
 
@@ -86,8 +92,9 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]
         data_length = len(formal_diagram[0])
-        formal_diagram_update(formal_diagram, data_length, actual_char, k + i + 1, oracles, level)
-        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, data_length)
+        fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, k + i + 1, oracles, level)
+        oracles[1][level][5] = fd_mso.print_formal_diagram_update(
+            formal_diagram_graph, level, formal_diagram, data_length)
         formal_diagram_graph = oracles[1][level][5]
 
     return test_1, test_2, test_3, test_4, test_5, i, k, actual_char, \
@@ -143,6 +150,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
     # Every new character is analysed.
     input_data = [ord(str_obj[i]) - letter_diff for i in range(len(str_obj))]
+    level_wait = -1
     k = len(f_oracle.data) - 1
     i = 0
     while i < len(str_obj):
@@ -152,11 +160,12 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:
-            formal_diagram_init(formal_diagram, data_length, oracles, level)
+            fd_mso.formal_diagram_init(formal_diagram, data_length, oracles, level)
         else:
-            formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
+            fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
-        oracles[1][level][5] = print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, data_length)
+        oracles[1][level][5] = fd_mso.print_formal_diagram_update(
+            formal_diagram_graph, level, formal_diagram, data_length)
 
         # First is the parametrisation of the rules according to the external settings.
         test_1, test_2, test_3, test_4, test_5, i, k, actual_char, f_oracle, link, history_next, concat_obj, \
@@ -167,17 +176,23 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and \
                 (end_mk == 0 or (end_mk == 1 and len(concat_obj) != 0)):
-            structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             print("[INFO] PROCESS IN LEVEL " + str(level))
-            print("k+i", k+i)
+
+            if rules_mso.wait == 1 and end_mk == 1:
+                end_mk = 0
+                level_wait = level - 1
+
+            structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
         oracles[1][level][3] = concat_obj
 
         # Automatically structuring if this is the End Of String
-        if level == 0 and i == len(str_obj) - 1:
+        if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
             end_mk = 1
+            rules_mso.wait = 0
         if end_mk == 1:
+            print("[INFO] PROCESS IN LEVEL " + str(level))
             structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             concat_obj = ''
         oracles[1][level][3] = concat_obj

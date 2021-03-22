@@ -240,8 +240,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     oracles[0] = level
     history = []
     vec = [1]
-    matrix = [chr(as_mso.letter_diff + 1), [vec]]
-    history.append([chr(as_mso.letter_diff + 1), chr(as_mso.letter_diff + 1), vec])
+    matrix = [chr(fd_mso.letter_diff + 1), [vec]]
+    history.append([chr(fd_mso.letter_diff + 1), chr(fd_mso.letter_diff + 1), vec])
 
     # ------- ALGORITHM -------
 
@@ -376,7 +376,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
             temp_max = j_mat
             vec = oracle_t.vec[len(matrix[0]) - 1].copy()
             vec.append(1)
-            matrix[0] += (chr(len(matrix[0]) + as_mso.letter_diff + 1))
+            matrix[0] += (chr(len(matrix[0]) + fd_mso.letter_diff + 1))
             matrix[1].append(vec)
             for i in range(len(matrix[1]) - 1):
                 matrix[1][i].append(matrix[1][len(matrix[1]) - 1][i])

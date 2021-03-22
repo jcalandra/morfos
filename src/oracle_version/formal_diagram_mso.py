@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 import parameters as prm
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 
 SR = prm.SR
 HOP_LENGTH = prm.HOP_LENGTH
 TO_SAVE_PYP = prm.TO_SAVE_PYP
 path_results = prm.PATH_RESULT
 
-letter_diff = 1
+letter_diff = prm.LETTER_DIFF
 
 
 # ============================================ FORMAL DIAGRAM ==========================================================
@@ -123,9 +124,6 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
         for i in range(n):
             formal_diagram[actual_char - 1][k_init + i - 1] = color
     return 0
-
-
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def diagram3D(oracles):

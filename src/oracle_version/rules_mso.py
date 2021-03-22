@@ -24,6 +24,10 @@ RULE_5 = 1
 ALIGNEMENT_rule3 = 1
 ALIGNEMENT_rule4 = 1
 
+letter_diff = prm.LETTER_DIFF
+
+wait = 0
+
 
 def rule_1_similarity(f_oracle, actual_char_ind):
     """ Compare the actual char which is analysed actual_char with all objects that are already seen in the actual level
@@ -483,7 +487,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    print("yes")
     data_length = len(oracles[1][level][4][0])
     to_struct = 0
     to_struct_obj = ''
@@ -493,7 +496,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
     level_tmp = -1
 
     ind = f_oracle.sfx[actual_char_ind - nb_elements] - 1
-    print("ind", ind)
     ind_init = ind
     k_init = ind
     new_ind_p1 = -1
@@ -571,7 +573,6 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
         else:
             if to_struct and len(oracles[1][level_up][1]) > 1:
                 # link update and computation of to_struct_obj
-                print("total link", link)
                 while oracles[1][level][1][len(oracles[1][level][1]) - 1] == new_ind:
                     to_struct_obj = chr(oracles[1][level][0].data[len(oracles[1][level][1]) - 1] + letter_diff) \
                         + to_struct_obj
@@ -633,7 +634,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
             print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
 
         as_mso.structure(
-            oracles[1][level][2], to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, end_mk)
+            oracles[1][level][2], to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, 0)
         oracles[1][level][3] = ""
 
     # concat_obj update at initial level
@@ -646,6 +647,10 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
         # formal diagram update at initial level
         formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
         print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
+
+    if level > 0 and end_mk == 1:
+        global wait
+        wait = 1
 
     # Then go back to the main loop of the structuring function with the correct structure to rebuilt the oracles
     return 1, str_obj

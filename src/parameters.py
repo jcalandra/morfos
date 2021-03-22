@@ -13,10 +13,12 @@ PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 SR = 22050
 HOP_LENGTH = 1024  # cqt : 512
 
+LETTER_DIFF = 1
+
 PRECISION = 4
 NB_NOTES = 48*PRECISION
 NB_MFCC = 50
-TETA = 0.965  # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.903 à précision 2, 0.927 à précision 1
+TETA = 0.97  # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.903 à précision 2, 0.927 à précision 1
 INIT = 0
 QUOTIENT = 100
 
@@ -77,7 +79,7 @@ SEGMENTATION = (0, 255, 255)  # red
 SEG_ERROR = (60, 255, 255)  # light green
 CLASS_ERROR = (60, 255, 150)  # dark green
 
-CORRECTION_BIT = 1
+CORRECTION_BIT = 0
 CORRECTION_BIT_COLOR = 0
 SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0
