@@ -155,6 +155,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     # Every new character is analysed.
     input_data = [ord(str_obj[i]) - letter_diff for i in range(len(str_obj))]
     level_wait = -1
+    global wait
     k = len(f_oracle.data) - 1
     i = 0
     print("[INFO] Process in level " + str(level) + "...")
@@ -162,12 +163,13 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
-        if level == 2:
-            print("concat obj", [ord(element) - letter_diff for element in concat_obj])
-            print("actual char", actual_char)
-            print("history next", len(oracles[1][level][2]), oracles[1][level][2])
-            print("history", len(oracles[1][level - 1][2]), oracles[1][level - 1][2])
-            print("matrix", [ord(element) - letter_diff for element in oracles[1][level - 1][6][0]])
+        print("actual char", actual_char)
+        print("f oracle data", len(oracles[1][level][0].data), oracles[1][level][0].data)
+        print("link", len(oracles[1][level][1]), oracles[1][level][1])
+        print("history next", len(oracles[1][level][2]), oracles[1][level][2])
+        print("concat obj", [ord(element) - letter_diff for element in concat_obj])
+        print("formal diagram", len(oracles[1][level][4]), oracles[1][level][4])
+
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:

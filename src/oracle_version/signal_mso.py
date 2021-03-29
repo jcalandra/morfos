@@ -296,7 +296,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        if diff:  # and len(concat_obj) > 3
+        if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
