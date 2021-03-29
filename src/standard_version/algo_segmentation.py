@@ -1,5 +1,14 @@
 import matplotlib.pyplot as plt
+import parameters as prm
 
+# In this file are implemented the rules that give segmentation criteria, without the Oracle (nor alignement techniques)
+# The similarity test function (char_next_level_similarity) and main algorithm are implemented in this file too (the
+# segmentation test function is in the main algorithm).
+# Functions for the creations of the formal diagrams from strings are provided.
+# Exemples from strings are provided at the end of this file
+# Remarque: ce fichier est probablement voué à être supprimé
+
+# ================================================= RULES ==============================================================
 # 5 rules are proposed :
 # RULE_1 : there is a structuration if the actual object has already be seen in the same level of structure.
 # RULE_2 : there is no structuration if an hypothesis about the upper level is validated.  RULE_2 is actually the
@@ -10,11 +19,11 @@ import matplotlib.pyplot as plt
 # RULE_5 : A structured object of upper level wich is alone is gathered with the next group.
 # On the extern parameters, 1 means that the rule is applied and 0 means that the rule is not applied.
 
-RULE_1 = 1
-RULE_2 = 1
-RULE_3 = 1
-RULE_4 = 1
-RULE_5 = 1
+RULE_1 = prm.RULE_1
+RULE_2 = prm.RULE_2
+RULE_3 = prm.RULE_3
+RULE_4 = prm.RULE_4
+RULE_5 = prm.RULE_5
 
 
 def rule_1_similarity(history, actual_char):
@@ -142,6 +151,7 @@ def rule_5_regathering(concat_obj):
     return 0
 
 
+# ======================================== SIMILARITY TEST FUNCTION ====================================================
 def char_next_level_similarity(new_char, history_next, structured_char, concat_obj):
     """ The function compare the actual new structured string with structured strings already seen before. For now,
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
@@ -159,6 +169,7 @@ def char_next_level_similarity(new_char, history_next, structured_char, concat_o
     return new_char
 
 
+# ======================================= MAIN COGNITIVE ALGORITHM FROM STRINGS ========================================
 # For now, the implementation is with strings, and every function fun_segmentation is called once the former execution
 # of this function is done.
 def fun_segmentation(char):
@@ -166,13 +177,6 @@ def fun_segmentation(char):
     by the extern user. It returns the structured char which is a tab of substring representing upper level object, the
     new string wew_char of upper level with adequated letters and the tab history[] of objects that are seen in this
     level."""
-    # TODO : fun_segmentation devrait prendre le FO produit jusque là et renvoyer à chaque fois qu'il y a structuration
-    #  un noeud pour le FO de niveau supérieur.
-    #  Ensuite le FO de niveau supérieur se construit.
-    #  Et fun segmentation de niveau supérieur agit de la même manière
-    #  Récupérer ici uniquement la chaîne de FO qui correspond aux différentes classes pour char.
-    #  On peut traduire le FO.data = char en lettres si souhaité
-
     # Initalisation of the structures
     structured_char = []  # actual char structured in packages
     new_char = ''  # corresponding leters in the next level of hyerarchy
@@ -182,8 +186,6 @@ def fun_segmentation(char):
 
     # Every new caracter is analysed.
     for i in range(len(char)):
-        # TODO :ici, on récupère le dernier noeud du niveau inférieur qui a été créé, après être passé par la structure
-        #  FO
         actual_char = char[i]  # i_th parsed caracter
 
         # First is the parametrisation of the rules according to the externs settings.
@@ -227,7 +229,6 @@ def fun_segmentation(char):
         if i == len(char) - 1:
             new_char = char_next_level_similarity(new_char, history_next, structured_char, concat_obj)
             structured_char.append(concat_obj)
-            # TODO : Envoyer ici au FO de niveau sup le noeud correspondant à concat_obj
 
     return structured_char, new_char, history, history_next
 
@@ -261,7 +262,7 @@ def graph_algo_cogn(char, matrix, data_length):
     plt.imshow(matrix, extent=[0, data_length, len(matrix), 0])
     plt.show()
 
-
+# ================================================= EXEMPLES ===========================================================
 # Here is a simple exemple with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
 def example():
     char_ex = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'

@@ -2,7 +2,9 @@ import time
 import matplotlib.pyplot as plt
 import signal_mso as sig_mso
 import parameters as prm
-import formal_diagram_mso as fd_mso
+# import formal_diagram_mso as fd_mso
+
+# This is the main loop for the whole cognitive algorithm
 
 NAME = prm.NAME
 FORMAT = prm.FORMAT
@@ -16,7 +18,9 @@ TETA = prm.TETA
 INIT = prm.INIT
 
 
+# ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
 def main():
+    """ Main function of the cognitive algorithm."""
     path = PATH_OBJ + NAME + FORMAT
     start_time_full = time.time()
 

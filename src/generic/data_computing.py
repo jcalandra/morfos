@@ -4,6 +4,8 @@ from matplotlib.pyplot import *
 import math
 import parameters as prm
 
+# In this file are implemented all functions that process the signal
+
 SR = prm.SR
 DIV = prm.DIV
 TONE_PRECISION = prm.TONE_PRECISION
@@ -14,11 +16,17 @@ MFCC_BIT = prm.MFCC_BIT
 FFT_BIT = prm.FFT_BIT
 CQT_BIT = prm.CQT_BIT
 
-# TODO !!! : dans la partie GET DATA, inclure le traitement des fichiers MIDI
+TIME_STATS = prm.TIME_STATS
+MFCC_NORMALISATION = prm.MFCC_NORMALISATION
+CLEAN_SPECTRUM = prm.CLEAN_SPECTRUM
+
+
+# =============================================== DATA COMPUTING =======================================================
+# TODO : dans la partie GET DATA, inclure le traitement des fichiers MIDI
 
 # TODO : dans getdata() gérer les fichiers stéréo
 # TODO : dans getdata() faire en sorte de passer les forrmat wav 16, 24 (et 32 déjà ok) bits
-# TODO: dans get_frequency, enregistrer les spectres et et fréquences correspondantes enregistrées pour ne pas avoir à
+# TODO : dans get_frequency, enregistrer les spectres et et fréquences correspondantes enregistrées pour ne pas avoir à
 #  les recalculer lorsque l'on modifie uniquement d'autres paramètres ultérieurs.
 
 
@@ -63,6 +71,7 @@ def get_frequency_basic(data, rate, f0, hop_length):
 
 # band
 def clean_spectrum_band(n, len_null, spectrum):
+    """ Clean the spectrum by keeping the highest frequencies in pikes. Induce to have an harmonic sound."""
     if spectrum[n - 1] >= spectrum[n - 2]:
         spectrum[n - 2] = 0
     elif spectrum[n - 2] > spectrum[n - 1] and (spectrum[n] > spectrum[n - 1]):
@@ -75,6 +84,7 @@ def clean_spectrum_band(n, len_null, spectrum):
 
 
 def freq_band(freq_min, freq_max, hop, div, fft, len_null, spectrum, freq):
+    """ Compute the sum for each frequency band."""
     freq_min = int(freq_min/div)
     freq_max = int(freq_max/div)
     i = freq_min
@@ -88,11 +98,12 @@ def freq_band(freq_min, freq_max, hop, div, fft, len_null, spectrum, freq):
         freq = np.append(freq, (i - hop) * div)
         if i > 2:
             n = len(spectrum) - 1
-            # spectrum, len_null = clean_spectrum_band(n, len_null, spectrum)
+            if CLEAN_SPECTRUM:
+                spectrum, len_null = clean_spectrum_band(n, len_null, spectrum)
     return spectrum, freq, len_null
 
 
-def get_frequency_bandes(data, rate, f0, hop_length):
+def get_frequency_bands(data, rate, f0, hop_length):
     """ get the amplitude for each frequency of the signal 'data'
     of frame rate 'rate' included in the window which begin at t0 and end at
     t0+size."""
@@ -104,8 +115,9 @@ def get_frequency_bandes(data, rate, f0, hop_length):
     freq = np.arange(0, j*div, div)
 
     len_null = 1
-    '''for n in range(2, j):
-        spectrum, len_null = clean_spectrum_band(n, len_null, spectrum)'''
+    if CLEAN_SPECTRUM:
+        for n in range(2, j):
+            spectrum, len_null = clean_spectrum_band(n, len_null, spectrum)
     spectrum, freq, len_null = freq_band(140, 360, 1, div, fft, len_null, spectrum, freq)
     spectrum, freq, len_null = freq_band(360, 700, 2, div, fft, len_null, spectrum, freq)
     spectrum, freq, len_null = freq_band(700, 1760, 5, div, fft, len_null, spectrum, freq)
@@ -114,12 +126,12 @@ def get_frequency_bandes(data, rate, f0, hop_length):
     spectrum, freq, len_null = freq_band(8000, 17000, 50, div, fft, len_null, spectrum, freq)
     spectrum, freq, len_null = freq_band(17000, 20000, 125, div, fft, len_null, spectrum, freq)
 
-    # graph_frequency(freq, spectrum)
     return freq, spectrum
 
 
 # multi-windows
 def clean_spectrum(spectrum):
+    """ Clean the spectrum by keeping the highest frequencies in pikes. Induce to have an harmonic sound."""
     len_null = 1
     for i in range(2, len(spectrum)):
         if spectrum[i - 1] >= spectrum[i - 2]:
@@ -218,6 +230,7 @@ def get_rms_volumes(data, hop_length, nb_hop, init):
 
 
 def get_fft_descriptors(data, rate, hop_length, nb_hop, init):
+    """ returns frequency and volume descriptors computed with fft."""
     start_time_vol = time.time()
     v_tab = get_rms_volumes(data, hop_length, nb_hop, init)
     vol_time = time.time() - start_time_vol
@@ -231,15 +244,16 @@ def get_fft_descriptors(data, rate, hop_length, nb_hop, init):
     print("Temps de calcul s_tab : %s secondes ---" % spec_time)
     print("Temps de calcul total : %s secondes ---" % full_time)
 
-    '''f_s = open("../../results/fft_spectrum.txt", "a")
-    f_v = open("../../results/fft_volume.txt", "a")
-    f_full = open("../../results/fft_full.txt", "a")
-    f_s.write(str(spec_time) + "\n")
-    f_s.close()
-    f_v.write(str(vol_time) + "\n")
-    f_v.close()
-    f_full.write(str(full_time) + "\n")
-    f_full.close()'''
+    if TIME_STATS:
+        f_s = open("../../results/fft_spectrum.txt", "a")
+        f_v = open("../../results/fft_volume.txt", "a")
+        f_full = open("../../results/fft_full.txt", "a")
+        f_s.write(str(spec_time) + "\n")
+        f_s.close()
+        f_v.write(str(vol_time) + "\n")
+        f_v.close()
+        f_full.write(str(full_time) + "\n")
+        f_full.close()
 
     return v_tab, s_tab
 
@@ -253,6 +267,7 @@ def mel_fcc(data, rate, hop_length, nb_mfcc):
 
 
 def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
+    """ returns frequency and volume descriptors computed with mfcc."""
     start_time = time.time()
     mfcc_tab = mel_fcc(data[init:], rate, hop_length, nb_mfcc)
     start_time_vol = time.time()
@@ -263,41 +278,43 @@ def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
     start_time_freq = time.time()
 
     # Normalisation of the mfccs
-    '''mean = np.mean(mfcc_tab)
-    sd = np.std(mfcc_tab)
-    n_mfcc_tab = mfcc_tab
-    n_mfcc_tab = np.subtract(n_mfcc_tab, mean)
-    n_mfcc_tab = n_mfcc_tab/sd'''
+    if MFCC_NORMALISATION:
+        mean = np.mean(mfcc_tab)
+        sd = np.std(mfcc_tab)
+        n_mfcc_tab = mfcc_tab
+        n_mfcc_tab = np.subtract(n_mfcc_tab, mean)
+        n_mfcc_tab = n_mfcc_tab/sd
     s_tab = mfcc_tab[1:]
-    '''
-    for i in range(len(s_tab)):
-        mean_s_tab_i = np.mean(s_tab[i])
-        standard_deviation = np.std(s_tab[i])
-        n = len(s_tab[i])
-        for j in range(n):
-            s_tab[i][j] = s_tab[i][j] - mean_s_tab_i
-        s_tab[i] = s_tab[i] / standard_deviation'''
+    if MFCC_NORMALISATION:
+        for i in range(len(s_tab)):
+            mean_s_tab_i = np.mean(s_tab[i])
+            standard_deviation = np.std(s_tab[i])
+            n = len(s_tab[i])
+            for j in range(n):
+                s_tab[i][j] = s_tab[i][j] - mean_s_tab_i
+            s_tab[i] = s_tab[i] / standard_deviation
     spec_time = (time.time() - start_time_freq) + (start_time_vol - start_time)
     full_time = time.time() - start_time
     print("Temps de calcul s_tab : %s secondes ---" % spec_time)
     print("Temps de calcul total : %s secondes ---" % full_time)
 
-    '''f_s = open("../../results/mfcc_spectrum.txt", "a")
-    f_v = open("../../results/mfcc_volume.txt", "a")
-    f_full = open("../../results/mfcc_full.txt", "a")
-    f_s.write(str(spec_time) + "\n")
-    f_s.close()
-    f_v.write(str(vol_time) + "\n")
-    f_v.close()
-    f_full.write(str(full_time) + "\n")
-    f_full.close()'''
+    if TIME_STATS:
+        f_s = open("../../results/mfcc_spectrum.txt", "a")
+        f_v = open("../../results/mfcc_volume.txt", "a")
+        f_full = open("../../results/mfcc_full.txt", "a")
+        f_s.write(str(spec_time) + "\n")
+        f_s.close()
+        f_v.write(str(vol_time) + "\n")
+        f_v.close()
+        f_full.write(str(full_time) + "\n")
+        f_full.close()
     return v_tab, s_tab
 
 # -------------------------- FROM CQT ---------------------------
 
 
 def get_cqt(data, rate, hop_length, nb_notes, init, fmin):
-    """ load the audio, do feature extraction """
+    """ Get the cqt from the audio 'data'."""
     print("f_min :", fmin)
     cqt_values = np.abs(librosa.cqt(data[init:], sr=rate, hop_length=hop_length, fmin=librosa.note_to_hz(fmin),
                            n_bins=nb_notes, bins_per_octave=NPO, window='blackmanharris', sparsity=0.01, norm=1))
@@ -307,6 +324,7 @@ def get_cqt(data, rate, hop_length, nb_notes, init, fmin):
 
 
 def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
+    """ returns frequency and volume descriptors computed with cqt."""
     start_time_vol = time.time()
     v_tab = get_rms_volumes(data, hop_length, nb_hop, init)
     vol_time = time.time() - start_time_vol
@@ -319,15 +337,16 @@ def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
     print("Temps de calcul s_tab : %s secondes ---" % spec_time)
     print("Temps de calcul total : %s secondes ---" % full_time)
 
-    '''f_s = open("../../results/cqt_spectrum.txt", "a")
-    f_v = open("../../results/cqt_volume.txt", "a")
-    f_full = open("../../results/cqt_full.txt", "a")
-    f_s.write(str(spec_time) + "\n")
-    f_s.close()
-    f_v.write(str(vol_time) + "\n")
-    f_v.close()
-    f_full.write(str(full_time) + "\n")
-    f_full.close()'''
+    if TIME_STATS:
+        f_s = open("../../results/cqt_spectrum.txt", "a")
+        f_v = open("../../results/cqt_volume.txt", "a")
+        f_full = open("../../results/cqt_full.txt", "a")
+        f_s.write(str(spec_time) + "\n")
+        f_s.close()
+        f_v.write(str(vol_time) + "\n")
+        f_v.close()
+        f_full.write(str(full_time) + "\n")
+        f_full.close()
     return v_tab, s_tab
 
 
@@ -335,6 +354,7 @@ def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
 
 
 def get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin='C1'):
+    """ returns frequency and volume descriptors computed with any kind of descriptors depending on the parameters."""
     v_tab = s_tab = 0
     if MFCC_BIT:
         v_tab, s_tab = get_mfcc_descriptors(data, rate, hop_length, nb_values, init)

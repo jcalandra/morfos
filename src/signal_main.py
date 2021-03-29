@@ -21,8 +21,14 @@ ALGO_VMO = prm.ALGO_VMO
 ALGO_REP = prm.ALGO_REP
 ALGO_USUAL = prm.ALGO_USUAL
 
+# This file contain the main loop to get the diagram only at the first level which is signal scale
+# Remarque: ce fichier est probablement voué à être supprimé
+# TODO: mettre à jour pour que ce soit fonctionnel (ou supprimer très certainement)
 
+
+# ==================================== MAIN FUNCTION FOR FIRST LEVEL DIAGRAM ===========================================
 def main():
+    """Main loop to get the formal diagram at level 0 (signal scale)."""
     path = PATH_OBJ + NAME + FORMAT
     start_time_full = time.time()
     level_max = -1

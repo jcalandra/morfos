@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import cv2
 import parameters as prm
-
+# In this file is computed the function that display and/or save in .bmp or .png the formal diagram given by 'matrix'.
 # note : pyplot reads pictures in RGB and opencv reads pictures in BGR
+# Remarque: ce fichier est probablement voué à être supprimé
+
 MFCC_BIT = prm.MFCC_BIT
 FFT_BIT = prm.FFT_BIT
 CQT_BIT = prm.CQT_BIT
@@ -16,7 +18,7 @@ TO_SHOW_PYP = prm.TO_SHOW_PYP
 
 
 def graph_algo_cogn(path, path_results, matrix, nb_mfcc, data_length, teta, hop_length, init):
-    """ Plot the picture of the formal diagram."""
+    """ Plot/Save the picture of the formal diagram given by 'matrix'."""
     name = path.split('/')[-1]
     file_name = name + "_hoplength" + str(hop_length) + "_teta" + str(teta) + "_init" + str(init)
     file_name_cv2 = file_name_pyplot = ''

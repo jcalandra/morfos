@@ -1,10 +1,14 @@
 from algo_segmentation_mso import *
+import matplotlib.pyplot as plt
+
+# This is the main loop starting the algorithm from a string
+# Remarque: ce fichier est probablement voué à être supprimé
+# TODO: maj pour que ce soit à nouveau fonctionnel
 
 
-# ===================================================== MAIN ==========================================================
-
-# This is the main loop with all static structures
+# =========================================== MAIN FUNCTION FROM STRING ================================================
 def main(char_ex):
+    """ Main loop for the cognitive algorithm starting from a string describing the audio."""
     # initialisation of the structures
     data_length = len(char_ex)
     level_max = -1
@@ -24,9 +28,10 @@ def main(char_ex):
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
 def example():
+    """ Exemple with the string char_ex"""
     char_ex2 = 'abacabacdeabfgabachijklmabacdeabhinopqabacrsrsttu'
     char_ex = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    #main(char_ex2)
+    # main(char_ex2)
     main(char_ex)
 
 

@@ -2,6 +2,9 @@ import math
 from matplotlib.pyplot import *
 import parameters as prm
 
+# In sim_function.py are computed distances in many ways.
+# Functions that returns if two materials are the same or not are also provided as 'comparison functions'
+
 MFCC_BIT = prm.MFCC_BIT
 FFT_BIT = prm.FFT_BIT
 CQT_BIT = prm.CQT_BIT
@@ -10,6 +13,7 @@ AUDIBLE_THRESHOLD = prm.AUDIBLE_THRESHOLD
 D_THRESHOLD = prm.D_THRESHOLD
 NB_NOTES = prm.NB_NOTES
 
+# ================================================= DISTANCES ==========================================================
 # ---------------------- STATIC FUNCTIONS ------------------------
 
 
@@ -61,7 +65,7 @@ def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
 
 
 def frequency_static_similarity_cqt(s_tab, id_hop_a, id_hop_b):
-    """ Compute the euclid distance between each mfcc of two different hops."""
+    """ Compute the euclid distance between each cqt of two different hops."""
     square_a = square_b = cs = 0
     n = len(s_tab[id_hop_a])
     # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j
@@ -86,14 +90,13 @@ def frequency_static_similarity_cqt(s_tab, id_hop_a, id_hop_b):
 
 # Volume
 def get_diff_volumes(v_tab, id_hop_a, id_hop_b):
-    """ Compute the difference between the volumes of hop_a and hop_b.
-     For now, exact same function as volume_static_dissimilarity."""
+    """ Compute the difference between the volumes of hop_a and hop_b."""
     diff = abs(v_tab[id_hop_a] - v_tab[id_hop_b])
     return diff
 
 
 def volume_dynamic_dissimilarities(v_tab, id_hop_a, id_hop_b):
-    """ Compute the volume evolution between """
+    """ Compute the volume evolution between (hop_a and hop_b) and (hop_a - 1 and hop_b - 1)."""
     diff_a = get_diff_volumes(v_tab, id_hop_a, id_hop_b)
     if id_hop_b == 0:
         vdd = diff_a
@@ -104,6 +107,7 @@ def volume_dynamic_dissimilarities(v_tab, id_hop_a, id_hop_b):
 
 
 def volume_kullback_leibler(v_tab, id_hop_a, id_hop_b):
+    """ Compute the ratio between the volumes of hop_a and hop_b."""
     kl = 0
     if v_tab[id_hop_b] > 0:
         d = v_tab[id_hop_a] / v_tab[id_hop_b]
@@ -129,6 +133,7 @@ def get_diff_frequencies_fft(s_tab, id_hop_a, id_hop_b):
 
 
 def frequency_dynamic_dissimilarity_fft2(s_tab, id_hop_a, id_hop_b):
+    """ Get the dynamic dissimilarity for fft."""
     ds_tab = get_diff_frequencies_fft(s_tab, id_hop_a, id_hop_b)
     ds_length = len(ds_tab)
     ed = 0
@@ -139,6 +144,7 @@ def frequency_dynamic_dissimilarity_fft2(s_tab, id_hop_a, id_hop_b):
 
 
 def frequency_dynamic_dissimilarity_fft(s_tab, id_hop_a, id_hop_b):
+    """ Get the dynamic dissimilarity for fft."""
     s_length = len(s_tab[id_hop_a])
     kl = 0
     for j in range(s_length):
@@ -165,6 +171,7 @@ def get_diff_frequencies_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
 
 
 def frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
+    """ Get the dynamic dissimilarity for mfcc and cqt."""
     ds_tab = get_diff_frequencies_mfcc_cqt(s_tab, id_hop_a, id_hop_b)
     ds_length = len(ds_tab)
     ed = 0
@@ -180,9 +187,10 @@ def frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
 # Spectrum
 
 
-# ----------------------- COMPARISON ----------------------------
+# ============================================ COMPARISON ==============================================================
 
 def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
+    """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
     fss = fss2 = 0
     if FFT_BIT:
         fss = frequency_static_similarity_fft(s_tab, i_hop_a, i_hop_b)
@@ -203,6 +211,8 @@ def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
 
 
 def graph_comparison(i_hop, j_hop, path, teta, tab_comparison):
+    """ Plot the curve of similarities between the actual object 'i_hop' and all objects heard before. These values are
+    stored in 'tab_comparison'. Plot also the value of the similarity threshold along the axe."""
     figure(figsize=(12, 8))
     tab_frame = [i for i in range(len(tab_comparison))]
     plot(tab_frame, [teta for i in range(len(tab_comparison))])
@@ -216,12 +226,13 @@ def graph_comparison(i_hop, j_hop, path, teta, tab_comparison):
         j_hop = i_hop - 1
     title(name + " : Similarités statiques de la frame n°" + str(i_hop) +
           " avec les frames n°0 à n°" + str(j_hop))
-    # show()
     savefig(path_results + path_name)
     close()
 
 
 def comparison(i_hop, teta, s_tab, v_tab, mat, path):
+    """ Compare the actual object 'i_hop' with every object already seen before. If it is similar to an already seen
+    object before i_hop, return the same material. Otherwise return -1."""
     tab_comparison = []
     fss = vss = 0
     if v_tab[i_hop] < AUDIBLE_THRESHOLD:
@@ -249,6 +260,7 @@ def comparison(i_hop, teta, s_tab, v_tab, mat, path):
 
 
 def dissimilarity(i_hop, s_tab, v_tab):
+    """ Compute the dissimilarity between the frequencies of i_hop and i_hop - 1."""
     sdd = 0
     if FFT_BIT:
         sdd = frequency_dynamic_dissimilarity_fft2(s_tab, i_hop, i_hop - 1)
@@ -263,7 +275,7 @@ def dissimilarity(i_hop, s_tab, v_tab):
         return 1
     return 0
 
-# REPRESENTANT IMPLEMENTATION
+# ========================================== REPRESENTANT IMPLEMENTATION ===============================================
 
 
 def frequency_static_similarity_fft_rep(s_id_hop_a, m_id_hop_b):  # common energy
@@ -289,6 +301,7 @@ def frequency_static_similarity_fft_rep(s_id_hop_a, m_id_hop_b):  # common energ
 
 
 def true_mat_rep(m_i_hop_a, s_i_hop_b, m_i_hop_c, j_mat, prev2_mat):
+    """ Return the closer class representative of m_i_hop_a between 's_i_hop_b' and 'm_i_hop_c'."""
     fss = fss2 = fun = 0
     if FFT_BIT:
         fss = frequency_static_similarity_fft_rep(m_i_hop_a, s_i_hop_b)
@@ -301,6 +314,8 @@ def true_mat_rep(m_i_hop_a, s_i_hop_b, m_i_hop_c, j_mat, prev2_mat):
 
 
 def comparison_rep(i_hop, teta, s_tab, v_tab, mat_rep):
+    """ Compare the actual object 'i_hop' with a representant of every materials seen before. If it is similar to an
+    class representative, return the same material. Otherwise return -1."""
     fss = 0
     audible_threshold = 0.005
     for j_hop in range(len(mat_rep)):

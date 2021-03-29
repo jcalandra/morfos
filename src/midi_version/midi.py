@@ -4,6 +4,8 @@ import parameters as prm
 import numpy as np
 import cv2
 
+# This file contains an implementation of formal diagram computation from a MIDI file (non-hierarchical implementation)
+
 SR = prm.SR
 HOP_LENGTH = prm.HOP_LENGTH
 TEMPO = prm.TEMPO
@@ -15,7 +17,7 @@ NB_SILENCE = prm.NB_SILENCE
 
 AUDIBLE_THRESHOLD = prm.AUDIBLE_THRESHOLD
 
-PATH_RESULT = "../results/"
+PATH_RESULT = "../../results/"
 
 
 # TODO : mettre ce code dans le dossier src et modifier les tests en conséquence
@@ -25,8 +27,9 @@ PATH_RESULT = "../results/"
 # TODO : ne pas diviser à la sous-frame, garder la note comme niveau de matériau
 
 
-# DATA COMPUTING
+# =================================================== DATA COMPUTING ===================================================
 def open_midi(midi_path):
+    """ Open and read MIDI file at MIDI path."""
     mf = music21.midi.MidiFile()
     mf.open(midi_path)
     mf.read()
@@ -34,8 +37,8 @@ def open_midi(midi_path):
     return music21.midi.translate.midiFileToStream(mf)
 
 
-# CLASSIFICATION
 def extract_notes(midi_part):
+    """ Extract the notes and volumes from a MIDI file."""
     print("[INFO] Extracting notes of the MIDI file...")
     parent_element = []
     ret = []
@@ -53,7 +56,9 @@ def extract_notes(midi_part):
     return ret, vol, parent_element
 
 
+# ============================================== SIMILARITY ============================================================
 def comparison(i_hop, ret, vol, mat):
+    """ Return the corresponding materials of the notes contained in the list 'ret'."""
     if vol[i_hop] < AUDIBLE_THRESHOLD:
         return 0
     for j_hop in range(i_hop):
@@ -62,8 +67,10 @@ def comparison(i_hop, ret, vol, mat):
     return -1
 
 
+# ============================================ FORMAL DIAGRAM ==========================================================
 def algo_cog(ret, vol, time):
     print("[INFO] Computing the cognitive algorithm of the MIDI extract...")
+    """ Compute the formal diagram according to the list of notes 'ret'."""
     # initialise matrix of each hop coordinates
     nb_hop_sec = SR / HOP_LENGTH
     sil_hop = int(NB_SILENCE/HOP_LENGTH)
@@ -123,7 +130,9 @@ def algo_cog(ret, vol, time):
     return mtx
 
 
+# ============================================== MAIN FUNCTION =========================================================
 def interface(midi_path, tempo):
+    """Compute and display the formal diagrams obtained from the MIDI file at 'midi_path'."""
     midi = open_midi(midi_path)
     ratio = tempo / 60
     top = midi.parts[0].flat.notes
@@ -154,8 +163,10 @@ def interface(midi_path, tempo):
     return matrix
 
 
-def main():
+# ================================================= EXAMPLE ============================================================
+def example_Geisslerlied():
+    """ Main function with Geisslerlied as an example."""
     name = "Geisslerlied"
     tempo = TEMPO
-    midi_path = '../data/midi/' + name + '.mid'
+    midi_path = '../../data/midi/' + name + '.mid'
     interface(midi_path, tempo)

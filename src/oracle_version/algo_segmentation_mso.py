@@ -4,8 +4,12 @@ import parameters as prm
 import formal_diagram_mso as fd_mso
 import rules_mso
 
+# In this file is defined the main loop for the algorithm at symbolic scale
+# structring test function according to rules (rules_parametrization) and similarity test function
+# (char_next_level_similarity) are also defined here
+
 letter_diff = prm.LETTER_DIFF
-wait = rules_mso.wait
+wait = 0
 
 
 # ================================================ SIMILARITY ==========================================================
@@ -32,7 +36,7 @@ def char_next_level_similarity(history_next, matrix, matrix_next, concat_obj):
     the results and the new string of upper level new_char is returned."""
     sim_tab = []
     for i in range(len(history_next)):
-        sim_digit, sim_value = alignements.scheme_alignement(history_next[i][1], concat_obj, matrix)
+        sim_digit, sim_value = alignements.scheme_alignment(history_next[i][1], concat_obj, matrix)
         sim_tab.append(sim_value/alignements.quotient)
         if sim_digit:
             new_char = history_next[i][0]
@@ -48,9 +52,9 @@ def char_next_level_similarity(history_next, matrix, matrix_next, concat_obj):
 
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
-
 def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
                           concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
+    """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
     if rules_mso.RULE_1:
         test_1 = rules_mso.rule_1_similarity(f_oracle, actual_char_ind)
@@ -68,8 +72,8 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
             oracles, level, actual_char_ind, str_obj, k, level_max, end_mk)
     else:
         test_4 = 0
-    if rules_mso.RULE_3:
-        test_3 = rules_mso.rule_3_existing_object(history_next, concat_obj, oracles[1][level - 1][6])
+    if rules_mso.RULE_3 and test_4 == 0:
+        test_3 = rules_mso.rule_3_existing_object(history_next, concat_obj, actual_char, oracles[1][level - 1][6])
     else:
         test_3 = 0
     if rules_mso.RULE_5:
@@ -103,6 +107,7 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
 
 
 def structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk):
+    """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
     new_char = char_next_level_similarity(history_next, oracles[1][level - 1][6], oracles[1][level][6], concat_obj)
     if len(oracles[1]) > level + 1:
@@ -118,11 +123,10 @@ def structure(history_next, concat_obj, oracles, level, link, data_length, level
     return 0
 
 
+# ================================= MAIN COGNITIVE ALGORITHM AT SYMBOLIC SCALE =========================================
 def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_mk=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
-    by the extern user. It returns the structured char which is a tab of substring representing upper level object, the
-    new string wew_char of upper level with adequated letters and the tab history[] of objects that are seen in this
-    level."""
+    by the extern user."""
     # end of the recursive loop
     if level > oracles[0] and end_mk == 1:
         return 0
@@ -153,10 +157,17 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     level_wait = -1
     k = len(f_oracle.data) - 1
     i = 0
+    print("[INFO] Process in level " + str(level) + "...")
     while i < len(str_obj):
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
+        if level == 2:
+            print("concat obj", [ord(element) - letter_diff for element in concat_obj])
+            print("actual char", actual_char)
+            print("history next", len(oracles[1][level][2]), oracles[1][level][2])
+            print("history", len(oracles[1][level - 1][2]), oracles[1][level - 1][2])
+            print("matrix", [ord(element) - letter_diff for element in oracles[1][level - 1][6][0]])
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:
@@ -176,7 +187,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level > 0 and end_mk == 1 and i < len(str_obj) - 1:
             print("wait on")
             end_mk = 0
-            rules_mso.wait = 1
+            wait = 1
             level_wait = level
 
         # If the tests are positives, there is structuration.
@@ -191,7 +202,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
             end_mk = 1
-            rules_mso.wait = 0
+            wait = 0
             level_wait = -1
         if end_mk == 1:
             structure(history_next, concat_obj, oracles, level, link, data_length, level_max, end_mk)

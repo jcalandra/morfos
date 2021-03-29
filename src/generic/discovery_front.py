@@ -1,3 +1,5 @@
+# In this file is computed the discovery front.
+
 
 def discovery_front_computing(diag, background):
     print("[INFO] Computing the discovery front...")

@@ -11,8 +11,9 @@ import algo_segmentation_mso as as_mso
 
 import compute_dynamics as cd
 
+# In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
+
 # TODO : intégrer le timbre dans la représentation
-# TODO : homogénéiser avec la hiérarchisation
 
 # note : matrices are created in HSV
 D_THRESHOLD = prm.D_THRESHOLD
@@ -31,11 +32,13 @@ NB_SILENCE = prm.NB_SILENCE
 SUFFIX_METHOD = prm.SUFFIX_METHOD
 FMIN = prm.NOTE_MIN
 
-SYNTHESIS = 0
-PLOT_ORACLE = 0
+SYNTHESIS = prm.SYNTHESIS
+PLOT_ORACLE = prm.PLOT_ORACLE
 
 
+# ======================================== ORACLE INITIALISATION AND CORRECTION ========================================
 def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
+    """ Modify the oracle 'oracle_t' according to the last corrected frame of mat 'j_mat' at instant 'i_hop'."""
     obs = input_data[i_hop]
     if prev_mat == oracle_t.data[-1]:
         if len(oracle_t.latent[prev_mat]) > 1:
@@ -73,6 +76,8 @@ def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
 
 
 def modify2_oracle(oracle_t, prev2_mat, prev_mat, j_mat, i_hop, input_data):
+    """ Modify the oracle 'oracle_t' according to the two last corrected frames of mat 'j_mat' and 'prev_mat' at instant
+    'i_hop' and i_hop - 1."""
     obs_1 = input_data[i_hop]
     obs_2 = input_data[i_hop - 1]
 
@@ -140,6 +145,7 @@ def modify2_oracle(oracle_t, prev2_mat, prev_mat, j_mat, i_hop, input_data):
 
 
 def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
+    """Initialize an oracle with the given parameters."""
     threshold = teta
     dfunc = 'cosine'
     dfunc_handle = None
@@ -172,7 +178,9 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
     return volume_data, suffix_method, input_data, oracle_t
 
 
+# ================================================ MATRIX CORRECTION ===================================================
 def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
+    """ Modify the similarity matrix according the the corrected frames."""
     blank_ind = 0
     while mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
             and mtx[prev_mat][blank_ind][2] == BACKGROUND[2]:
@@ -190,6 +198,7 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     return 0, matrix, actual_max, temp_max, mtx
 
 
+# ============================================ COGNITIVE ALGORITHM =====================================================
 def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
@@ -437,6 +446,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 history_next[-1] = (history_next[-1][0], new_history_next_element)
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
                          + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+            # TODO: corriger la valeur dans la matrice
 
         if len(concat_obj) >= 3:
             concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \

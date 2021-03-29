@@ -3,50 +3,21 @@ import parameters as prm
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
+# In this file are implemented all the fonctions for the initialization and the update of the formal diagram and
+# the functions to display the formal diagrams.
 SR = prm.SR
 HOP_LENGTH = prm.HOP_LENGTH
 TO_SAVE_PYP = prm.TO_SAVE_PYP
 path_results = prm.PATH_RESULT
+EVOL_PRINT = prm.EVOL_PRINT
 
 letter_diff = prm.LETTER_DIFF
 
 
-# ============================================ FORMAL DIAGRAM ==========================================================
-
-# First implementation computed at the end of the segmentation function
-def cognitive_algorithm(data):
-    """ This function creates the matrix that represents the formal diagram produce by the adequated string char. It
-    returns the matrix corresponding to the formal diagram and the len of the string."""
-    len_data = len(data) - 1
-    nb_mat = 1
-    new_mat = [1 for i in range(len_data)]
-    mtx = [new_mat]
-    mtx[0][0] = 0
-    for i_hop in range(1, len_data):
-        j_mat = data[i_hop + 1] - 1
-        if j_mat > len(mtx) - 1:
-            nb_mat = nb_mat + 1
-            new_mat = [1 for i in range(len_data)]
-            mtx.append(new_mat)
-            mtx[nb_mat - 1][i_hop] = 0
-        else:
-            mtx[j_mat][i_hop] = 0
-    return mtx, len_data
-
-
-def graph_cognitive_algorithm(char, matrix, data_length):
-    """ plot the picture of formal diagram matrix according to its length data_length. The picture is named ofter the
-    string char."""
-    name = char
-    plt.figure(figsize=(30, 20))
-    plt.title("Formal diagram of " + name)
-    plt.gray()
-    plt.imshow(matrix, extent=[0, data_length, len(matrix), 0])
-    plt.show()
-
-
-# Second implementation for an evolutive formal diagram
+# ============================================ FORMAL DIAGRAM 2D =======================================================
+# Implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
+    """ Print the formal diagram at level 'level' at its initialization."""
     # print("PRINT formal diagram init")
     fig = plt.figure(figsize=(30, 20))
     plt.title("Formal diagram of level " + str(level))
@@ -57,6 +28,7 @@ def print_formal_diagram_init(level):
 
 
 def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
+    """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
     fig = plt.figure(fig_number)
     plt.clf()
@@ -68,12 +40,13 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
-    #plt.pause(0.0001)
-    #plt.savefig(path_results + file_name_pyplot)
+    if EVOL_PRINT == 1:
+        plt.pause(0.0001)
     return fig.number
 
 
 def formal_diagram_init(formal_diagram, data_length, oracles, level):
+    """Initialize the formal diagram 'formal_diagram' at level 'level'."""
     # print("formal diagram init")
     new_mat = [1 for i in range(data_length)]
     formal_diagram.append(new_mat)
@@ -95,6 +68,8 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 
 
 def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
+    """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
+    'actual_char'."""
     # print("formal diagram update")
     k_init = actual_char_ind
     if level == 0:
@@ -126,7 +101,9 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     return 0
 
 
+# ======================================== FORMAL DIAGRAM 3D (TESTS) ===================================================
 def diagram3D(oracles):
+    """ 3D representation proposition of the formal diagrams once they are all created."""
     z_len = len(oracles[1])
     y_len = len(oracles[1][0][4][0])
     file_name_pyplot = "FD_3D"
@@ -197,4 +174,3 @@ def diagram3D(oracles):
     fig = plt.figure(figsize=(50, 50))
     ax = fig.gca(projection='3d')
     ax.voxels(maxi_mat_np, facecolors=maxi_colors_np)
-    #plt.savefig(path_results + file_name_pyplot)

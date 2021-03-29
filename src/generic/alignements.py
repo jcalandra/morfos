@@ -3,26 +3,26 @@ from Bio import pairwise2
 from Bio.Align import substitution_matrices
 import parameters
 
-TRANSPOSITION = 0
+# In this file are computed the alignment between strings to compute similarity at a symbolic scale
+
+transpo = parameters.TRANSPOSITION
 quotient = parameters.QUOTIENT
 threshold = parameters.TETA
 
+# penalty values
+gap_value = parameters.GAP_VALUE
+extend_gap_value = parameters.EXT_GAP_VALUE
+gap = parameters.GAP
+correc_value = parameters.CORREC_VALUE
 
-def scheme_alignement(string_compared, actual_string, mat):
+
+# ================================================= ALIGNMENT ==========================================================
+def scheme_alignment(string_compared, actual_string, mat):
     # initalisation
     alignment = -pow(10, 10)
     if len(actual_string) == 0:
         return 0, 0
     min_len = min(len(string_compared), len(actual_string))
-    if TRANSPOSITION:
-        transpo = 1  # max_char - min_char
-    else:
-        transpo = 1
-
-    # NW parameters
-    gap_value = -10
-    extend_gap_value = -5
-    gap = chr(0)
 
     # creation of the similarity matrix
     if not mat[1]:
@@ -37,7 +37,7 @@ def scheme_alignement(string_compared, actual_string, mat):
         for i in actual_string:
             sy += chr(ord(i) - j)
 
-        # Needleman-Wunsch alignement
+        # Needleman-Wunsch alignment
         nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap)
         if len(nw_align) == 0:
             return 0, 0
@@ -45,7 +45,7 @@ def scheme_alignement(string_compared, actual_string, mat):
         if nw_alignment > alignment:
             alignment = nw_alignment
 
-    similarity = (alignment - gap_value) / min_len
+    similarity = (alignment - correc_value) / min_len
     if similarity >= threshold*quotient:
         return 1, similarity
     return 0, similarity

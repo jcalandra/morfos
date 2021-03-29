@@ -5,8 +5,10 @@ import numpy as np
 import cv2
 import time
 
-# TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
+# In this file are implemented functions for the cognitive algorithm at level 0: the signal scale, in this most standard
+# version
 
+# TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
 # TODO : intégrer le timbre dans la représentation
 # TODO : intégrer une hiérarchisation
 
@@ -27,6 +29,7 @@ NB_SILENCE = prm.NB_SILENCE
 FMIN = prm.NOTE_MIN
 
 
+# ============================== STANDARD COGNITIVE ALGORITHM AT SIGNAL SCALE ==========================================
 def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")

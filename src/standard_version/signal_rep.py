@@ -4,8 +4,11 @@ import parameters as prm
 import numpy as np
 import cv2
 
-# TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
 
+# In this file are implemented functions for the cognitive algorithm at level 0: the signal scale, with a representant
+# for each material
+
+# TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
 # TODO : intégrer le timbre dans la représentation
 # TODO : intégrer une hiérarchisation
 
@@ -26,7 +29,9 @@ NB_SILENCE = prm.NB_SILENCE
 FMIN = prm.NOTE_MIN
 
 
+# ======================================= REPRESENTANT MATRIX UPDATES ==================================================
 def update_mat_rep(mat_rep, j_mat, i_hop, s_tab, v_tab):
+    """ Update the representant matrix mat_rep with the new object of material j_mat."""
     if v_tab[i_hop] == 0:
         s = s_tab[i_hop]
     else:
@@ -38,6 +43,7 @@ def update_mat_rep(mat_rep, j_mat, i_hop, s_tab, v_tab):
     return mat_rep
 
 
+# ============================ COGNITIVE ALGORITHM AT SIGNAL SCALE WITH REPRESENTANTS===================================
 def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")

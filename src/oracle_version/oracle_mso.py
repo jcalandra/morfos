@@ -24,6 +24,9 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 @contact: wangsix@gmail.com, chw160@ucsd.edu
 """
 
+# This file is an adapted version of oracle.py file in vmo library developped by Cheng-i Wang
+# The Factor Oracle is the modified class
+
 import numpy as np
 import misc as utl
 import sim_functions as sf
