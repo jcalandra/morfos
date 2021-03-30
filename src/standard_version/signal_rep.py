@@ -244,12 +244,6 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
 
     mtx = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
     distance = (seg_error + class_error)/nb_hop
-    '''
-    algocog_time = time.time() - start_time
-    print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
-    f_ac = open("../../results/algocog_computing.txt", "a")
-    f_ac.write(str(algocog_time) + "\n")
-    f_ac.close()'''
 
     if WRITE_RESULTS:
         name = audio_path.split('/')[-1]

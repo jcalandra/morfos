@@ -53,7 +53,7 @@ def char_next_level_similarity(history_next, matrix, matrix_next, concat_obj):
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
 def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
-                          concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
+                          concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max):
     """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
     if rules_mso.RULE_1:
@@ -69,7 +69,7 @@ def rules_parametrization(f_oracle, actual_char, actual_char_ind, link, oracles,
         test_2 = 0
     if rules_mso.RULE_4:
         test_4, potential_obj = rules_mso.rule_4_recomputed_object(
-            oracles, level, actual_char_ind, str_obj, k, level_max, end_mk)
+            oracles, level, actual_char_ind, str_obj, k, level_max)
     else:
         test_4 = 0
     if rules_mso.RULE_3 and test_4 == 0:
@@ -163,13 +163,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
-        print("actual char", actual_char)
-        print("f oracle data", len(oracles[1][level][0].data), oracles[1][level][0].data)
-        print("link", len(oracles[1][level][1]), oracles[1][level][1])
-        print("history next", len(oracles[1][level][2]), oracles[1][level][2])
-        print("concat obj", [ord(element) - letter_diff for element in concat_obj])
-        print("formal diagram", len(oracles[1][level][4]), oracles[1][level][4])
-
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:
@@ -184,10 +177,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         test_1, test_2, test_3, test_4, test_5, i, k, actual_char, f_oracle, link, history_next, concat_obj, \
             formal_diagram, formal_diagram_graph, str_obj, input_data = rules_parametrization(
                 f_oracle, actual_char, actual_char_ind, link, oracles, level, i, k, history_next, concat_obj,
-                formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk)
+                formal_diagram, formal_diagram_graph, str_obj, input_data, level_max)
 
         if level > 0 and end_mk == 1 and i < len(str_obj) - 1:
-            print("wait on")
             end_mk = 0
             wait = 1
             level_wait = level

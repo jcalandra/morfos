@@ -23,7 +23,7 @@ ALGO_USUAL = prm.ALGO_USUAL
 
 # This file contain the main loop to get the diagram only at the first level which is signal scale
 # Remarque: ce fichier est probablement voué à être supprimé
-# TODO: mettre à jour pour que ce soit fonctionnel (ou supprimer très certainement)
+# TODO: mettre à jour pour que ce soit fonctionnel
 
 
 # ==================================== MAIN FUNCTION FOR FIRST LEVEL DIAGRAM ===========================================

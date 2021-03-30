@@ -273,7 +273,6 @@ def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
     start_time_vol = time.time()
     v_tab = 1 - abs(mfcc_tab[0]/max(abs(mfcc_tab[0])))
     vol_time = time.time() - start_time
-    print("Temps de calcul v_tab : %s secondes ---" % vol_time)
 
     start_time_freq = time.time()
 
@@ -293,12 +292,13 @@ def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
             for j in range(n):
                 s_tab[i][j] = s_tab[i][j] - mean_s_tab_i
             s_tab[i] = s_tab[i] / standard_deviation
-    spec_time = (time.time() - start_time_freq) + (start_time_vol - start_time)
-    full_time = time.time() - start_time
-    print("Temps de calcul s_tab : %s secondes ---" % spec_time)
-    print("Temps de calcul total : %s secondes ---" % full_time)
 
     if TIME_STATS:
+        print("Temps de calcul v_tab : %s secondes ---" % vol_time)
+        spec_time = (time.time() - start_time_freq) + (start_time_vol - start_time)
+        full_time = time.time() - start_time
+        print("Temps de calcul s_tab : %s secondes ---" % spec_time)
+        print("Temps de calcul total : %s secondes ---" % full_time)
         f_s = open("../../results/mfcc_spectrum.txt", "a")
         f_v = open("../../results/mfcc_volume.txt", "a")
         f_full = open("../../results/mfcc_full.txt", "a")
@@ -315,7 +315,6 @@ def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
 
 def get_cqt(data, rate, hop_length, nb_notes, init, fmin):
     """ Get the cqt from the audio 'data'."""
-    print("f_min :", fmin)
     cqt_values = np.abs(librosa.cqt(data[init:], sr=rate, hop_length=hop_length, fmin=librosa.note_to_hz(fmin),
                            n_bins=nb_notes, bins_per_octave=NPO, window='blackmanharris', sparsity=0.01, norm=1))
 
@@ -328,16 +327,16 @@ def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
     start_time_vol = time.time()
     v_tab = get_rms_volumes(data, hop_length, nb_hop, init)
     vol_time = time.time() - start_time_vol
-    print("Temps de calcul v_tab : %s secondes ---" % vol_time)
 
     start_time_freq = time.time()
     s_tab = get_cqt(data, rate, hop_length, nb_values, init, fmin)
-    spec_time = time.time() - start_time_freq
-    full_time = vol_time + spec_time
-    print("Temps de calcul s_tab : %s secondes ---" % spec_time)
-    print("Temps de calcul total : %s secondes ---" % full_time)
 
     if TIME_STATS:
+        spec_time = time.time() - start_time_freq
+        print("Temps de calcul v_tab : %s secondes ---" % vol_time)
+        full_time = vol_time + spec_time
+        print("Temps de calcul s_tab : %s secondes ---" % spec_time)
+        print("Temps de calcul total : %s secondes ---" % full_time)
         f_s = open("../../results/cqt_spectrum.txt", "a")
         f_v = open("../../results/cqt_volume.txt", "a")
         f_full = open("../../results/cqt_full.txt", "a")

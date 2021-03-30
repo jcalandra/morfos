@@ -137,10 +137,6 @@ def interface(midi_path, tempo):
     ratio = tempo / 60
     top = midi.parts[0].flat.notes
     freq, vol, parent_element = extract_notes(top)
-    print("volume", vol)
-    print(len(vol))
-    print(len(freq))
-    print("parent_element :", parent_element)
     time = [n.offset / ratio for n in parent_element]
     print("[RESULT] notes = ", freq)
     print("[RESULT] time = ", time)

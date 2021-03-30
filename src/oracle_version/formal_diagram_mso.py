@@ -41,7 +41,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         string += chr(i + letter_diff + 1)
     plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
     if EVOL_PRINT == 1:
-        plt.pause(0.0001)
+        plt.pause(0.1)
     return fig.number
 
 
@@ -106,7 +106,6 @@ def diagram3D(oracles):
     """ 3D representation proposition of the formal diagrams once they are all created."""
     z_len = len(oracles[1])
     y_len = len(oracles[1][0][4][0])
-    file_name_pyplot = "FD_3D"
 
     x_len = len(oracles[1][0][4])
     for i in range(1, z_len):

@@ -7,11 +7,11 @@
 # Main informations about the signal to
 # process
 
-NAME = "Geisslerlied"
+NAME = "mozartK545_rondo"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
+PATH_OBJ = PATH_OBJ_BASIS + 'Mozart/'
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 
 teta = 0.97
@@ -38,10 +38,10 @@ QUOTIENT = 100
 TRANSPOSITION = 1
 LETTER_DIFF = 1
 
-GAP_VALUE = -5
-EXT_GAP_VALUE = -2
+GAP_VALUE = -10
+EXT_GAP_VALUE = -5
 GAP = chr(0)
-CORREC_VALUE = GAP_VALUE/2
+CORREC_VALUE = 0
 
 # -------- SIGNAL SIM FUNCTIONS -----------
 # parameters for signal similarity computation

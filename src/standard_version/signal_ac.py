@@ -56,7 +56,6 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
 
     print("[INFO] Computing frequencies and volume...")
     v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_mfcc, init, fmin)
-    print(s_tab)
 
     value = 255 - v_tab[0] * 255
     color = (BASIC_FRAME[0], BASIC_FRAME[1], value)

@@ -303,7 +303,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
                 if i_hop == nb_hop - 1:
                     end_mk = 1
-                    print("ou là")
                     concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(oracles[1]) > level + 1:
@@ -325,7 +324,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
             if i_hop == nb_hop - 1:
                 end_mk = 1
                 concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
-                print("ici")
                 # link update
                 if len(oracles[1]) > level + 1:
                     node = max(oracles[1][level][1]) + 1
@@ -477,8 +475,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
     algocog_time = time.time() - start_time
     print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
-    print("seg error = ", seg_error, " || class error = ", class_error)
-    print("distance = ", distance)
 
     if WRITE_RESULTS:
         f_ac = open("../../results/algocog_computing.txt", "a")
