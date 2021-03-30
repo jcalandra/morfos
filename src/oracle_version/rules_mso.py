@@ -59,8 +59,9 @@ def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     the function returns 0."""
     if ALIGNEMENT_rule3:
         for i in range(len(history_next)):
-            if alignements.scheme_alignment(history_next[i][1], concat_obj, matrix)[0]: #and  \
-                    #alignements.scheme_alignement(history_next[i][1], concat_obj + chr(actual_char + letter_diff), matrix)[0] == 0:
+            if alignements.scheme_alignment(history_next[i][1], concat_obj, matrix)[0] and  \
+                    alignements.scheme_alignment(
+                        history_next[i][1], concat_obj + chr(actual_char + letter_diff), matrix)[0] == 0:
                 return 1
     else:
         for i in range(len(history_next)):

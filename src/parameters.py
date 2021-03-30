@@ -41,7 +41,7 @@ LETTER_DIFF = 1
 GAP_VALUE = -10
 EXT_GAP_VALUE = -5
 GAP = chr(0)
-CORREC_VALUE = 0
+CORREC_VALUE = GAP_VALUE/2
 
 # -------- SIGNAL SIM FUNCTIONS -----------
 # parameters for signal similarity computation
