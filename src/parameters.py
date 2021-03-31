@@ -7,14 +7,14 @@
 # Main informations about the signal to
 # process
 
-NAME = "mozartK545_rondo"
+NAME = "Geisslerlied"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + 'Mozart/'
+PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 
-teta = 0.97
+teta = 0.98
 
 # ----------------- RULES -----------------
 # Rules that are activated or not and their
@@ -121,7 +121,7 @@ TO_SHOW_PYP = 1
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 0
+EVOL_PRINT = 1
 
 # ------------ ALGOCOG ----------------
 
