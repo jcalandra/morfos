@@ -1,13 +1,13 @@
 cognitive_algorithm_and_its_musical_applications
 
 - **data/**
-    Contain examples of audio files in .wav.
+    Contains examples of audio files in .wav.
 - **lib/vmo/master/**
-    Contain files from VMO library developped by C. Wang that we need.
+    Contains files from VMO library developped by C. Wang that we need: https://github.com/wangsix/vmo.
 - **src/**
-    Contain main files for the application.
+    Contains main files for the application.
     - **generic/**
-        Necessary files for every versions of the cognitive algorithm
+        Necessary files for every versions of the cognitive algorithm.
     - **midi_version/**
         Necessary files for the MIDI version of the cognitive algorithm. Not updated.
     - **oracle_version/**
@@ -18,4 +18,4 @@ cognitive_algorithm_and_its_musical_applications
 - **tests/**
     Contains some tests.
 
-First apply the parameters you want in parameters.py, then run the file main_mso.py to obtain formal diagrams
+First apply the parameters you want in parameters.py, then run the file main_mso.py to obtain formal diagrams.
