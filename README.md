@@ -18,5 +18,4 @@ cognitive_algorithm_and_its_musical_applications
 - **tests/**
     Contains some tests.
 
-First apply the parameters you want in parameters.py
-Then run the file main_mso.py to obtain formal diagrams
+First apply the parameters you want in parameters.py, then run the file main_mso.py to obtain formal diagrams
