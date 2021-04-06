@@ -12,6 +12,7 @@ path_results = prm.PATH_RESULT
 EVOL_PRINT = prm.EVOL_PRINT
 
 letter_diff = prm.LETTER_DIFF
+processing = prm.processing
 
 
 # ============================================ FORMAL DIAGRAM 2D =======================================================
@@ -39,7 +40,10 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     string = ""
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
-    plt.imshow(formal_diagram, extent=[0, int(data_length/SR*HOP_LENGTH), len(formal_diagram), 0])
+    if processing == 'symbols':
+        plt.imshow(formal_diagram, extent=[0, int(data_length), len(formal_diagram), 0])
+    elif processing == 'signal':
+        plt.imshow(formal_diagram, extent=[0, int(data_length / SR * HOP_LENGTH), len(formal_diagram), 0])
     if EVOL_PRINT == 1:
         plt.pause(0.1)
     return fig.number
@@ -72,6 +76,8 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     'actual_char'."""
     # print("formal diagram update")
     k_init = actual_char_ind
+    if processing == 'symbols':
+        actual_char = actual_char - oracles[1][level][0].data[1] + 1
     if level == 0:
         n = 1
     else:
@@ -93,11 +99,8 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-        for i in range(n):
-            formal_diagram[len(formal_diagram) - 1][k_init + i - 1] = color
-    else:
-        for i in range(n):
-            formal_diagram[actual_char - 1][k_init + i - 1] = color
+    for i in range(n):
+        formal_diagram[actual_char - 1][k_init + i - 1] = color
     return 0
 
 

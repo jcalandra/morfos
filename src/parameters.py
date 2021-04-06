@@ -14,7 +14,9 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 
-teta = 0.98
+teta = 0.97
+# processing must be str 'symbols' or 'signal'
+processing = 'symbols'
 
 # ----------------- RULES -----------------
 # Rules that are activated or not and their
@@ -26,8 +28,8 @@ RULE_3 = 1
 RULE_4 = 1
 RULE_5 = 1
 
-ALIGNEMENT_rule3 = 1
-ALIGNEMENT_rule4 = 1
+ALIGNEMENT_rule3 = 0
+ALIGNEMENT_rule4 = 0
 
 # ------------- ALIGNEMENT ----------------
 # Alignement parameters to reajust similarity
@@ -38,8 +40,8 @@ QUOTIENT = 100
 TRANSPOSITION = 1
 LETTER_DIFF = 1
 
-GAP_VALUE = -10
-EXT_GAP_VALUE = -5
+GAP_VALUE = -5
+EXT_GAP_VALUE = -1
 GAP = chr(0)
 CORREC_VALUE = GAP_VALUE/2
 

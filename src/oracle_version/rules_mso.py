@@ -70,7 +70,7 @@ def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     return 0
 
 
-def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_max):
+def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k, level_max):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
@@ -96,7 +96,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
         for j in range(nb_elements):
             sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
             # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
-        if alignements.scheme_alignment(sub_suffix, concat_obj, oracles[1][level - 1][6])[0] == 0:
+        if alignements.scheme_alignment(sub_suffix, concat_obj, matrix)[0] == 0:
             return 0, str_obj
 
     else:
@@ -123,7 +123,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
     # if the actual concat_obj is not the longest common string :
     if ALIGNEMENT_rule4:
         if alignements.scheme_alignment(sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
-                                         oracles[1][level - 1][6])[0] == 1:
+                                         matrix)[0] == 1:
             return 0, str_obj
     else:
         if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
@@ -139,9 +139,9 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
         # if concat_obj corresponds to an already known object, return 0.
         if ALIGNEMENT_rule4:
             if alignements.scheme_alignment(
-                    history_next[real_value - 1][1], concat_obj, oracles[1][level - 1][6])[0] == 1 or \
+                    history_next[real_value - 1][1], concat_obj, matrix)[0] == 1 or \
                     alignements.scheme_alignment(
-                    history_next[real_value - 1][1], sub_suffix, oracles[1][level - 1][6])[0] == 1:
+                    history_next[real_value - 1][1], sub_suffix, matrix)[0] == 1:
                 return 0, str_obj
         else:
             if history_next[real_value - 1][1] == concat_obj:
@@ -183,6 +183,7 @@ def rule_4_recomputed_object(oracles, level, actual_char_ind, str_obj, k, level_
                 str_2apn += chr(f_oracle.data[i] + letter_diff)
             str_obj = str_2apn + str_obj
 
+    print("str obj", str_obj)
     # each level level_up superior or equal to actual level is recomputed
     while len(oracles[1]) > level_up != level_tmp:
         new_fo = oracle_mso.create_oracle('f')
