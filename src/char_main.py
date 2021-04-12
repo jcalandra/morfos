@@ -23,16 +23,22 @@ def main(char_ex):
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", oracles[1][i][1])
         print("history next : ", oracles[1][i][2])
-    plt.pause(300)
+    plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
 def example():
     """ Exemple with the string char_ex"""
-    char_ex2 = 'abacabacdeabfgabachijklmabacdeabhinopqabacrsrsttu'
-    char_ex = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    # main(char_ex2)
-    main(char_ex)
-
+    Geisslerlied = 'abcdadbbdbcddcdeaafaedaedcd'
+    Debussy3 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1, 2, 3, 4, 9, 20, 21,
+                20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 28, 29, 32, 33, 34, 35, 1, 2, 3, 4, 5, 6, 36, 37, 9, 38,
+                39, 9, 39, 40, 1, 39, 40, 41, 42]
+    Debussy4 = ''
+    for i in range(len(Debussy3)):
+        Debussy4 += chr(Debussy3[i])
+    Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
+    Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
+    Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
+    main(Debussy4)
 
 example()

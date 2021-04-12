@@ -14,7 +14,7 @@ processing = prm.processing
 
 
 # ================================================ SIMILARITY ==========================================================
-def char_next_level_similarity_basic(history_next, concat_obj):
+def char_next_level_similarity_wo_alignement(history_next, matrix, matrix_next, concat_obj):
     """ The function compare the actual new structured string with structured strings already seen before. For now,
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""
@@ -26,7 +26,15 @@ def char_next_level_similarity_basic(history_next, concat_obj):
                 if j == len(history_next[i][1]):
                     new_char = history_next[i][0]
                     return new_char
-    new_char = chr(letter_diff + len(history_next))
+    new_char = chr(letter_diff + len(history_next) + 1)
+
+    sim_tab = [0 for ind in range(len(matrix_next[0]))]
+    sim_tab.append(1)
+    matrix_next[0] += new_char
+    matrix_next[1].append(sim_tab.copy())
+    for i in range(len(matrix_next[1]) - 1):
+        matrix_next[1][i].append(matrix_next[1][len(matrix_next[1]) - 1][i])
+
     history_next.append((new_char, concat_obj))
     return new_char
 
@@ -42,19 +50,21 @@ def char_next_level_similarity(history_next, matrix, matrix_next, concat_obj):
         if sim_digit:
             new_char = history_next[i][0]
             return new_char
-    new_char = chr(letter_diff + len(history_next) + 1)
+
+    new_char = chr(letter_diff + len(matrix_next[0]) + 1)
     sim_tab.append(1)
     matrix_next[0] += new_char
     matrix_next[1].append(sim_tab.copy())
     for i in range(len(matrix_next[1]) - 1):
         matrix_next[1][i].append(matrix_next[1][len(matrix_next[1]) - 1][i])
+
     history_next.append((new_char, concat_obj))
     return new_char
 
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
 def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
-                          concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max):
+                          concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
     """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
     if rules_mso.RULE_1:
@@ -70,7 +80,7 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         test_2 = 0
     if rules_mso.RULE_4:
         test_4, potential_obj = rules_mso.rule_4_recomputed_object(
-            oracles, matrix, level, actual_char_ind, str_obj, k, level_max)
+            oracles, matrix, level, actual_char_ind, str_obj, k, level_max, end_mk)
     else:
         test_4 = 0
     if rules_mso.RULE_3 and test_4 == 0:
@@ -87,7 +97,6 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         link = oracles[1][level][1]
         history_next = oracles[1][level][2]
         concat_obj = oracles[1][level][3]
-        print("test 4 len concat obj", len(concat_obj))
         formal_diagram = oracles[1][level][4]
 
         str_obj = potential_obj
@@ -112,7 +121,6 @@ def structure(history_next, matrix, concat_obj, oracles, level, link, data_lengt
     # Labelling upper level string and updating the different structures
     new_char = char_next_level_similarity(history_next, matrix, oracles[1][level][6], concat_obj)
     if len(oracles[1]) > level + 1:
-        # node = len(oracles[1][level + 1][0].data)
         node = max(oracles[1][level][1]) + 1
     else:
         node = 1
@@ -139,14 +147,13 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
             mso.structure_init(flag, level)
-        #oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
 
         oracles[0] = level
         level_max = level
 
         if level == 0 and processing == 'symbols':
             vec = [1]
-            matrix = [chr(fd_mso.letter_diff + 1), [vec]]
+            matrix = [chr(fd_mso.letter_diff + ord(str_obj[0])), [vec]]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
         elif level > 0:
             matrix = oracles[1][level - 1][6]
@@ -173,13 +180,11 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     i = 0
     print("[INFO] Process in level " + str(level) + "...")
     while i < len(str_obj):
-        print("i", i, "len str obj", len(str_obj))
-        print("end mk", end_mk)
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
 
-        if level == 0 and processing == 'symbols' and actual_char - 1 > len(matrix[0]):
+        if level == 0 and processing == 'symbols' and actual_char > max([ord(matrix[0][ind]) for ind in range(len(matrix[0]))]):
             vec = [0 for ind_vec in range(len(matrix[0]))]
             vec.append(1)
             matrix[0] += chr(actual_char + fd_mso.letter_diff)
@@ -200,7 +205,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         test_1, test_2, test_3, test_4, test_5, i, k, actual_char, f_oracle, link, history_next, concat_obj, \
             formal_diagram, formal_diagram_graph, str_obj, input_data = rules_parametrization(
                 f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next, concat_obj,
-                formal_diagram, formal_diagram_graph, str_obj, input_data, level_max)
+                formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk)
 
         if level > 0 and end_mk == 1 and i < len(str_obj) - 1:
             end_mk = 0
@@ -208,8 +213,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             level_wait = level
 
         # If the tests are positives, there is structuration.
-        if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
-            # or (end_mk == 1 and len(concat_obj) != 0)):
+        if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0): # or (end_mk == 1 and len(concat_obj) != 0):
             structure(history_next, matrix, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
@@ -222,12 +226,11 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             wait = 0
             level_wait = -1
         if end_mk == 1:
-            print("youpla")
             structure(history_next, matrix, concat_obj, oracles, level, link, data_length, level_max, end_mk)
             print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
         oracles[1][level][3] = concat_obj
         i += 1
-        print("i", i)
+        print("state number ", i, " in level ", level)
 
     return 1

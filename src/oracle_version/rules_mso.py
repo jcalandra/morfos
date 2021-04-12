@@ -42,7 +42,7 @@ def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
      of an already known object of upper level. The function returns 1 then, 0 otherwise."""
     if len(f_oracle.data) > 2 and f_oracle.sfx[actual_char_ind - 1] != 0 \
             and f_oracle.data[f_oracle.sfx[actual_char_ind - 1] + 1] == actual_char \
-            and len(link) > f_oracle.sfx[actual_char_ind - 1] + 2\
+            and len(link) > f_oracle.sfx[actual_char_ind - 1] + 1\
             and link[f_oracle.sfx[actual_char_ind - 1]] == link[f_oracle.sfx[actual_char_ind - 1] + 1]:
         return 1
     return 0
@@ -70,7 +70,7 @@ def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     return 0
 
 
-def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k, level_max):
+def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k, level_max, end_mk):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
@@ -87,7 +87,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
         return 0, str_obj
 
     # if the longest similar suffix is not an adequate value
-    if f_oracle.sfx[actual_char_ind - nb_elements] is None or f_oracle.sfx[actual_char_ind - nb_elements] == 0 or \
+    if f_oracle.sfx[actual_char_ind - nb_elements] is None or f_oracle.sfx[actual_char_ind - nb_elements] == 0 or\
             f_oracle.sfx[actual_char_ind - nb_elements] == actual_char_ind - nb_elements - 1:
         return 0, str_obj
 
@@ -150,7 +150,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             if link[f_oracle.sfx[actual_char_ind - nb_elements]] != \
                     link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] and \
                     link[f_oracle.sfx[actual_char_ind - nb_elements]] !=\
-                    link[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements + 1]:
+                    link[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements]:
                 return 0, str_obj
 
     # else, we are in the required conditions and we rebuild the oracles
@@ -183,7 +183,6 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
                 str_2apn += chr(f_oracle.data[i] + letter_diff)
             str_obj = str_2apn + str_obj
 
-    print("str obj", str_obj)
     # each level level_up superior or equal to actual level is recomputed
     while len(oracles[1]) > level_up != level_tmp:
         new_fo = oracle_mso.create_oracle('f')
@@ -313,9 +312,13 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             # formal diagram update at initial level
             formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
             print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
-
-        as_mso.structure(
-            oracles[1][level][2], to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, 0)
+        if level == 0:
+            as_mso.structure(
+                oracles[1][level][2], oracles[1][level][7], to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, end_mk)
+        else:
+            as_mso.structure(
+                oracles[1][level][2], oracles[1][level - 1][6], to_struct_obj, oracles, level, oracles[1][level][1],
+                data_length, level_max, end_mk)
         oracles[1][level][3] = ""
 
     # concat_obj update at initial level

@@ -245,11 +245,11 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     level = 0
     f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
         structure_init(flag, level)
-    oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
-    oracles[0] = level
-    history = []
     vec = [1]
     matrix = [chr(fd_mso.letter_diff + 1), [vec]]
+    oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
+    oracles[0] = level
+    history = []
     history.append([chr(fd_mso.letter_diff + 1), chr(fd_mso.letter_diff + 1), vec])
 
     # ------- ALGORITHM -------

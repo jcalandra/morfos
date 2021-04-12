@@ -20,7 +20,7 @@ processing = prm.processing
 def print_formal_diagram_init(level):
     """ Print the formal diagram at level 'level' at its initialization."""
     # print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(30, 20))
+    fig = plt.figure(figsize=(12, 8))
     plt.title("Formal diagram of level " + str(level))
     plt.xlabel("time in seconds (formal memory)")
     plt.ylabel("material (material memory)")
@@ -35,11 +35,15 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     plt.clf()
     file_name_pyplot = "FD_level" + str(level)
     plt.title("Formal diagram of level " + str(level))
-    plt.xlabel("time in seconds (formal memory)")
+    if processing == 'symbols':
+        plt.xlabel("time in number of states (formal memory)")
+    elif processing == 'signal':
+        plt.xlabel("time in seconds (formal memory)")
     plt.ylabel("material (material memory)")
     string = ""
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
+    #plt.yticks([i for i in range(len(string))], string)
     if processing == 'symbols':
         plt.imshow(formal_diagram, extent=[0, int(data_length), len(formal_diagram), 0])
     elif processing == 'signal':
