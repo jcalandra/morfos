@@ -14,7 +14,8 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 
-teta = 0.976
+teta = 0.97
+d_threshold = 140
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 
@@ -28,8 +29,8 @@ RULE_3 = 1
 RULE_4 = 1
 RULE_5 = 1
 
-ALIGNEMENT_rule3 = 1
-ALIGNEMENT_rule4 = 1
+ALIGNEMENT_rule3 = 0
+ALIGNEMENT_rule4 = 0
 
 # ------------- ALIGNEMENT ----------------
 # Alignement parameters to reajust similarity
@@ -38,7 +39,7 @@ ALIGNEMENT_rule4 = 1
 
 QUOTIENT = 100
 TRANSPOSITION = 1
-LETTER_DIFF = 1
+LETTER_DIFF = 0
 
 GAP_VALUE = -5
 EXT_GAP_VALUE = -1
@@ -48,12 +49,12 @@ CORREC_VALUE = GAP_VALUE/2
 # -------- SIGNAL SIM FUNCTIONS -----------
 # parameters for signal similarity computation
 
-# fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.903
+# fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.97
 # at precision 2, 0.927 at precision 1
 TETA = teta
 AUDIBLE_THRESHOLD = 0.00001
 # fft : 25; mfcc : 60 # cqt : 140
-D_THRESHOLD = 140
+D_THRESHOLD = d_threshold
 GRAPH_COMPARISON = 0
 
 # ----------- DATA PROCESSING --------------

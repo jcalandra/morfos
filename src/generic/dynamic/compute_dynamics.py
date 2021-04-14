@@ -44,7 +44,12 @@ def compute_dynamics():
         nb_hop = int(data_size / hop_length)
 
     v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
-    s_tab_trans = s_tab.transpose()
+
+    if prm.FFT_BIT == 1:
+        s_tab_trans = np.array(s_tab).transpose()
+    else:
+        s_tab_trans = s_tab.transpose()
+
     vsd = [0]
     vsd_temp = [0]
     vdd = [0]

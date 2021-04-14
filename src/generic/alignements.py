@@ -39,6 +39,7 @@ def scheme_alignment(string_compared, actual_string, mat):
 
         # Needleman-Wunsch alignment
         nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap)
+        print("NW ALIGN", nw_align)
         if len(nw_align) == 0:
             return 0, 0
         nw_alignment = nw_align[0][2]
@@ -49,3 +50,141 @@ def scheme_alignment(string_compared, actual_string, mat):
     if similarity >= threshold*quotient:
         return 1, similarity
     return 0, similarity
+
+
+def tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
+    i = 0
+    id_mk = 1
+    id_ext = id_red = 0
+    len_gap = 0
+    str_gap = ''
+    shift = 0
+    while i < len(mat_rep):
+        if mat_obj[i] == gap:
+            if id_ext == 1:
+                transfo_tabs.append(['extension', i-len(str_gap) - shift, str_gap])
+                id_ext = 0
+                str_gap = ''
+            len_gap += 1
+            id_mk = 0
+            id_red = 1
+        elif mat_rep[i] == gap:
+            if id_red == 1:
+                transfo_tabs.append(['reduction', i-len_gap - shift, len_gap])
+                shift += len_gap
+                id_red = 0
+                len_gap = 0
+            str_gap += mat_obj[i]
+            id_mk = 0
+            id_ext = 1
+        else:
+            if id_red == 1:
+                transfo_tabs.append(['reduction', i-len_gap - shift, len_gap])
+                shift += len_gap
+                id_red = 0
+                len_gap = 0
+            if id_ext == 1:
+                transfo_tabs.append(['extension', i-len(str_gap) - shift, str_gap])
+                id_ext = 0
+                str_gap = ''
+            if mat_rep[i] != mat_obj[i]:
+                transfo_tabs.append(['variation', i - shift, mat_obj[i]])
+                id_mk = 0
+        i += 1
+    if id_red == 1:
+        transfo_tabs.append(['reduction', i - len_gap - shift, len_gap])
+    elif id_ext == 1:
+        transfo_tabs.append(['extension', i - len(str_gap) - shift, str_gap])
+    elif id_mk == 1:
+        transfo_tabs.append(['identity'])
+    return transfo_tabs
+
+
+def identity(mat_rep):
+    return mat_rep
+
+
+def variation(mat_rep, ind_mismatch, value_mismatch):
+    mat_obj = mat_rep[:ind_mismatch] + value_mismatch
+    if len(mat_rep) > ind_mismatch:
+        mat_obj += mat_rep[ind_mismatch + 1:]
+    return mat_obj
+
+
+def reduction(mat_rep, ind_gap, len_gap):
+    mat_obj = mat_rep[:ind_gap]
+    if len(mat_rep) > ind_gap + len_gap:
+        mat_obj += mat_rep[ind_gap + len_gap:]
+    return mat_obj
+
+
+def extension(mat_rep, ind_gap, str_gap):
+    mat_obj = mat_rep[:ind_gap] + str_gap
+    if len(mat_rep) > ind_gap:
+        mat_obj += mat_rep[ind_gap:]
+    return mat_obj
+
+
+def get_mat_obj(mat_rep, transfo_tabs):
+    mat_obj = mat_rep
+    for i in transfo_tabs:
+        if i[0] == 'identity':
+            mat_obj = identity(mat_obj)
+        if i[0] == 'variation':
+            mat_obj = variation(mat_obj, i[1], i[2])
+        if i[0] == 'extension':
+            mat_obj = extension(mat_obj, i[1], i[2])
+        if i[0] == 'reduction':
+            mat_obj = reduction(mat_obj, i[1], i[2])
+    return mat_obj
+
+
+def test_transfoDetermination():
+    rep_example = 'abzdabcd'
+    obj_example = 'abcdabcd'
+    transfo_tabs = []
+    print(tabTransfo(rep_example, obj_example, transfo_tabs, gap='z'))
+    print(extension('abdabcd', 2, 'c'))
+
+    rep_example = 'abzzzzdabcd'
+    obj_example = 'abcabcdabcd'
+    transfo_tabs = []
+    print(tabTransfo(rep_example, obj_example, transfo_tabs, gap='z'))
+    print(extension('abdabcd', 2, 'cabc'))
+
+    rep_example = 'abdabcdzzzz'
+    obj_example = 'abdabcdcabc'
+    transfo_tabs = []
+    print(tabTransfo(rep_example, obj_example, transfo_tabs, gap='z'))
+    print(extension('abdabcd', 7, 'cabc'))
+
+    rep_example = 'abzzdabcdzzzz'
+    obj_example = 'abhidabcdcabc'
+    transfo_tabs = []
+    print(tabTransfo(rep_example, obj_example, transfo_tabs, gap='z'))
+    print(extension('abdabcd', 2, 'hi'))
+    print(extension(extension('abdabcd', 2, 'hi'), 9, 'cabc'))
+
+    rep_example = 'ababzzdababbazzzz'
+    obj_example = 'zzabhidabzzczcabc'
+    transfo_tabs = []
+    print(tabTransfo(rep_example, obj_example, transfo_tabs, gap='z'))
+    print(extension(reduction(variation(reduction(extension(reduction('ababdababba', 0, 2), 2, 'hi'), 7, 2), 7, 'c'), 8, 1), 8, 'cabc'))
+    rep_example_clean = 'ababdababba'
+    print(get_mat_obj(rep_example_clean, transfo_tabs))
+
+
+def tests_transfofunctions():
+    mat_rep = 'abcdabcd'
+    ind_mis = 1
+    value_mis = 'd'
+    print(variation(mat_rep, ind_mis, value_mis))
+    ind_gap = 5
+    len_gap = 2
+    print(reduction(mat_rep, ind_gap, len_gap))
+    str_gap = 'hijkh'
+    print(extension(mat_rep, ind_gap, str_gap))
+    print(identity(mat_rep))
+
+
+test_transfoDetermination()

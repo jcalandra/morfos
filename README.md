@@ -1,21 +1,26 @@
-cognitive_algorithm_and_its_musical_applications
+Cognitive Algorithm and its Musical Applications
+
 
 - **data/**
     Contains examples of audio files in .wav.
 - **lib/vmo/master/**
-    Contains files from VMO library developped by C. Wang that we need: https://github.com/wangsix/vmo.
+    Contains files that we need from the Variable Markov Oracle library developped by C. Wang: 
+    https://github.com/wangsix/vmo.
 - **src/**
-    Contains main files for the application.
+    Contains the main files for the application.
     - **generic/**
         Necessary files for every versions of the cognitive algorithm.
     - **midi_version/**
-        Necessary files for the MIDI version of the cognitive algorithm. Not updated.
+        Necessary files for the MIDI version of the cognitive algorithm. Not updated. This folder will be updated in order to obtain 
+        formal diagrams from MIDI data, using the Multi-Scale Oracle (MSO).
     - **oracle_version/**
-        Necessary files for the Multi-Scale Oracle version of the cognitive algorithm. This is the folder that interest us the most.
+        Necessary files for the MSO version of the cognitive algorithm.
     - **standard_version/**
-        Necessary files for standard version without MSO. Stadards versions are not updated and might be deleted or updated.
+        Necessary files for a standard version without MSO. The standard version is not updated and might be deleted.
 
 - **tests/**
     Contains some tests.
 
-First apply the parameters you want in parameters.py, then run the file main_mso.py to obtain formal diagrams.
+First you should apply the parameters you want in `parameters.py`, then you can run:
+ - `main_mso.py` to obtain formal diagrams from signal.
+ - `char_main.py` to obtain formal diagrams from character strings.
