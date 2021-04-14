@@ -52,6 +52,7 @@ def scheme_alignment(string_compared, actual_string, mat):
     return 0, similarity
 
 
+# ========================================== TRANSFORMATION FUNCTIONS ==================================================
 def tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
     i = 0
     id_mk = 1
