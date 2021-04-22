@@ -47,11 +47,13 @@ def scheme_alignment(string_compared, actual_string, mat):
 
     similarity = (alignment - correc_value) / min_len
     if similarity >= threshold*quotient:
+        print(nw_align[0][0], nw_align[0][1])
+        print("tabTransfo", tabTransfo(nw_align[0][0], nw_align[0][1], [], gap))
         return 1, similarity
     return 0, similarity
 
 
-# ========================================== TRANSFORMATION FUNCTIONS ==================================================
+# ================================== MATERIALS TRANSFORMATION FUNCTIONS ================================================
 def tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
     i = 0
     id_mk = 1
@@ -137,3 +139,5 @@ def get_mat_obj(mat_rep, transfo_tabs):
         if i[0] == 'reduction':
             mat_obj = reduction(mat_obj, i[1], i[2])
     return mat_obj
+
+# ================================= STRUCTURE TRANSFORMATION FUNCTIONS =================================================

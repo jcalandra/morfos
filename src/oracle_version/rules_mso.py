@@ -27,6 +27,7 @@ ALIGNEMENT_rule4 = prm.ALIGNEMENT_rule4
 letter_diff = prm.LETTER_DIFF
 
 
+# RULE 1:  (ab + a => (ab)(a
 def rule_1_similarity(f_oracle, actual_char_ind):
     """ Look the suffix of actual char which is at 'actual_char_ind'. Return 1 if the actual_char has already been seen,
      meaning its suffix is not 0, otherwise the function returns 0, meaning it's a new material."""
@@ -35,6 +36,7 @@ def rule_1_similarity(f_oracle, actual_char_ind):
     return 0
 
 
+# RULE 2: (ab)(a + b => (ab)(ab
 def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
     """ Compare the concatenated object concat_obj of unstructured char in the actual level plus the actual_char, with
     the already seen objects in the past that begins with the same concat_obj. If the strings are equals, hypothesis
@@ -53,6 +55,7 @@ def rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind
     return abs(1 - validated_hypothesis(f_oracle, link, actual_char, actual_char_ind))
 
 
+# RULE 3: (ab)(ab + c => (ab)(ab)(c
 def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
@@ -70,6 +73,7 @@ def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     return 0
 
 
+# RULE 4: (abcd)(ab + e => (ab)(cd)(ab)(e
 def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k, level_max, end_mk):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
@@ -336,6 +340,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
     return 1, str_obj
 
 
+# RULE 5: (a + a => (aa
 def rule_5_regathering(concat_obj):
     """ The function returns 1 if the length of the string corresponding to  the concatenated object that are not
     structured in the actual level is higher than one. It returns 0 if the length of the string is equal or less than

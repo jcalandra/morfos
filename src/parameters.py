@@ -17,7 +17,7 @@ PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
 teta = 0.97
 d_threshold = 140
 # processing must be str 'symbols' or 'signal'
-processing = 'signal'
+processing = 'symbols'
 
 # ----------------- RULES -----------------
 # Rules that are activated or not and their
@@ -41,7 +41,7 @@ QUOTIENT = 100
 TRANSPOSITION = 1
 LETTER_DIFF = 0
 
-GAP_VALUE = -5
+GAP_VALUE = -2
 EXT_GAP_VALUE = -1
 GAP = chr(0)
 CORREC_VALUE = GAP_VALUE/2
