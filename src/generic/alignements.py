@@ -106,7 +106,8 @@ def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
     while i < len(mat_rep):
         if mat_obj[i] == gap:
             if id_ext == 1:
-                transfo_tabs.append(lambda_extension(i - len(str_gap) - shift, str_gap))
+                transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
+                                     'extension', (i - len(str_gap) - shift, str_gap)])
                 id_ext = 0
                 str_gap = ''
             len_gap += 1
@@ -114,7 +115,8 @@ def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
             id_red = 1
         elif mat_rep[i] == gap:
             if id_red == 1:
-                transfo_tabs.append(lambda_reduction(i - len_gap - shift, len_gap))
+                transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
+                                     'reduction', (i - len_gap - shift, len_gap)])
                 shift += len_gap
                 id_red = 0
                 len_gap = 0
@@ -123,30 +125,34 @@ def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
             id_ext = 1
         else:
             if id_red == 1:
-                transfo_tabs.append(lambda_reduction(i - len_gap - shift, len_gap))
+                transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
+                                     'reduction', (i - len_gap - shift, len_gap)])
                 shift += len_gap
                 id_red = 0
                 len_gap = 0
             if id_ext == 1:
-                transfo_tabs.append(lambda_extension(i - len(str_gap) - shift, str_gap))
+                transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
+                                     'extension', (i - len(str_gap) - shift, str_gap)])
                 id_ext = 0
                 str_gap = ''
             if mat_rep[i] != mat_obj[i]:
-                transfo_tabs.append(lambda_variation(i - shift, mat_obj[i]))
+                transfo_tabs.append([lambda_variation(i - shift, mat_obj[i]), 'variation', (i - shift, mat_obj[i])])
                 id_mk = 0
         i += 1
     if id_red == 1:
-        transfo_tabs.append(lambda_reduction(i - len_gap - shift, len_gap))
+        transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
+                                     'reduction', (i - len_gap - shift, len_gap)])
     elif id_ext == 1:
-        transfo_tabs.append(lambda_extension(i - len(str_gap) - shift, str_gap))
+        transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
+                             'extension', (i - len(str_gap) - shift, str_gap)])
     elif id_mk == 1:
-        transfo_tabs.append(lambda_identity())
+        transfo_tabs.append([lambda_identity(), 'identity', ()])
     return transfo_tabs
 
 
 def lambda_get_mat_obj(mat_rep, transfo_tabs):
     mat_obj = mat_rep
-    for fun in transfo_tabs:
+    for fun, fun_lab, params in transfo_tabs:
         mat_obj = fun(mat_obj)
     return mat_obj
 
