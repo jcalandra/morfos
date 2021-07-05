@@ -11,14 +11,14 @@ NAME = "Geisslerlied"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + 'Geisslerlied/'
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Mozart/"
+PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
-teta = 0.97
-d_threshold = 140
+teta = 0.91
+d_threshold = 25
 # processing must be str 'symbols' or 'signal'
-processing = 'symbols'
-
+processing = 'signal'
+verbose = 0
 # ----------------- RULES -----------------
 # Rules that are activated or not and their
 # parameters
@@ -41,7 +41,7 @@ QUOTIENT = 100
 TRANSPOSITION = 1
 LETTER_DIFF = 0
 
-GAP_VALUE = -2
+GAP_VALUE = -5
 EXT_GAP_VALUE = -1
 GAP = chr(0)
 CORREC_VALUE = GAP_VALUE/2
@@ -60,7 +60,7 @@ GRAPH_COMPARISON = 0
 # ----------- DATA PROCESSING --------------
 # parameters for data processing
 
-SR = 22050
+SR = 44100
 HOP_LENGTH = 1024
 
 PRECISION = 4
@@ -69,8 +69,8 @@ NB_MFCC = 50
 INIT = 0
 
 MFCC_BIT = 0
-CQT_BIT = 1
-FFT_BIT = 0
+CQT_BIT = 0
+FFT_BIT = 1
 
 if CQT_BIT:
     NB_VALUES = NB_NOTES
@@ -86,8 +86,8 @@ NOTE_MIN = 'C3'
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
-TONE_PRECISION = 0.125
-DIV = 20
+TONE_PRECISION = 1
+DIV = 2
 
 TIME_STATS = 0
 MFCC_NORMALISATION = 0
@@ -124,7 +124,7 @@ TO_SHOW_PYP = 1
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 1
+EVOL_PRINT = 0
 
 # ------------ ALGOCOG ----------------
 
@@ -141,9 +141,8 @@ ALGO_USUAL = 0
 
 # ------------ VMO ---------------
 
-REPRESENTANTS = 1
 PARCOURS = 1
 INCERTITUDE = 3
-SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
+SUFFIX_METHOD = 'inc'  # 'inc' ou 'complete'
 
 SYNTHESIS = 0

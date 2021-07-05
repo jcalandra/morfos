@@ -146,34 +146,25 @@ def modify2_oracle(oracle_t, prev2_mat, prev_mat, j_mat, i_hop, input_data):
 
 def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
     """Initialize an oracle with the given parameters."""
-    threshold = teta
-    dfunc = 'cosine'
-    dfunc_handle = None
-    if prm.MFCC_BIT == 1:
-        dim = nb_values - 1
-    elif prm.FFT_BIT == 1:
-        dim = nb_hop
-    else:
-        dim = nb_values
-
-    if prm.FFT_BIT == 1:
-        input_data = np.array(s_tab).transpose()
-    else:
-        input_data = s_tab.transpose()
-
     volume_data = v_tab
     suffix_method = SUFFIX_METHOD
+
+    if prm.MFCC_BIT == 1:
+        dim = nb_values - 1
+        input_data = s_tab.transpose()
+    elif prm.FFT_BIT == 1:
+        dim = len(s_tab[0])
+        input_data = np.array(s_tab)
+    else:
+        dim = nb_values
+        input_data = s_tab.transpose()
 
     if type(input_data) != np.ndarray or type(input_data[0]) != np.ndarray:
         input_data = np.array(input_data)
     if input_data.ndim != 2:
         input_data = np.expand_dims(input_data, axis=1)
 
-    if flag == 'f' or flag == 'v':
-        oracle_t = oracle_mso.create_oracle(flag, threshold=threshold, dfunc=dfunc, dfunc_handle=dfunc_handle, dim=dim)
-
-    else:
-        oracle_t = oracle_mso.create_oracle('a', threshold=threshold, dfunc=dfunc, dfunc_handle=dfunc_handle, dim=dim)
+    oracle_t = oracle_mso.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
 
     return volume_data, suffix_method, input_data, oracle_t
 
@@ -181,6 +172,7 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
 # ================================================ MATRIX CORRECTION ===================================================
 def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     """ Modify the similarity matrix according the the corrected frames."""
+    # TODO: regarder les ajouts et suppression dans oracle_t.vec
     blank_ind = 0
     while mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
             and mtx[prev_mat][blank_ind][2] == BACKGROUND[2]:
@@ -206,7 +198,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
     data, rate, data_size, data_length = dc.get_data(audio_path)
     temps_data = time.time() - here_time
-    print("Temps data : %s secondes ---" % temps_data)
+    if prm.verbose == 1:
+        print("Temps data : %s secondes ---" % temps_data)
 
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
@@ -218,14 +211,16 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     data_length = data_length + nb_points / rate
     if data_size % hop_length < init:
         nb_hop = int(data_size / hop_length)
-    print("[RESULT] audio length = ", nb_hop)
+    if prm.verbose == 1:
+        print("[RESULT] audio length = ", nb_hop)
 
     new_mat = np.ones((1, nb_hop, 3), np.uint8)
     for i in range(nb_hop):
         new_mat[0][i] = BACKGROUND
     mtx = new_mat.copy()
 
-    print("[INFO] Computing frequencies and volume...")
+    if prm.verbose == 1:
+        print("[INFO] Computing frequencies and volume...")
     v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
 
     value = 255 - v_tab[0] * 255
@@ -235,7 +230,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     seg_error = 0
     class_error = 0
 
-    print("[INFO] Structures initialisation...")
+    if prm.verbose == 1:
+        print("[INFO] Structures initialisation...")
 
     # ------- CREATE AND BUILD VMO -------
     flag = 'a'
@@ -259,28 +255,27 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     color = color2 = (BASIC_FRAME[0], BASIC_FRAME[1], v_tab[0])
     diff_mk = 0
 
-    print("[INFO] Computing formal diagram...")
+    if prm.verbose == 1:
+        print("[INFO] Computing formal diagram...")
 
     start_time = time.time()
 
-    vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
+    # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
 
     for i_hop in range(nb_hop):  # while
-        print("[INFO] Process in level 0...")
+        if prm.verbose == 1:
+            print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
-        if flag == 'f' or flag == 'v':
-            oracle_t.add_state(obs)
-        else:
-            oracle_t.add_state(obs, input_data, volume_data, suffix_method)
+        oracle_t.add_state(obs, input_data, volume_data, suffix_method)
 
         j_mat = oracle_t.data[i_hop + 1]
         value = 255 - v_tab[i_hop] * 255
 
-        value_vsd = 255 - abs(vsd[i_hop]) * 255
+        '''value_vsd = 255 - abs(vsd[i_hop]) * 255
         value_vdd = 255 - abs(vdd[i_hop]) * 255
         value_vkl = 255 - abs(vkl[i_hop]) * 255
         value_fsd = 255 - abs(fsd[i_hop]) * 255
-        value_fdd = 255 - abs(fdd[i_hop]) * 255
+        value_fdd = 255 - abs(fdd[i_hop]) * 255'''
 
         color3 = color2
         color2 = color
@@ -318,7 +313,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 concat_obj = ""
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
-                print("[INFO] Process in level 0...")
+                if prm.verbose == 1:
+                    print("[INFO] Process in level 0...")
         else:
             diff_mk = 0
             if i_hop == nb_hop - 1:
@@ -337,7 +333,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 concat_obj = ""
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
-                print("[INFO] Process in level 0...")
+                if prm.verbose == 1:
+                    print("[INFO] Process in level 0...")
 
         if j_mat > actual_max:
 
@@ -489,7 +486,8 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
     if SYNTHESIS == 1:
         name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
-        print("name : ", name)
+        if prm.verbose == 1:
+            print("name : ", name)
         s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
 
     if PLOT_ORACLE == 1:

@@ -14,7 +14,7 @@ processing = prm.processing
 
 
 # ================================================ SIMILARITY ==========================================================
-def char_next_level_similarity_basic(history_next, matrix, matrix_next, concat_obj):
+def char_next_level_similarity_strict(history_next, matrix, matrix_next, concat_obj):
     """ The function compare the actual new structured string with structured strings already seen before. For now,
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""

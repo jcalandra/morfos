@@ -24,7 +24,7 @@ def graph_energy(tab, rate, data_size, name, y_label):
     xlabel("time (s)")
     ylabel(y_label)
     axis([0, data_size/rate*hop_length, min(tab) - abs(min(tab)/10), max(tab) + max(tab)/10])
-    figname = "cognitive_algorithm_and_its_musical_applications/src/dynamic/" + name + "_" + y_label + ".png"
+    figname = "cognitive_algorithm_and_its_musical_applications/src/generic/dynamic/" + name + "_" + y_label + ".png"
     print(figname)
     savefig(figname)
     show()
@@ -91,4 +91,4 @@ def compute_dynamics():
     return vsd, vdd, vkl, fsd, fdd
 
 
-compute_dynamics()
+#compute_dynamics()

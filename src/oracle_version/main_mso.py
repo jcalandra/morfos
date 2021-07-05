@@ -35,7 +35,7 @@ def main():
 
     # printing the results in the shell
     for i in range(len(mso_oracle[1])):
-        new_fd.append([chr(tab_f_oracle[i][0].data[j] + sig_mso.fd_mso.letter_diff)
+        new_fd.append([tab_f_oracle[i][0].data[j]
                        for j in range(1, len(tab_f_oracle[i][0].data))])
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", mso_oracle[1][i][1])

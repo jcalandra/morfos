@@ -35,10 +35,12 @@ def example():
                 39, 9, 39, 40, 1, 39, 40, 41, 42]
     Debussy4 = ''
     for i in range(len(Debussy3)):
-        Debussy4 += chr(Debussy3[i])
+        Debussy4 += chr(Debussy3[i] + 96)
+    print(Debussy4)
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
     Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
     main(Debussy4)
 
 example()
+

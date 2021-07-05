@@ -171,7 +171,7 @@ def get_n_frequencies(data, rate, hop_length, nb_hop, init):
     f = init
     s_tab = []
     for i in range(nb_hop):
-        s_tab.append(get_frequency_basic(data, rate, f, hop_length)[1])
+        s_tab.append(get_frequency_windows(data, rate, f, hop_length)[1])
         f = f + hop_length
     return s_tab
 
@@ -213,7 +213,8 @@ def get_rms_volumes(data, hop_length, nb_hop, init):
         n = len(vn_tab[i])
         for j in range(n):
             v_tab_i = v_tab_i + (vn_tab[i][j])**2
-        v_tab_i = math.sqrt(v_tab_i/n)
+        if n != 0:
+            v_tab_i = math.sqrt(v_tab_i/n)
         v_tab.append(v_tab_i)
         mean_vtab = mean_vtab + v_tab_i
 

@@ -9,6 +9,8 @@ transpo = parameters.TRANSPOSITION
 quotient = parameters.QUOTIENT
 threshold = parameters.TETA
 
+letter_diff = parameters.LETTER_DIFF
+
 # penalty values
 gap_value = parameters.GAP_VALUE
 extend_gap_value = parameters.EXT_GAP_VALUE
@@ -48,7 +50,7 @@ def scheme_alignment(string_compared, actual_string, mat):
     similarity = (alignment - correc_value) / min_len
     if similarity >= threshold * quotient:
         print(nw_align[0][0], nw_align[0][1])
-        print("tabTransfo", lambda_tabTransfo(nw_align[0][0], nw_align[0][1], [], gap))
+        # print("tabTransfo", lambda_tabTransfo(nw_align[0][0], nw_align[0][1], [], gap))
         return 1, similarity
     return 0, similarity
 
@@ -96,18 +98,20 @@ def lambda_extension(ind_gap, str_gap):
     return lambda x: extension(x, ind_gap, str_gap)
 
 
-def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
+def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, sim_matrix, gap=gap):
     i = 0
     id_mk = 1
     id_ext = id_red = 0
     len_gap = 0
     str_gap = ''
     shift = 0
-    while i < len(mat_rep):
+    len_mat = len(mat_rep)
+    while i < len_mat:
         if mat_obj[i] == gap:
             if id_ext == 1:
                 transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
-                                     'extension', (i - len(str_gap) - shift, str_gap)])
+                                     'extension', (i - len(str_gap) - shift, str_gap),
+                                     gap_value + (len(str_gap) - 1)*extend_gap_value])
                 id_ext = 0
                 str_gap = ''
             len_gap += 1
@@ -116,7 +120,8 @@ def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
         elif mat_rep[i] == gap:
             if id_red == 1:
                 transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
-                                     'reduction', (i - len_gap - shift, len_gap)])
+                                     'reduction', (i - len_gap - shift, len_gap),
+                                     gap_value + (len_gap - 1)*extend_gap_value])
                 shift += len_gap
                 id_red = 0
                 len_gap = 0
@@ -126,35 +131,52 @@ def lambda_tabTransfo(mat_rep, mat_obj, transfo_tabs, gap=gap):
         else:
             if id_red == 1:
                 transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
-                                     'reduction', (i - len_gap - shift, len_gap)])
+                                     'reduction', (i - len_gap - shift, len_gap),
+                                     gap_value + (len_gap - 1)*extend_gap_value])
                 shift += len_gap
                 id_red = 0
                 len_gap = 0
             if id_ext == 1:
                 transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
-                                     'extension', (i - len(str_gap) - shift, str_gap)])
+                                     'extension', (i - len(str_gap) - shift, str_gap),
+                                     gap_value + (len(str_gap) - 1)*extend_gap_value])
                 id_ext = 0
                 str_gap = ''
             if mat_rep[i] != mat_obj[i]:
-                transfo_tabs.append([lambda_variation(i - shift, mat_obj[i]), 'variation', (i - shift, mat_obj[i])])
+                transfo_tabs.append([lambda_variation(i - shift, mat_obj[i]), 'variation', (i - shift, mat_obj[i]),
+                                     1 - sim_matrix[1][ord(mat_rep[i]) - letter_diff]
+                                     [(ord(mat_obj[i]) - letter_diff)]])
                 id_mk = 0
         i += 1
     if id_red == 1:
         transfo_tabs.append([lambda_reduction(i - len_gap - shift, len_gap),
-                                     'reduction', (i - len_gap - shift, len_gap)])
+                             'reduction', (i - len_gap - shift, len_gap),
+                             gap_value + (len_gap - 1)*extend_gap_value])
     elif id_ext == 1:
         transfo_tabs.append([lambda_extension(i - len(str_gap) - shift, str_gap),
-                             'extension', (i - len(str_gap) - shift, str_gap)])
+                             'extension', (i - len(str_gap) - shift, str_gap),
+                             gap_value + (len(str_gap) - 1)*extend_gap_value])
     elif id_mk == 1:
-        transfo_tabs.append([lambda_identity(), 'identity', ()])
+        transfo_tabs.append([lambda_identity(), 'identity', (), 0])
     return transfo_tabs
 
 
 def lambda_get_mat_obj(mat_rep, transfo_tabs):
     mat_obj = mat_rep
-    for fun, fun_lab, params in transfo_tabs:
+    for fun, fun_label, params, weight in transfo_tabs:
         mat_obj = fun(mat_obj)
     return mat_obj
 
+
+def transfo_similarity(transfo_tabs_ref, transfo_tabs_obj, min_len):
+    diff = 1
+    for i in range(len(transfo_tabs_ref)):
+        diff -= transfo_tabs_ref[i][3]/min_len
+        for j in range(len(transfo_tabs_obj)):
+            if transfo_tabs_ref[i] == transfo_tabs_obj[j]:
+                diff += 2*transfo_tabs_ref[i][3]/min_len
+    for j in range(len(transfo_tabs_obj)):
+        diff -= transfo_tabs_obj[j][3]/min_len
+    return 1 - diff
 
 # ================================= STRUCTURE TRANSFORMATION FUNCTIONS =================================================
