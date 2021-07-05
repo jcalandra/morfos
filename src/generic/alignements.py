@@ -29,7 +29,9 @@ def scheme_alignment(string_compared, actual_string, mat):
     # creation of the similarity matrix
     if not mat[1]:
         mat[1] = np.empty((0, 0))
+    print("mat", mat)
     np_mat = np.array(mat[1]) * quotient
+    #print("np_mat", np_mat)
     matrix = substitution_matrices.Array(alphabet=mat[0], dims=2, data=np_mat)
 
     # conversion of the string if necessary

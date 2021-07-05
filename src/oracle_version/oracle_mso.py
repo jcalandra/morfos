@@ -727,6 +727,7 @@ class MO(FactorOracle):
                 self.rep.append([new_data, 1])
                 if len(self.rep) > 1:
                     self.vec.append(comp_rep)
+                    print("in mso vec", self.vec)
 
             else:  # Si on a un matériau déjà existant
                 # trie avec le 2e élément de chaque couple par ordre décroissant
@@ -752,8 +753,10 @@ class MO(FactorOracle):
                 self.latent.append([i])
                 self.data.append(len(self.latent) - 1)
                 self.rep.append([new_data, 1])
-                self.vec.append(comp_rep)
-
+                print("in mso comp rep", comp_rep)
+                if len(self.rep) > 1:
+                    self.vec.append(comp_rep)
+                    print(self.vec)
             else:
                 self.sfx[i] = suffix_candidate
                 # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1

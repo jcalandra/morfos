@@ -15,7 +15,7 @@ PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
 teta = 0.91
-d_threshold = 25
+d_threshold = 60
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
@@ -86,8 +86,8 @@ NOTE_MIN = 'C3'
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
-TONE_PRECISION = 1
-DIV = 2
+TONE_PRECISION = 0.125
+DIV = 20
 
 TIME_STATS = 0
 MFCC_NORMALISATION = 0
