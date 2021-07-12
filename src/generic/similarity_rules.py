@@ -30,11 +30,12 @@ def similarity_alignment(history_next, concat_obj, matrix):
 
 def similarity_signal(history_next, concat_obj, matrix):
     sim_tab = []
-    sim_digit = 0
+    s_tab = []
     for i in range(len(history_next)):
-        # TODO: implémenter la similarité à partir du signal à tous les niveaux
-        sim_digit, sim_value = similarity_computation.compute_signal_similarity(history_next[i][1], concat_obj)
-        sim_tab.append(sim_value / similarity_computation.quotient)
+        # TODO: ajouter les descripteurs correspondants au signal dans history_next_table
+        s_tab.append(history_next[i][2])
+        sim_digit, sim_value = similarity_computation.compute_signal_similarity(s_tab, i, concat_obj)
+        sim_tab.append(sim_value)
         if sim_digit:
             new_char = history_next[i][0]
             return new_char, sim_tab, 1

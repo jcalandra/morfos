@@ -1,6 +1,7 @@
 import numpy as np
 from Bio import pairwise2
 from Bio.Align import substitution_matrices
+import similarity_functions as sim_f
 import parameters
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
@@ -57,6 +58,19 @@ def compute_alignment(string_compared, actual_string, mat):
 
 
 # ==================================================== SIGNAL ==========================================================
-def compute_signal_similarity(string_compared, actual_string):
-    similarity = 0
+MFCC_BIT = parameters.MFCC_BIT
+FFT_BIT = parameters.FFT_BIT
+CQT_BIT = parameters.CQT_BIT
+
+
+def compute_signal_similarity(s_tab, compared_object_ind, actual_object):
+    # descriptor corresponds to the descriptor that is computed from the actual_object
+    descriptor = []
+    # s_tab corresponds to the descriptors from history_next_table concatenated with the descriptor extracted
+    # from actual_obj
+    s_tab.append(descriptor)
+    # freq_static_sim_fft is ok because s_tab is in the according shape
+    similarity = sim_f.frequency_static_similarity_fft(s_tab, compared_object_ind, len(s_tab) - 1)
+    s_tab.pop()
+
     return 0, similarity
