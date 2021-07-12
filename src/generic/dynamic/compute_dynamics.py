@@ -11,7 +11,7 @@ init = prm.INIT
 nb_values = prm.NB_VALUES
 fmin = prm.NOTE_MIN
 
-PRINT_GRAPHES = 0
+PRINT_GRAPHES = 1
 
 
 def graph_energy(tab, rate, data_size, name, y_label):
@@ -44,6 +44,8 @@ def compute_dynamics():
         nb_hop = int(data_size / hop_length)
 
     v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
+    print("len stab",len(s_tab[0]))
+    print(nb_hop)
 
     if prm.FFT_BIT == 1:
         s_tab_trans = np.array(s_tab).transpose()
@@ -83,9 +85,9 @@ def compute_dynamics():
         print(vdd)
         graph_energy(vkl, rate, nb_hop, name, "volume kullback leibler dissimilarity")
         print(vkl)
-        graph_energy(fsd, rate, nb_hop, name, "frequence static dissimilarity")
+        graph_energy(fsd, rate, nb_hop, name, "frequency static dissimilarity")  # concordance différentielle
         print(fsd)
-        graph_energy(fdd, rate, nb_hop, name, "frequence dynamic dissimilarity")
+        graph_energy(fdd, rate, nb_hop, name, "frequency dynamic dissimilarity")
         print(fdd)
 
     return vsd, vdd, vkl, fsd, fdd

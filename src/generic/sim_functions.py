@@ -65,7 +65,7 @@ def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
 
 
 def frequency_static_similarity_cqt(s_tab, id_hop_a, id_hop_b):
-    """ Compute the euclid distance between each cqt of two different hops."""
+    """ Compute the cosine similarity between each cqt of two different hops."""
     square_a = square_b = cs = 0
     n = len(s_tab[id_hop_a])
     # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j

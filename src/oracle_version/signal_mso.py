@@ -375,16 +375,13 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                     seg_error = seg_error + 2
 
         if j_mat > actual_max:
-            print("matrix before", matrix)
             temp_max = j_mat
             vec = oracle_t.vec[len(matrix[0]) - 1].copy()
-            print("vec", vec)
             vec.append(1)
             matrix[0] += (chr(len(matrix[0]) + fd_mso.letter_diff + 1))
             matrix[1].append(vec)
             for i in range(len(matrix[1]) - 1):
                 matrix[1][i].append(matrix[1][len(matrix[1]) - 1][i])
-            print("matrix after", matrix)
             new_mat_l = np.ones((1, nb_hop, 3), np.uint8)
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
@@ -489,8 +486,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
     if SYNTHESIS == 1:
         name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
-        if prm.verbose == 1:
-            print("name : ", name)
+        print("name : ", name)
         s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
 
     if PLOT_ORACLE == 1:

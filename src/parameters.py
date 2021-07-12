@@ -14,8 +14,8 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
-teta = 0.91
-d_threshold = 60
+teta = 0.976
+d_threshold = 140
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
@@ -60,7 +60,7 @@ GRAPH_COMPARISON = 0
 # ----------- DATA PROCESSING --------------
 # parameters for data processing
 
-SR = 44100
+SR = 22050
 HOP_LENGTH = 1024
 
 PRECISION = 4
@@ -69,8 +69,8 @@ NB_MFCC = 50
 INIT = 0
 
 MFCC_BIT = 0
-CQT_BIT = 0
-FFT_BIT = 1
+CQT_BIT = 1
+FFT_BIT = 0
 
 if CQT_BIT:
     NB_VALUES = NB_NOTES
@@ -143,6 +143,6 @@ ALGO_USUAL = 0
 
 PARCOURS = 1
 INCERTITUDE = 3
-SUFFIX_METHOD = 'inc'  # 'inc' ou 'complete'
+SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 
-SYNTHESIS = 0
+SYNTHESIS = 1
