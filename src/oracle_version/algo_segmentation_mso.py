@@ -41,7 +41,7 @@ def similarity_alignment(history_next, concat_obj, matrix):
 def similarity_signal(history_next, concat_obj, matrix):
     sim_tab = []
     for i in range(len(history_next)):
-        sim_digit, sim_value = alignments.compute_alignment(history_next[i][1], concat_obj, matrix)
+        sim_digit, sim_value = signal.compute_signalsim(history_next[i][1], concat_obj, matrix)
         sim_tab.append(sim_value / alignments.quotient)
         if sim_digit:
             new_char = history_next[i][0]
