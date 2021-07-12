@@ -1,7 +1,7 @@
 import parameters as prm
 from matplotlib.pyplot import *
 import data_computing as dc
-import sim_functions as sf
+import similarity_functions as sf
 
 SHOW_FREQUENCIES = 0
 

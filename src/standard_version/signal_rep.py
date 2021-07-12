@@ -1,5 +1,5 @@
 import data_computing as dc
-import sim_functions as sf
+import similarity_functions as sf
 import parameters as prm
 import numpy as np
 import cv2

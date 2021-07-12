@@ -1,4 +1,4 @@
-import alignments
+import similarity_computation
 from parameters import LETTER_DIFF
 letter_diff = LETTER_DIFF
 
@@ -20,8 +20,8 @@ def similarity_strict(history_next, concat_obj, matrix):
 def similarity_alignment(history_next, concat_obj, matrix):
     sim_tab = []
     for i in range(len(history_next)):
-        sim_digit, sim_value = alignments.compute_alignment(history_next[i][1], concat_obj, matrix)
-        sim_tab.append(sim_value / alignments.quotient)
+        sim_digit, sim_value = similarity_computation.compute_alignment(history_next[i][1], concat_obj, matrix)
+        sim_tab.append(sim_value / similarity_computation.quotient)
         if sim_digit:
             new_char = history_next[i][0]
             return new_char, sim_tab, 1
@@ -33,6 +33,8 @@ def similarity_signal(history_next, concat_obj, matrix):
     sim_digit = 0
     for i in range(len(history_next)):
         # TODO: implémenter la similarité à partir du signal à tous les niveaux
+        sim_digit, sim_value = similarity_computation.compute_signal_similarity(history_next[i][1], concat_obj)
+        sim_tab.append(sim_value / similarity_computation.quotient)
         if sim_digit:
             new_char = history_next[i][0]
             return new_char, sim_tab, 1

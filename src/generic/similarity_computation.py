@@ -11,6 +11,8 @@ threshold = parameters.TETA
 
 letter_diff = parameters.LETTER_DIFF
 
+
+# ================================================= ALIGNMENT ==========================================================
 # penalty values
 gap_value = parameters.GAP_VALUE
 extend_gap_value = parameters.EXT_GAP_VALUE
@@ -18,7 +20,6 @@ gap = parameters.GAP
 correc_value = parameters.CORREC_VALUE
 
 
-# ================================================= ALIGNMENT ==========================================================
 def compute_alignment(string_compared, actual_string, mat):
     # initalisation
     alignment = -pow(10, 10)
@@ -55,3 +56,7 @@ def compute_alignment(string_compared, actual_string, mat):
     return 0, similarity
 
 
+# ==================================================== SIGNAL ==========================================================
+def compute_signal_similarity(string_compared, actual_string):
+    similarity = 0
+    return 0, similarity

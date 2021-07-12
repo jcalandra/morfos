@@ -29,7 +29,7 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
 import misc as utl
-import sim_functions as sf
+import similarity_functions as sf
 import parameters as prm
 
 PARCOURS = prm.PARCOURS

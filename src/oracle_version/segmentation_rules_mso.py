@@ -1,5 +1,5 @@
 import oracle_mso
-import alignments
+import similarity_computation
 import algo_segmentation_mso as as_mso
 from formal_diagram_mso import *
 
@@ -62,8 +62,8 @@ def rule_3_existing_object(history_next, concat_obj, actual_char, matrix):
     the function returns 0."""
     if ALIGNEMENT_rule3:
         for i in range(len(history_next)):
-            if alignments.compute_alignment(history_next[i][1], concat_obj, matrix)[0] and  \
-                    alignments.compute_alignment(
+            if similarity_computation.compute_alignment(history_next[i][1], concat_obj, matrix)[0] and  \
+                    similarity_computation.compute_alignment(
                         history_next[i][1], concat_obj + chr(actual_char + letter_diff), matrix)[0] == 0:
                 return 1
     else:
@@ -100,7 +100,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
         for j in range(nb_elements):
             sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
             # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
-        if alignments.compute_alignment(sub_suffix, concat_obj, matrix)[0] == 0:
+        if similarity_computation.compute_alignment(sub_suffix, concat_obj, matrix)[0] == 0:
             return 0, str_obj
 
     else:
@@ -126,8 +126,8 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
     # if the actual concat_obj is not the longest common string :
     if ALIGNEMENT_rule4:
-        if alignments.compute_alignment(sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
-                                       matrix)[0] == 1:
+        if similarity_computation.compute_alignment(sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
+                                                    matrix)[0] == 1:
             return 0, str_obj
     else:
         if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
@@ -142,9 +142,9 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
         # if concat_obj corresponds to an already known object, return 0.
         if ALIGNEMENT_rule4:
-            if alignments.compute_alignment(
+            if similarity_computation.compute_alignment(
                     history_next[real_value - 1][1], concat_obj, matrix)[0] == 1 or \
-                    alignments.compute_alignment(
+                    similarity_computation.compute_alignment(
                     history_next[real_value - 1][1], sub_suffix, matrix)[0] == 1:
                 return 0, str_obj
         else:
