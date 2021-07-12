@@ -8,8 +8,9 @@ import plot
 from mso import *
 import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
+import similarity_rules as sim_rules
 
-import compute_dynamics as cd
+#import compute_dynamics as cd
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -308,7 +309,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 for ind in range(len(concat_obj)):
                     link.append(node)
                 # history_next update
-                new_char = as_mso.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
+                new_char = sim_rules.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
@@ -328,7 +329,7 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
                 for ind in range(len(concat_obj)):
                     link.append(node)
                 # history_next update
-                new_char = as_mso.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
+                new_char = sim_rules.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
