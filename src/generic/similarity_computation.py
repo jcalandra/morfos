@@ -75,8 +75,11 @@ fmin = parameters.NOTE_MIN
 def compute_window_audio(oracles, level, actual_object):
     # descriptor corresponds to the descriptor that is computed from the actual_object
     descriptor = []
-    k_init = actual_object.init
-    k_end = k_init + len(actual_object.label) - 1
+    # TODO: when object structure will be modified,
+    #  k_init = actual_object.init,
+    #  k_end = k_init + len(actual_object.label) - 1
+    k_init = len(oracles[1][level][1]) + 1
+    k_end = k_init + len(actual_object) - 1
     if level > 0:
         lv = level - 1
         while lv >= 0:
