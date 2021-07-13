@@ -28,7 +28,7 @@ def main():
     tab_f_oracle = []
     mso_oracle = [level_max, tab_f_oracle]
 
-    sig_mso.algo_cog(path, mso_oracle, HOP_LENGTH, NB_VALUES, TETA, INIT)
+    sig_mso.algo_cog(path, mso_oracle)
     print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
     new_fd = []

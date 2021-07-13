@@ -36,7 +36,7 @@ def main():
     mso_oracle = [level_max, tab_f_oracle]
     matrix = data_length = None
     if ALGO_VMO:
-        matrix, data_length, data_size, distance, t = sig_mso.algo_cog(path, mso_oracle, HOP_LENGTH, NB_VALUES, TETA, INIT)
+        matrix, data_length, data_size, distance, t = sig_mso.algo_cog(path, mso_oracle)
     elif ALGO_REP:
         matrix, data_length, data_size, distance, t = sig_r.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
     elif ALGO_USUAL:

@@ -31,14 +31,20 @@ def similarity_alignment(history_next, concat_obj, matrix):
 def similarity_signal(history_next, concat_obj, matrix):
     sim_tab = []
     s_tab = []
+    window = []
+    actual_object_descriptor = similarity_computation.compute_descriptor(window)
+    s_tab.append(actual_object_descriptor)
     for i in range(len(history_next)):
         # TODO: ajouter les descripteurs correspondants au signal dans history_next_table
+        # s_tab corresponds to the descriptors from history_next_table concatenated with the descriptor extracted
+        # from actual_obj
         s_tab.append(history_next[i][2])
-        sim_digit, sim_value = similarity_computation.compute_signal_similarity(s_tab, i, concat_obj)
+        sim_digit, sim_value = similarity_computation.compute_signal_similarity(s_tab, i, i+1)
         sim_tab.append(sim_value)
         if sim_digit:
             new_char = history_next[i][0]
             return new_char, sim_tab, 1
+    s_tab.pop(0)
     return None, sim_tab, 0
 
 

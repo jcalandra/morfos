@@ -31,11 +31,15 @@ WRITE_RESULTS = prm.WRITE_RESULTS
 
 NB_SILENCE = prm.NB_SILENCE
 SUFFIX_METHOD = prm.SUFFIX_METHOD
-FMIN = prm.NOTE_MIN
+fmin = prm.NOTE_MIN
 
 SYNTHESIS = prm.SYNTHESIS
 PLOT_ORACLE = prm.PLOT_ORACLE
 
+hop_length = prm.HOP_LENGTH
+init = prm.INIT
+nb_values = prm.NB_VALUES
+teta = prm.TETA
 
 # ======================================== ORACLE INITIALISATION AND CORRECTION ========================================
 def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
@@ -192,11 +196,9 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
 
 
 # ============================================ COGNITIVE ALGORITHM =====================================================
-def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, end_mk=0):
-    """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
-    print("[INFO] Computing the cognitive algorithm of the audio extract...")
+def prep_data(audio_path):
+    """ Prepare the signal from continue to discrete values and add silence at the beginning."""
     here_time = time.time()
-
     data, rate, data_size, data_length = dc.get_data(audio_path)
     temps_data = time.time() - here_time
     if prm.verbose == 1:
@@ -205,7 +207,11 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))
+    return data, rate, data_size, data_length, nb_points
 
+
+def matrix_init(rate, data_size, data_length, nb_points):
+    """ Initialize the structure corresponding to the formal diagram of level 0."""
     # initialise matrix of each hop coordinates
     nb_sil_frames = nb_points / hop_length
     nb_hop = int(data_size / hop_length + nb_sil_frames) + 1
@@ -219,6 +225,14 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
     for i in range(nb_hop):
         new_mat[0][i] = BACKGROUND
     mtx = new_mat.copy()
+    return mtx, nb_hop, data_length
+
+
+def algo_cog(audio_path, oracles, end_mk=0):
+    """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
+    print("[INFO] Computing the cognitive algorithm of the audio extract...")
+    data, rate, data_size, data_length, nb_points = prep_data(audio_path)
+    mtx, nb_hop, data_length = matrix_init(rate, data_size, data_length, nb_points)
 
     if prm.verbose == 1:
         print("[INFO] Computing frequencies and volume...")
@@ -271,12 +285,6 @@ def algo_cog(audio_path, oracles, hop_length, nb_values, teta, init, fmin=FMIN, 
 
         j_mat = oracle_t.data[i_hop + 1]
         value = 255 - v_tab[i_hop] * 255
-
-        '''value_vsd = 255 - abs(vsd[i_hop]) * 255
-        value_vdd = 255 - abs(vdd[i_hop]) * 255
-        value_vkl = 255 - abs(vkl[i_hop]) * 255
-        value_fsd = 255 - abs(fsd[i_hop]) * 255
-        value_fdd = 255 - abs(fdd[i_hop]) * 255'''
 
         color3 = color2
         color2 = color
