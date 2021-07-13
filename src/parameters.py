@@ -7,15 +7,15 @@
 # Main informations about the signal to
 # process
 
-NAME = "Geisslerlied"
+NAME = "papipapopapipapo"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
+PATH_OBJ = PATH_OBJ_BASIS
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
-teta = 0.976
-d_threshold = 140
+teta = 0.965
+d_threshold = 160
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
@@ -130,7 +130,7 @@ EVOL_PRINT = 0
 
 CORRECTION_BIT = 1
 CORRECTION_BIT_COLOR = 0
-SEGMENTATION_BIT = 0
+SEGMENTATION_BIT = 1
 WRITE_RESULTS = 0
 
 NB_SILENCE = 1024*16
@@ -145,4 +145,4 @@ PARCOURS = 1
 INCERTITUDE = 3
 SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 
-SYNTHESIS = 1
+SYNTHESIS = 0

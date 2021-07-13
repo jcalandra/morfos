@@ -72,10 +72,10 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data
 
 
-def structure(history_next, matrix, concat_obj, oracles, level, link, data_length, level_max, end_mk):
+def structure(concat_obj, oracles, level, link, data_length, level_max, end_mk):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    new_char = similarity_rules.char_next_level_similarity(history_next, matrix, oracles[1][level][6], concat_obj)
+    new_char = similarity_rules.char_next_level_similarity(oracles, level)
     if len(oracles[1]) > level + 1:
         node = max(oracles[1][level][1]) + 1
     else:
@@ -174,7 +174,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
             # or (end_mk == 1 and len(concat_obj) != 0):
-            structure(history_next, matrix, concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
@@ -187,7 +187,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             wait = 0
             level_wait = -1
         if end_mk == 1:
-            structure(history_next, matrix, concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''

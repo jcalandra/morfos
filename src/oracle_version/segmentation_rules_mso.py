@@ -316,13 +316,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             # formal diagram update at initial level
             formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
             print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
-        if level == 0:
-            as_mso.structure(
-                oracles[1][level][2], oracles[1][level][7], to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, end_mk)
-        else:
-            as_mso.structure(
-                oracles[1][level][2], oracles[1][level - 1][6], to_struct_obj, oracles, level, oracles[1][level][1],
-                data_length, level_max, end_mk)
+        as_mso.structure(to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, end_mk)
         oracles[1][level][3] = ""
 
     # concat_obj update at initial level

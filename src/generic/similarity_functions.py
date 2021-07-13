@@ -266,9 +266,9 @@ def dissimilarity(i_hop, s_tab, v_tab):
         sdd = frequency_dynamic_dissimilarity_fft2(s_tab, i_hop, i_hop - 1)
     elif MFCC_BIT or CQT_BIT:
         sdd = frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, i_hop, i_hop - 1)
+    # vdd = volume_kullback_leibler(v_tab, i_hop, i_hop - 1)
     if v_tab[i_hop] != 0:
         seuil = D_THRESHOLD
-        # *(v_tab[i_hop] + v_tab[i_hop - 1])/2
     else:
         seuil = D_THRESHOLD
     if sdd > seuil:

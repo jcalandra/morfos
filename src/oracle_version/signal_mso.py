@@ -260,6 +260,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
     matrix = [chr(fd_mso.letter_diff + 1), [vec]]
     oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
+    oracles[2] = data
     history = []
     history.append([chr(fd_mso.letter_diff + 1), chr(fd_mso.letter_diff + 1), vec])
 
@@ -317,7 +318,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 for ind in range(len(concat_obj)):
                     link.append(node)
                 # history_next update
-                new_char = sim_rules.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
+                new_char = sim_rules.char_next_level_similarity(oracles, level)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
@@ -337,7 +338,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 for ind in range(len(concat_obj)):
                     link.append(node)
                 # history_next update
-                new_char = sim_rules.char_next_level_similarity(history_next, matrix, matrix_next, concat_obj)
+                new_char = sim_rules.char_next_level_similarity(oracles, level)
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
@@ -438,7 +439,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
-                history_next[-1] = (history_next[-1][0], new_history_next_element)
+                history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
 
         if len(concat_obj) == 2:
@@ -447,7 +448,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
-                history_next[-1] = (history_next[-1][0], new_history_next_element)
+                history_next[-1] = (history_next[-1][0], new_history_next_element,  history_next[-1][2])
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
                          + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
             # TODO: corriger la valeur dans la matrice
