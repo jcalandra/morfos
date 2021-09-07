@@ -7,15 +7,15 @@
 # Main informations about the signal to
 # process
 
-NAME = "papipapopapipapo"
+NAME = "Geisslerlied"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS
+PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
-teta = 0.965
-d_threshold = 160
+teta = 0.976
+d_threshold = 140
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
@@ -124,13 +124,13 @@ TO_SHOW_PYP = 1
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 0
+EVOL_PRINT = 1
 
 # ------------ ALGOCOG ----------------
 
 CORRECTION_BIT = 1
 CORRECTION_BIT_COLOR = 0
-SEGMENTATION_BIT = 1
+SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0
 
 NB_SILENCE = 1024*16

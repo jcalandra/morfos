@@ -45,11 +45,10 @@ def similarity_signal(oracles, level):
     actual_object_descriptor = similarity_computation.compute_descriptor(window)
     s_tab.append(actual_object_descriptor)
     for i in range(len(history_next)):
-        # TODO: ajouter les descripteurs correspondants au signal dans history_next_table
         # s_tab corresponds to the descriptors from history_next_table concatenated with the descriptor extracted
         # from actual_obj
         s_tab.append(history_next[i][2])
-        sim_digit, sim_value = similarity_computation.compute_signal_similarity(s_tab, i, i+1)
+        sim_digit, sim_value = similarity_computation.compute_signal_similarity(s_tab, i)
         sim_tab.append(sim_value)
         if sim_digit:
             new_char = history_next[i][0]

@@ -261,11 +261,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
     oracles[2] = data
-    history = []
-    history.append([chr(fd_mso.letter_diff + 1), chr(fd_mso.letter_diff + 1), vec])
 
     # ------- ALGORITHM -------
-
     prev_mat = prev2_mat = prev3_mat = 0
     actual_max = temp_max = 0
     color = color2 = (BASIC_FRAME[0], BASIC_FRAME[1], v_tab[0])
@@ -421,12 +418,13 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 digit, matrix, actual_max, temp_max, mtx = \
                     modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
 
-        for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
-            for k in range(len(mtx)):
-                mtx[k][j - 1] = BACKGROUND
-        mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
-        mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
-        mtx[oracle_t.data[i_hop + 1]][i_hop] = color
+        if i_hop > 3:
+            for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
+                for k in range(len(mtx)):
+                    mtx[k][j - 1] = BACKGROUND
+            mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
+            mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
+            mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
         if len(concat_obj) == 1:
             if len(history_next) > 0:

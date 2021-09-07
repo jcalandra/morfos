@@ -95,18 +95,18 @@ def compute_window_audio(oracles, level, actual_object):
 
 def compute_descriptor(window):
     hop_length = len(window)
-    if MFCC_BIT:
-        descriptor = librosa.feature.mfcc(y=window, sr=rate, hop_length=hop_length, n_mfcc=nb_value)[1:]
-    elif FFT_BIT:
+    #if MFCC_BIT:
+    descriptor = librosa.feature.mfcc(y=window, sr=rate, hop_length=hop_length, n_mfcc=20)[1:]
+    '''elif FFT_BIT:
         descriptor = data_computing.get_frequency_windows(window, rate, 0, hop_length)
     else:
         descriptor = np.abs(librosa.cqt(window, sr=rate, hop_length=hop_length, fmin=librosa.note_to_hz(fmin),
                      n_bins=nb_notes, bins_per_octave=NPO, window='blackmanharris', sparsity=0.01, norm=1))
-        descriptor = librosa.amplitude_to_db(descriptor, ref=np.max)
+        descriptor = librosa.amplitude_to_db(descriptor, ref=np.max)'''
     return descriptor
 
 
-def compute_signal_similarity(s_tab, compared_object_ind, actual_object_ind):
+def compute_signal_similarity(s_tab, compared_object_ind):
     # freq_static_sim_fft is ok because s_tab is in the according shape
     similarity = sim_f.frequency_static_similarity_fft(s_tab, compared_object_ind, len(s_tab) - 1)
     if similarity >= threshold:
