@@ -25,9 +25,9 @@ class FormalDiagram:
         for i in range(n):
             self.material_lines[0][i] = 1.1 / 4
 
-    def __init__(self, mso, level):
+    def __init__(self, mso, level, init_mtx):
 
-        self.material_lines = []
+        self.material_lines = [init_mtx]
         self._formal_diagram_init(mso, level)
 
     def _formal_diagram_update(self, mso, actual_char, actual_char_ind, level):
@@ -107,7 +107,8 @@ class FormalDiagramGraph:
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         string = ""
-        formal_diagram = mso.levels[level].formal_diagram
+        formal_diagram = mso.levels[level].formal_diagram.material_lines
+        print(formal_diagram)
         for i in range(len(formal_diagram)):
             string += chr(i + LETTER_DIFF + 1)
         # plt.yticks([i for i in range(len(string))], string)

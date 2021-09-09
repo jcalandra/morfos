@@ -16,7 +16,11 @@ class SimMatrix:
         self.labels = ""
         self.values = []
 
-    def update_sim_matrix(self, new_char, sim_tab):
+    def init(self, label, vec):
+        self.labels = label
+        self.values = [vec]
+
+    def update(self, new_char, sim_tab):
         self.labels += new_char
         self.values.append(sim_tab.copy())
         for i in range(len(self.values - 1)):
