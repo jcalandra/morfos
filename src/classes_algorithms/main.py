@@ -27,6 +27,7 @@ def main():
     path = PATH_OBJ + NAME + FORMAT
     start_time_full = time.time()
     mso = class_mso.MSO(NAME, path)
+    mso.get_audio(path)
     class_signal.algo_cog(path, mso)
     print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
@@ -36,9 +37,6 @@ def main():
         print("link_" + str(i) + ": ", mso.levels[i].link)
         print("history next : ", mso.levels[i].materials.history)
         print("matrix_next : ",  mso.levels[i].materials.sim_matrix)
-
-    ui.graph_algo_cogn(NAME, PATH_RESULT, mso.levels[0].formal_diagram, NB_VALUES, mso.data_length, TETA, HOP_LENGTH,
-                       INIT)
     plt.pause(3000)
 
 

@@ -8,7 +8,7 @@ class FormalDiagram:
     def _formal_diagram_init(self, mso, level):
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
         # print("formal diagram init")
-        new_mat = [1 for i in range(mso.data_length)]
+        new_mat = [1 for i in range(mso.nb_hop)]
         self.material_lines.append(new_mat)
         if level == 0:
             n = 1
@@ -25,10 +25,14 @@ class FormalDiagram:
         for i in range(n):
             self.material_lines[0][i] = 1.1 / 4
 
-    def __init__(self, mso, level, init_mtx):
+    def __init__(self):
+        self.material_lines = []
 
-        self.material_lines = [init_mtx]
-        self._formal_diagram_init(mso, level)
+    def init(self, mso, level, init_mtx):
+        if level == -1:
+            self.material_lines = [init_mtx]
+        else:
+            self._formal_diagram_init(mso, level)
 
     def _formal_diagram_update(self, mso, actual_char, actual_char_ind, level):
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
@@ -56,7 +60,7 @@ class FormalDiagram:
             n = k_end - k_init + 1
         color = (actual_char_ind % 4 + 0.1) / 4
         if actual_char > len(self.material_lines):
-            new_mat = [1 for i in range(mso.data_length)]
+            new_mat = [1 for i in range(mso.nb_hop)]
             self.material_lines.append(new_mat)
         for i in range(n):
             self.material_lines[actual_char - 1][k_init + i - 1] = color
@@ -108,14 +112,15 @@ class FormalDiagramGraph:
         plt.ylabel("material (material memory)")
         string = ""
         formal_diagram = mso.levels[level].formal_diagram.material_lines
-        print(formal_diagram)
+        print("fd", formal_diagram)
+        print(len(formal_diagram))
         for i in range(len(formal_diagram)):
             string += chr(i + LETTER_DIFF + 1)
         # plt.yticks([i for i in range(len(string))], string)
         if processing == 'symbols':
-            plt.imshow(formal_diagram, extent=[0, int(mso.data_length), len(formal_diagram), 0])
+            plt.imshow(formal_diagram, extent=[0, mso.nb_hop, len(formal_diagram), 0])
         elif processing == 'signal':
-            plt.imshow(formal_diagram, extent=[0, int(mso.data_length / SR * HOP_LENGTH), len(formal_diagram), 0])
+            plt.imshow(formal_diagram, extent=[0, mso.data_length, len(formal_diagram), 0])
         if EVOL_PRINT == 1:
             plt.pause(0.1)
             name = self.path + self.name + str(

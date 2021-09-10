@@ -2,7 +2,8 @@ import oracle_mso
 import class_materials
 import class_formal_diagrams
 import class_object
-from parameters import SR
+from numpy import concatenate
+from parameters import SR, HOP_LENGTH
 
 from data_computing import get_data
 
@@ -17,10 +18,10 @@ class MSO:
         self.levels = []
 
         self.audio = []
-        self.get_audio(audio_path)
         self.rate = SR
         self.data_length = 0
         self.data_size = 0
+        self.nb_hop = 0
 
     def set_name(self, name):
         self.name = name
@@ -31,7 +32,12 @@ class MSO:
         self.audio = data
         self.rate = rate
         self.data_size = data_size
-        return
+        self.nb_hop = int(data_size/HOP_LENGTH)
+
+    def update_audio(self, added_data, data_length, nb_hop):
+        self.data_length = data_length
+        self.audio = concatenate((added_data, self.audio))
+        self.nb_hop = nb_hop
 
     def add_level(self, level):
         self.levels.append(level)
@@ -44,7 +50,7 @@ class MSOLevel:
     def __init__(self, mso):
         self.objects = []
         self.oracle = None
-        self.formal_diagram = None
+        self.formal_diagram = class_formal_diagrams.FormalDiagram()
         self.formal_diagram_graph = class_formal_diagrams.FormalDiagramGraph(0, mso.name)
         self.link = [0]
         self.materials = class_materials.Materials()
@@ -53,9 +59,6 @@ class MSOLevel:
 
     def init_oracle(self, flag, teta, dim):
         self.oracle = oracle_mso.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
-
-    def init_formal_diagram(self, mso, level, init_mtx):
-        self.formal_diagram = class_formal_diagrams.FormalDiagram(mso, level, init_mtx)
 
     def update_objects(self, obj):
         self.objects.append(obj)
