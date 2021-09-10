@@ -4,6 +4,8 @@ import formal_diagram_mso as fd_mso
 import segmentation_rules_mso
 import similarity_rules
 
+import class_mso
+
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
 # (char_next_level_similarity) are also defined here
@@ -72,32 +74,34 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data
 
 
-def structure(concat_obj, oracles, level, link, data_length, level_max, end_mk):
+def structure(concat_obj, ms_oracle, level, link, data_length, level_max, end_mk):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    new_char = similarity_rules.char_next_level_similarity(oracles, level)
-    if len(oracles[1]) > level + 1:
-        node = max(oracles[1][level][1]) + 1
+    new_char = similarity_rules.char_next_level_similarity(ms_oracle, level)
+    if len(ms_oracle.levels) > level + 1:
+        node = max(ms_oracle.levels[level][1]) + 1
     else:
         node = 1
     for ind in range(len(concat_obj)):
         link.append(node)
 
     # send to the next f_oracle the node corresponding to concat_obj
-    fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+    fun_segmentation(ms_oracle, level + 1, level_max, end_mk)
     return 0
 
 
 # ================================= MAIN COGNITIVE ALGORITHM AT SYMBOLIC SCALE =========================================
-def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_mk=0):
+def fun_segmentation(ms_oracle, level=0, level_max=-1, end_mk=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user."""
     # end of the recursive loop
-    if level > oracles[0] and end_mk == 1:
+    str_obj = ms_oracle.symbol
+    data_length = ms_oracle.nb_hop
+    if level > ms_oracle.level_max and end_mk == 1:
         return 0
 
     #  Initialisation of the structures
-    if level > oracles[0]:
+    if level > ms_oracle.level_max:
         if prm.verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         flag = 'f'
@@ -105,28 +109,30 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
             mso.structure_init(flag, level)
 
-        oracles[0] = level
+        ms_oracle.level_max = level
         level_max = level
 
         if level == 0 and processing == 'symbols':
             vec = [1]
             matrix = [chr(fd_mso.letter_diff + ord(str_obj[0])), [vec]]
-            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
+            class_mso.MSOLevel(ms_oracle)
         elif level > 0:
-            matrix = oracles[1][level - 1][6]
-            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
-
+            matrix = ms_oracle.levels[level - 1][6]
+            class_mso.MSOLevel(ms_oracle)
     else:
-        f_oracle = oracles[1][level][0]
-        link = oracles[1][level][1]
-        history_next = oracles[1][level][2]
-        concat_obj = oracles[1][level][3]
-        formal_diagram = oracles[1][level][4]
-        formal_diagram_graph = oracles[1][level][5]
-        matrix_next = oracles[1][level][6]
+        f_oracle = ms_oracle.levels[level].oracle
+        link = ms_oracle.levels[level].link
+        history_next = ms_oracle.levels[level].materials.history_next
+        matrix_next = ms_oracle.levels[level].materials.sim_matrix
+        concat_obj = ms_oracle.levels[level].concat_obj
+        formal_diagram = ms_oracle.levels[level].formal_diagram
+        formal_diagram_graph = ms_oracle.levels[level].formal_diagram_graph
+
         if level > 0:
-            matrix = oracles[1][level - 1][6]
+            matrix = ms_oracle.levels[level - 1].materials.sim_matrix
         else:
+            # TODO: @jcalandra 10/09/2021 - matrix storage at level 0
+            #  réfléchir au stockage de la matrice de niveau 0
             matrix = oracles[1][level][7]
 
     # Every new character is analysed.

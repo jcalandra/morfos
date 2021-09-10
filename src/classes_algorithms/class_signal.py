@@ -1,16 +1,15 @@
 import data_computing as dc
 import similarity_functions as sf
+import similarity_rules as sim_rules
 import parameters as prm
 import numpy as np
 import cv2
 import time
 import plot
-import formal_diagram_mso as fd_mso
-import algo_segmentation_mso as as_mso
-import similarity_rules as sim_rules
 
 import class_mso
 import class_s_mso
+import class_cog_algo
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -40,6 +39,7 @@ hop_length = prm.HOP_LENGTH
 init = prm.INIT
 nb_values = prm.NB_VALUES
 teta = prm.TETA
+letter_diff = prm.LETTER_DIFF
 
 
 # ======================================== ORACLE INITIALISATION AND CORRECTION ========================================
@@ -239,9 +239,9 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
     level = 0
     flag = 'a'
     volume_data, suffix_method, input_data, dim = dims_oracle(nb_values, s_tab, v_tab)
-    matrix = [chr(fd_mso.letter_diff + 1), [[1]]]
+    matrix = [chr(letter_diff + 1), [[1]]]
     class_mso.MSOLevel(ms_oracle)
-    ms_oracle.levels[level].materials.sim_matrix.init(chr(fd_mso.letter_diff + 1), [1])
+    ms_oracle.levels[level].materials.sim_matrix.init(chr(letter_diff + 1), [1])
     ms_oracle.levels[level].init_oracle(flag, teta, dim)
 
     # formal diagram of level 0
@@ -291,14 +291,14 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        '''if diff and len(concat_obj) > 3:
+        if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
 
                 if i_hop == nb_hop - 1:
                     end_mk = 1
-                    concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
+                    concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(ms_oracle.levels[level]) > level + 1:
                     # node = len(oracles[1][level + 1][0].data)
@@ -312,14 +312,14 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
-                as_mso.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                class_cog_algo.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
         else:
             diff_mk = 0
             if i_hop == nb_hop - 1:
                 end_mk = 1
-                concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
+                concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
                 # link update
                 if len(ms_oracle.levels) > level + 1:
                     node = max(ms_oracle.level[level].link) + 1
@@ -332,9 +332,9 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
-                as_mso.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                class_cog_algo.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")'''
+                    print("[INFO] Process in level 0...")
 
         if j_mat > actual_max:
 
@@ -382,7 +382,7 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
             temp_max = j_mat
             vec = oracle_t.vec[len(matrix[0]) - 1].copy()
             vec.append(1)
-            matrix[0] += (chr(len(matrix[0]) + fd_mso.letter_diff + 1))
+            matrix[0] += (chr(len(matrix[0]) + letter_diff + 1))
             matrix[1].append(vec)
             print("matrix1", matrix[1])
             for i in range(len(matrix[1]) - 1):
@@ -430,32 +430,32 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
         if len(concat_obj) == 1:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-2]) - fd_mso.letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-2]) - letter_diff > len(matrix[0]):
                     tmp_char = history_next[-1][1][-1]
                     new_history_next_element = new_history_next_element[:-2]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                     new_history_next_element += tmp_char
-                if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                 history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
-            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+            concat_obj = chr(letter_diff + oracle_t.data[i_hop] + 1)
 
         if len(concat_obj) == 2:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
+                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                 history_next[-1] = (history_next[-1][0], new_history_next_element,  history_next[-1][2])
-            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
-                         + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+            concat_obj = chr(letter_diff + oracle_t.data[i_hop - 1] + 1) \
+                         + chr(letter_diff + oracle_t.data[i_hop] + 1)
             # TODO: corriger la valeur dans la matrice
 
         if len(concat_obj) >= 3:
-            concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
-                         + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
-        concat_obj = concat_obj + chr(fd_mso.letter_diff + oracle_t.data[i_hop + 1] + 1)
+            concat_obj = concat_obj[:len(concat_obj) - 2] + chr(letter_diff + oracle_t.data[i_hop - 1] + 1) \
+                         + chr(letter_diff + oracle_t.data[i_hop] + 1)
+        concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
 
         if temp_max > actual_max:
             actual_max = temp_max

@@ -51,14 +51,15 @@ class ConcatObj:
         self.concat_signal = []
         self.descriptors = Descriptors()
         self.concat_labels = ""
+        self.size = 0
 
-    def update_objects(self, obj):
+    def _update_objects(self, obj):
         self.objects.append(obj)
 
-    def update_signal(self, signal):
+    def _update_signal(self, signal):
         self.concat_signal += signal
 
-    def update_descriptors(self, new_descriptors):
+    def _update_descriptors(self, new_descriptors):
         for i in len(self.descriptors.concat_descriptors):
             self.descriptors.concat_descriptors[i].append(new_descriptors[i])
 
@@ -70,14 +71,15 @@ class ConcatObj:
                              window='blackmanharris', sparsity=0.01, norm=1))
         self.descriptors.mean_descriptors = amplitude_to_db(cqt_values, ref=max)
 
-    def update_labels(self, label):
+    def _update_labels(self, label):
         self.concat_labels += label
 
     def update(self, obj):
-        self.update_objects(obj)
-        self.update_signal(obj.signal)
-        self.update_descriptors(obj.descriptors)
-        self.update_labels(obj.label)
+        self._update_objects(obj)
+        self._update_signal(obj.signal)
+        self._update_descriptors(obj.descriptors)
+        self._update_labels(obj.label)
+        self.size += 1
 
 
 # TODO: @jcalandra 09/09/2021 trajectoire moyenne

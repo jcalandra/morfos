@@ -11,13 +11,14 @@ from data_computing import get_data
 class MSO:
     """ The Multi-Scale Oracle"""
 
-    def __init__(self, name, audio_path):
+    def __init__(self, name):
         self.name = ""
         self.set_name(name)
         self.level_max = -1
         self.levels = []
 
         self.audio = []
+        self.symbol = ""
         self.rate = SR
         self.data_length = 0
         self.data_size = 0
@@ -37,6 +38,10 @@ class MSO:
     def update_audio(self, added_data, data_length, nb_hop):
         self.data_length = data_length
         self.audio = concatenate((added_data, self.audio))
+        self.nb_hop = nb_hop
+
+    def get_symbol(self, symbol, nb_hop):
+        self.symbol = symbol
         self.nb_hop = nb_hop
 
     def add_level(self, level):
