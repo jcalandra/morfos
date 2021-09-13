@@ -28,7 +28,7 @@ class FormalDiagram:
     def __init__(self):
         self.material_lines = []
 
-    def init(self, mso, level, init_mtx):
+    def init(self, mso, level, init_mtx=None):
         if level == -1:
             self.material_lines = [init_mtx]
         else:
@@ -72,8 +72,7 @@ class FormalDiagram:
 
 class FormalDiagramGraph:
 
-    @staticmethod
-    def _print_formal_diagram_init(level):
+    def _print_formal_diagram_init(self, level):
         """ Print the formal diagram at level 'level' at its initialization."""
         # print("PRINT formal diagram init")
         fig = plt.figure(figsize=(12, 8))
@@ -81,7 +80,7 @@ class FormalDiagramGraph:
         plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.gray()
-        return fig.number
+        self.fig_number = fig.number
 
     def __init__(self, level, name, path="cognitive_algorithm_and_its_musical_applications/results/"):
         self.name = ""

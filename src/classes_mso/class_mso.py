@@ -24,6 +24,8 @@ class MSO:
         self.data_size = 0
         self.nb_hop = 0
 
+        self.matrix = []
+
     def set_name(self, name):
         self.name = name
 
@@ -44,15 +46,18 @@ class MSO:
         self.symbol = symbol
         self.nb_hop = nb_hop
 
-    def add_level(self, level):
+    def add_level(self, level, new_char):
         self.levels.append(level)
+        level.string = new_char
+        level.actual_char = new_char
+        level.data_length = 1
         self.level_max += 1
 
 
 class MSOLevel:
     """ A specific level of the Multi-Scale Oracle """
 
-    def __init__(self, mso):
+    def __init__(self, mso, new_char):
         self.objects = []
         self.oracle = None
         self.formal_diagram = class_formal_diagrams.FormalDiagram()
@@ -60,9 +65,17 @@ class MSOLevel:
         self.link = [0]
         self.materials = class_materials.Materials()
         self.concat_obj = class_object.ConcatObj()
-        mso.add_level(self)
 
-    def init_oracle(self, flag, teta, dim):
+        self.string = ""
+        self.actual_char = ""
+        self.actual_char_ind = 0
+        self.iterator = 0
+        self.data_length = 0
+        self.shift = 0
+
+        mso.add_level(self, new_char)
+
+    def init_oracle(self, flag, teta=0, dim=1):
         self.oracle = oracle_mso.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
 
     def update_objects(self, obj):

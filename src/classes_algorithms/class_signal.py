@@ -190,8 +190,8 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
         actual_max = actual_max - 1
         temp_max = temp_max - 1
         mtx = np.delete(mtx, - 1, 0)
-        return 1, matrix, actual_max, temp_max, mtx
-    return 0, matrix, actual_max, temp_max, mtx
+        return 1, actual_max, temp_max, mtx
+    return 0, actual_max, temp_max, mtx
 
 
 # ============================================ COGNITIVE ALGORITHM =====================================================
@@ -239,7 +239,7 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
     level = 0
     flag = 'a'
     volume_data, suffix_method, input_data, dim = dims_oracle(nb_values, s_tab, v_tab)
-    matrix = [chr(letter_diff + 1), [[1]]]
+    ms_oracle.matrix = [chr(letter_diff + 1), [[1]]]
     class_mso.MSOLevel(ms_oracle)
     ms_oracle.levels[level].materials.sim_matrix.init(chr(letter_diff + 1), [1])
     ms_oracle.levels[level].init_oracle(flag, teta, dim)
@@ -290,7 +290,7 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
             oracle_t = ms_oracle.levels[level].oracle
             j_mat = prev_mat
 
-        diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        '''diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
@@ -312,7 +312,7 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
-                class_cog_algo.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
         else:
@@ -332,9 +332,9 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 # concat_obj update
                 concat_obj = ""
                 diff_mk = 1
-                class_cog_algo.fun_segmentation(ms_oracle, new_char, nb_hop, level=level + 1, end_mk=end_mk)
+                class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")
+                    print("[INFO] Process in level 0...")'''
 
         if j_mat > actual_max:
 
@@ -351,8 +351,8 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 else:
                     modify_oracle(ms_oracle.levels[level].oracle, prev2_mat, prev_mat, i_hop - 1, input_data)
                     oracle_t = ms_oracle.levels[level].oracle
-                    digit, matrix, actual_max, temp_max, mtx = \
-                        modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                    digit, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
                     if digit == 1:
                         j_mat -= 1
 
@@ -368,25 +368,24 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 else:
                     modify2_oracle(ms_oracle.levels[level].oracle, prev3_mat, prev2_mat, prev_mat, i_hop - 1, input_data)
                     oracle_t = ms_oracle.levels[level].oracle
-                    digit, matrix, actual_max, temp_max, mtx = \
-                        modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                    digit, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
                     if digit == 1:
                         j_mat -= 1
-                    digit, matrix, actual_max, temp_max, mtx = \
-                        modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
+                    digit, actual_max, temp_max, mtx = \
+                        modify_matrix(mtx, prev2_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 2)
                     if digit == 1:
                         j_mat -= 1
                     seg_error = seg_error + 2
 
         if j_mat > actual_max:
             temp_max = j_mat
-            vec = oracle_t.vec[len(matrix[0]) - 1].copy()
+            vec = oracle_t.vec[len(ms_oracle.matrix[0]) - 1].copy()
             vec.append(1)
-            matrix[0] += (chr(len(matrix[0]) + letter_diff + 1))
-            matrix[1].append(vec)
-            print("matrix1", matrix[1])
-            for i in range(len(matrix[1]) - 1):
-                matrix[1][i].append(matrix[1][len(matrix[1]) - 1][i])
+            ms_oracle.matrix[0] += (chr(len(ms_oracle.matrix[0]) + letter_diff + 1))
+            ms_oracle.matrix[1].append(vec)
+            for i in range(len(ms_oracle.matrix[1]) - 1):
+                ms_oracle.matrix[1][i].append(ms_oracle.matrix[1][len(ms_oracle.matrix[1]) - 1][i])
             new_mat_l = np.ones((1, nb_hop, 3), np.uint8)
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
@@ -403,8 +402,8 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 # By default the best element is the previous one because FO cannot point on future objects
                 modify_oracle(ms_oracle.levels[level].oracle, good_mat, prev_mat, i_hop - 1, input_data)
                 oracle_t = ms_oracle.levels[level].oracle
-                digit, matrix, actual_max, temp_max, mtx = \
-                    modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
+                digit, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
 
             if i_hop > 2 and prev_mat == prev2_mat and prev_mat != prev3_mat and j_mat != prev_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
@@ -413,10 +412,10 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
                 good_mat = sf.true_mat(i_hop - 1, i_hop, i_hop - 3, j_mat, prev3_mat, s_tab)
                 modify2_oracle(ms_oracle.levels[level].oracle, good_mat, prev2_mat, prev_mat, i_hop - 1, input_data)
                 oracle_t = ms_oracle.levels[level].oracle
-                digit, matrix, actual_max, temp_max, mtx = \
-                    modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, i_hop - 1)
-                digit, matrix, actual_max, temp_max, mtx = \
-                    modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
+                digit, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
+                digit, actual_max, temp_max, mtx = \
+                    modify_matrix(mtx, prev2_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 2)
 
         if i_hop > 3:
             for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
@@ -430,12 +429,12 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
         if len(concat_obj) == 1:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-2]) - letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-2]) - letter_diff > len(ms_oracle.matrix[0]):
                     tmp_char = history_next[-1][1][-1]
                     new_history_next_element = new_history_next_element[:-2]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                     new_history_next_element += tmp_char
-                if ord(history_next[-1][1][-1]) - letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                 history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
@@ -444,7 +443,7 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
         if len(concat_obj) == 2:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-1]) - letter_diff > len(matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                 history_next[-1] = (history_next[-1][0], new_history_next_element,  history_next[-1][2])
