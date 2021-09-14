@@ -1,5 +1,5 @@
 from parameters import LETTER_DIFF, processing, verbose
-import segmentation_rules_mso
+import class_segmentation_rules
 import class_similarity_rules
 
 import class_mso
@@ -18,33 +18,27 @@ wait = 0
 def rules_parametrization(matrix, ms_oracle, level, i, k, str_obj, input_data, end_mk):
     """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
-    if segmentation_rules_mso.RULE_1:
-        test_1 = segmentation_rules_mso.rule_1_similarity(ms_oracle.levels[level].oracle,
-                                                          ms_oracle.levels[level].actual_char_ind)
+    if class_segmentation_rules.RULE_1:
+        test_1 = class_segmentation_rules.rule_1_similarity(ms_oracle, level)
     else:
         test_1 = 1
-    if segmentation_rules_mso.RULE_2:
-        test_2 = segmentation_rules_mso.rule_2_not_validated_hypothesis(
-            ms_oracle.levels[level].oracle, ms_oracle.levels[level].link, ms_oracle.levels[level].actual_char,
-            ms_oracle.levels[level].actual_char_ind)
+    if class_segmentation_rules.RULE_2:
+        test_2 = class_segmentation_rules.rule_2_not_validated_hypothesis(ms_oracle, level)
     else:
         test_2 = 1
-    if not segmentation_rules_mso.RULE_1 and not segmentation_rules_mso.RULE_2:
+    if not class_segmentation_rules.RULE_1 and not class_segmentation_rules.RULE_2:
         test_1 = 0
         test_2 = 0
-    if segmentation_rules_mso.RULE_4:
-        test_4, potential_obj = segmentation_rules_mso.rule_4_recomputed_object(
-            ms_oracle, matrix, level, ms_oracle.levels[level].actual_char_ind, str_obj, k, ms_oracle.level_max, end_mk)
+    if class_segmentation_rules.RULE_4:
+        test_4, potential_obj = class_segmentation_rules.rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk)
     else:
         test_4 = 0
-    if segmentation_rules_mso.RULE_3 and test_4 == 0:
-        test_3 = segmentation_rules_mso.rule_3_existing_object(
-            ms_oracle.levels[level].materials.history, ms_oracle.levels[level].concat_obj.concat_labels,
-            ms_oracle.levels[level].actual_char, matrix)
+    if class_segmentation_rules.RULE_3 and test_4 == 0:
+        test_3 = class_segmentation_rules.rule_3_existing_object(ms_oracle, level)
     else:
         test_3 = 0
-    if segmentation_rules_mso.RULE_5:
-        test_5 = segmentation_rules_mso.rule_5_regathering(ms_oracle.levels[level].concat_obj.concat_labels)
+    if class_segmentation_rules.RULE_5:
+        test_5 = class_segmentation_rules.rule_5_regathering(ms_oracle, level)
     else:
         test_5 = 1
 

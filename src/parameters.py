@@ -24,10 +24,10 @@ verbose = 0
 # parameters
 
 RULE_1 = 1
-RULE_2 = 0
-RULE_3 = 0
-RULE_4 = 0
-RULE_5 = 0
+RULE_2 = 1
+RULE_3 = 1
+RULE_4 = 1
+RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0
 ALIGNEMENT_rule4 = 0
