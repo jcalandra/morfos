@@ -1,12 +1,11 @@
 from parameters import LETTER_DIFF, processing, verbose
 import segmentation_rules_mso
-import similarity_rules
+import class_similarity_rules
 
 import class_mso
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
-# (char_next_level_similarity) are also defined here
 wait = 0
 
 
@@ -40,12 +39,12 @@ def rules_parametrization(matrix, ms_oracle, level, i, k, str_obj, input_data, e
         test_4 = 0
     if segmentation_rules_mso.RULE_3 and test_4 == 0:
         test_3 = segmentation_rules_mso.rule_3_existing_object(
-            ms_oracle.levels[level].materials.history, ms_oracle.levels[level].concat_obj.labels,
+            ms_oracle.levels[level].materials.history, ms_oracle.levels[level].concat_obj.concat_labels,
             ms_oracle.levels[level].actual_char, matrix)
     else:
         test_3 = 0
     if segmentation_rules_mso.RULE_5:
-        test_5 = segmentation_rules_mso.rule_5_regathering(ms_oracle.levels[level].concat_obj.labels)
+        test_5 = segmentation_rules_mso.rule_5_regathering(ms_oracle.levels[level].concat_obj.concat_labels)
     else:
         test_5 = 1
 
@@ -63,19 +62,21 @@ def rules_parametrization(matrix, ms_oracle, level, i, k, str_obj, input_data, e
             ms_oracle.levels[level].actual_char, ms_oracle.levels[level].actual_char_ind, ms_oracle, level)
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
-    return test_1, test_2, test_3, test_4, test_5, str_obj, i, k, input_data
+    return test_1, test_2, test_3, test_4, test_5, str_obj, ms_oracle.levels[level].iterator, ms_oracle.levels[level].shift, input_data
 
 
 def structure(ms_oracle, level, end_mk):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    new_char = similarity_rules.char_next_level_similarity(ms_oracle, level)
+    new_char = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
     if len(ms_oracle.levels) > level + 1:
-        node = max(ms_oracle.levels[level][1]) + 1
+        node = max(ms_oracle.levels[level].link) + 1
     else:
         node = 1
-    for ind in range(len(ms_oracle.levels[level].concat_obj.labels)):
+    print("concat label", ms_oracle.levels[level].concat_obj.concat_labels)
+    for ind in range(len(ms_oracle.levels[level].concat_obj.concat_labels)):
         ms_oracle.levels[level].link.append(node)
+    print("link", ms_oracle.levels[level].link)
 
     # send to the next f_oracle the node corresponding to concat_obj
     fun_segmentation(ms_oracle, new_char, level + 1, end_mk)
@@ -87,9 +88,6 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user."""
     # end of the recursive loop
-    # str_obj = ms_oracle.levels[level].char
-    print("level", level)
-    print("ms_oracle.level_max", ms_oracle.level_max)
     if level > ms_oracle.level_max and end_mk == 1:
         return 0
 
@@ -97,14 +95,14 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
     if level > ms_oracle.level_max:
         if verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
-        print(str_obj)
-        class_mso.MSOLevel(ms_oracle, str_obj)
+        class_mso.MSOLevel(ms_oracle)
         ms_oracle.levels[level].init_oracle('f')
         matrix = ms_oracle.matrix
 
         if level == 0 and processing == 'symbols':
             vec = [1]
-            ms_oracle.matrix = [chr(LETTER_DIFF + ord(str_obj[0])), [vec]]
+            ms_oracle.matrix.labels = chr(LETTER_DIFF + ord(str_obj[0]))
+            ms_oracle.matrix.values = [vec]
         elif level > 0:
             matrix = ms_oracle.levels[level - 1].materials.sim_matrix
 
@@ -122,35 +120,38 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
     global wait
     ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
     k = ms_oracle.levels[level].shift
-    i = 0
+    ms_oracle.levels[level].iterator = 0
     if verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
-    while i < len(str_obj):
-        ms_oracle.levels[level].oracle.add_state(input_data[i])
-        actual_char = ms_oracle.levels[level].oracle.data[k + i + 1]  # i_th parsed character
-        actual_char_ind = k + i + 1
+    while ms_oracle.levels[level].iterator < len(str_obj):
+        i = ms_oracle.levels[level].iterator
+        print("i", i)
+        ms_oracle.levels[level].update_oracle(input_data[i])
+        print("actual_char ind", ms_oracle.levels[level].actual_char_ind)
 
         if level == 0 and processing == 'symbols' and \
-                actual_char > max([ord(ms_oracle.matrix[0][ind]) for ind in range(len(ms_oracle.matrix[0]))]):
-            vec = [0 for ind_vec in range(len(ms_oracle.matrix[0]))]
+                ms_oracle.levels[level].actual_char > \
+                max([ord(ms_oracle.matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.labels))]):
+            vec = [0 for ind_vec in range(len(ms_oracle.matrix.values))]
             vec.append(1)
-            ms_oracle.matrix[0] += chr(actual_char + LETTER_DIFF)
-            ms_oracle.matrix[1].append(vec)
-            for ind_mat in range(len(ms_oracle.matrix[1]) - 1):
-                ms_oracle.matrix[1][ind_mat].append(ms_oracle.matrix[1][len(ms_oracle.matrix[1]) - 1][ind_mat])
+            ms_oracle.matrix.labels += chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
+            ms_oracle.matrix.values.append(vec)
+            for ind_mat in range(len(ms_oracle.matrix.values) - 1):
+                ms_oracle.matrix.values[ind_mat].append(ms_oracle.matrix.values[len(ms_oracle.matrix.values) - 1][ind_mat])
 
         # formal diagram is updated with the new char
-        if actual_char_ind == 1:
+        if ms_oracle.levels[level].actual_char_ind == 1:
+            print("init level", level)
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
         else:
-            ms_oracle.levels[level].formal_diagram.update(actual_char, actual_char_ind, ms_oracle, level)
+            ms_oracle.levels[level].formal_diagram.update(
+                ms_oracle.levels[level].actual_char, ms_oracle.levels[level].actual_char_ind, ms_oracle, level)
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
         # First is the parametrisation of the rules according to the external settings.
-        test_1, test_2, test_3, test_4, test_5, i, k, str_obj, input_data = rules_parametrization(
+        test_1, test_2, test_3, test_4, test_5, str_obj, i, k, input_data = rules_parametrization(
                 matrix, ms_oracle, level, i, k, str_obj, input_data, end_mk)
-
         if level > 0 and end_mk == 1 and i < len(str_obj) - 1:
             end_mk = 0
             wait = 1
@@ -162,9 +163,9 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
             structure(ms_oracle, level, end_mk)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-            ms_oracle.levels[level].concat_obj_obj.labels = ''
-        ms_oracle.levels[level].concat_obj_obj.labels = \
-            ms_oracle.levels[level].concat_obj_obj.labels + chr(actual_char + LETTER_DIFF)
+            ms_oracle.levels[level].concat_obj.concat_labels = ''
+        ms_oracle.levels[level].concat_obj.concat_labels = \
+            ms_oracle.levels[level].concat_obj.concat_labels + chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
 
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
@@ -175,8 +176,8 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
             structure(ms_oracle, level, end_mk)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-            ms_oracle.levels[level].concat_obj_obj.labels = ''
-        i += 1
+            ms_oracle.levels[level].concat_obj.labels = ''
+        ms_oracle.levels[level].iterator += 1
         if verbose == 1:
             print("state number ", i, " in level ", level)
 

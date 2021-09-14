@@ -3,7 +3,7 @@ import class_materials
 import class_formal_diagrams
 import class_object
 from numpy import concatenate
-from parameters import SR, HOP_LENGTH
+from parameters import SR, HOP_LENGTH, LETTER_DIFF
 
 from data_computing import get_data
 
@@ -24,7 +24,7 @@ class MSO:
         self.data_size = 0
         self.nb_hop = 0
 
-        self.matrix = []
+        self.matrix = class_materials.SimMatrix()
 
     def set_name(self, name):
         self.name = name
@@ -46,18 +46,15 @@ class MSO:
         self.symbol = symbol
         self.nb_hop = nb_hop
 
-    def add_level(self, level, new_char):
+    def add_level(self, level):
         self.levels.append(level)
-        level.string = new_char
-        level.actual_char = new_char
-        level.data_length = 1
         self.level_max += 1
 
 
 class MSOLevel:
     """ A specific level of the Multi-Scale Oracle """
 
-    def __init__(self, mso, new_char):
+    def __init__(self, mso):
         self.objects = []
         self.oracle = None
         self.formal_diagram = class_formal_diagrams.FormalDiagram()
@@ -73,7 +70,7 @@ class MSOLevel:
         self.data_length = 0
         self.shift = 0
 
-        mso.add_level(self, new_char)
+        mso.add_level(self)
 
     def init_oracle(self, flag, teta=0, dim=1):
         self.oracle = oracle_mso.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
@@ -83,6 +80,10 @@ class MSOLevel:
 
     def update_oracle(self, data):
         self.oracle.add_state(data)
+        self.actual_char = self.oracle.data[self.shift + self.iterator + 1]
+        self.actual_char_ind = self.shift + self.iterator + 1
+        self.string += str(self.actual_char + LETTER_DIFF)
+        self.data_length += 1
 
     def update_link(self, node):
         self.objects.append(node)

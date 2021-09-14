@@ -40,7 +40,7 @@ def example():
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
     Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    main(Debussy4)
+    main(Mozart)
 
 example()
 
