@@ -4,9 +4,9 @@ letter_diff = LETTER_DIFF
 
 
 # ================================================ SIMILARITY ==========================================================
-def similarity_strict(oracles, level):
-    history_next = oracles[1][level][2]
-    concat_obj = oracles[1][level][3]
+def similarity_strict(ms_oracle, level):
+    history_next = ms_oracle.levels[level].materials.history
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
     sim_tab = [0 for ind in range(len(history_next))]
     for i in range(len(history_next)):
         if len(concat_obj) == len(history_next[i][1]):
@@ -35,12 +35,12 @@ def similarity_alignment(ms_oracle, level):
     return None, None, sim_tab, 0
 
 
-def similarity_signal(oracles, level):
+def similarity_signal(ms_oracle, level):
     sim_tab = []
     s_tab = []
-    history_next = oracles[1][level][2]
-    concat_obj = oracles[1][level][3]
-    window = class_similarity_computation.compute_window_audio(oracles, level, concat_obj)
+    history_next = ms_oracle.levels[level].materials.history
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    window = class_similarity_computation.compute_window_audio(ms_oracle, level, concat_obj)
     actual_object_descriptor = class_similarity_computation.compute_descriptor(window)
     s_tab.append(actual_object_descriptor)
     for i in range(len(history_next)):

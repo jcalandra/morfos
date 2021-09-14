@@ -4,7 +4,6 @@ from Bio.Align import substitution_matrices
 import similarity_functions as sim_f
 import parameters
 import librosa
-import data_computing
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
 
@@ -72,24 +71,24 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 
-def compute_window_audio(oracles, level, actual_object):
+def compute_window_audio(ms_oracle, level, actual_object):
     # descriptor corresponds to the descriptor that is computed from the actual_object
     descriptor = []
     # TODO: when object structure will be modified,
     #  k_init = actual_object.init,
     #  k_end = k_init + len(actual_object.label) - 1
-    k_init = len(oracles[1][level][1]) + 1
+    k_init = len(ms_oracle.levels[level].link) + 1
     k_end = k_init + len(actual_object) - 1
     if level > 0:
         lv = level - 1
         while lv >= 0:
-            link = oracles[1][lv][1]
+            link = ms_oracle.levels[lv].link
             link_r = link.copy()
             link_r.reverse()
             k_init = link.index(k_init)
             k_end = len(link) - link_r.index(k_end) - 1
 
-    window = oracles[2][k_init:k_end + 1]
+    window = ms_oracle.audio[k_init:k_end + 1]
     return window
 
 

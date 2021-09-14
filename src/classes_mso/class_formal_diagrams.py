@@ -34,10 +34,12 @@ class FormalDiagram:
         else:
             self._formal_diagram_init(mso, level)
 
-    def _formal_diagram_update(self, mso, actual_char, actual_char_ind, level):
+    def _formal_diagram_update(self, mso, level):
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
         # print("formal diagram update")
+        actual_char = mso.levels[level].actual_char
+        actual_char_ind = mso.levels[level].actual_char_ind
         k_init = actual_char_ind
         if processing == 'symbols':
             actual_char = actual_char - mso.levels[level].oracle.data[1] + 1
@@ -71,8 +73,8 @@ class FormalDiagram:
             self.material_lines[actual_char - 1][k_init + i - 1] = color
         return 0
 
-    def update(self, actual_char, actual_char_ind, mso, level):
-        self._formal_diagram_update(mso, actual_char, actual_char_ind, level)
+    def update(self, mso, level):
+        self._formal_diagram_update(mso, level)
 
 
 class FormalDiagramGraph:

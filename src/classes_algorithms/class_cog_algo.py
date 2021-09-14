@@ -58,8 +58,7 @@ def rules_parametrization(matrix, ms_oracle, level, i, k, str_obj, input_data, e
         ms_oracle.levels[level].oracle.add_state(input_data[i])
         ms_oracle.levels[level].actual_char = ms_oracle.levels[level].oracle.data[ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator + 1]
         ms_oracle.levels[level].data_length = len(ms_oracle.levels[level].formal_diagram.material_lines[0])
-        ms_oracle.levels[level].formal_diagram.update(
-            ms_oracle.levels[level].actual_char, ms_oracle.levels[level].actual_char_ind, ms_oracle, level)
+        ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
     return test_1, test_2, test_3, test_4, test_5, str_obj, ms_oracle.levels[level].iterator, ms_oracle.levels[level].shift, input_data
@@ -144,8 +143,7 @@ def fun_segmentation(ms_oracle, str_obj, level=0, end_mk=0):
             print("init level", level)
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
         else:
-            ms_oracle.levels[level].formal_diagram.update(
-                ms_oracle.levels[level].actual_char, ms_oracle.levels[level].actual_char_ind, ms_oracle, level)
+            ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
