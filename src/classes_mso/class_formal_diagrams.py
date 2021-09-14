@@ -45,18 +45,13 @@ class FormalDiagram:
             actual_char = actual_char - mso.levels[level].oracle.data[1] + 1
         if level == 0:
             n = 1
-            print("level fd", level)
-            print("link fd", mso.levels[level].link)
         else:
             k_end = k_init
             lv = level - 1
-            print("level fd", lv)
-            print("link fd", mso.levels[lv].link)
             while lv >= 0:
                 link = mso.levels[lv].link
                 link_r = link.copy()
                 link_r.reverse()
-                print("k_init", k_init)
                 k_init = link.index(k_init)
                 true_len = len(link) - link_r.index(len(mso.levels[lv + 1].oracle.data) - 1)
                 sub_link_r = link.copy()

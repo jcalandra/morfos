@@ -90,7 +90,6 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
     # allocation of structures of actual level
-    level_max = ms_oracle.level_max
     actual_char_ind = ms_oracle.levels[level].actual_char_ind
     f_oracle = ms_oracle.levels[level].oracle
     link = ms_oracle.levels[level].link
@@ -178,15 +177,14 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    data_length = len(ms_oracle.levels[level].formal_diagram.material_lines)
+    data_length = len(ms_oracle.levels[level].formal_diagram.material_lines[0])
     to_struct = 0
     to_struct_obj = ''
 
-    frame_level = level
     level_up = level
     level_tmp = -1
 
-    ind = f_oracle.sfx[actual_char_ind - nb_elements] - 1
+    ind = ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] - 1
     ind_init = ind
     new_ind_p1 = -1
     ind_fo_init = 1
@@ -195,15 +193,15 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
     # compute the string that has to be fully rebuilt at actual level before going back to lower levels
     if actual_char_ind > len(str_obj) + k:
         str_obj = ""
-        for i in range(ind + 1, len(f_oracle.data)):
-            str_obj += chr(f_oracle.data[i] + letter_diff)
+        for i in range(ind + 1, len(ms_oracle.levels[level].oracle.data)):
+            str_obj += chr(ms_oracle.levels[level].oracle.data[i] + letter_diff)
     else:
         if ind >= k:
             str_obj = str_obj[ind - k:]
         else:
             str_2apn = ""
             for i in range(ind + 1, k + 1):
-                str_2apn += chr(f_oracle.data[i] + letter_diff)
+                str_2apn += chr(ms_oracle.levels[level].oracle.data[i] + letter_diff)
             str_obj = str_2apn + str_obj
 
     # each level level_up superior or equal to actual level is recomputed
@@ -332,7 +330,10 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
     if to_struct:
         for j in range(ind_to_struct):
             char_ind = ind_fo_init + j
-            new_state = f_oracle.data[char_ind]
+            new_state = ms_oracle.levels[level].oracle.data[char_ind]
+            ms_oracle.levels[level].actual_char = new_state
+            ms_oracle.levels[level].actual_char_ind = char_ind
+
             ms_oracle.levels[level].oracle.add_state(new_state)
             ms_oracle.levels[level].concat_obj.concat_labels += to_struct_obj[j]
             # formal diagram update at initial level
@@ -345,6 +346,9 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
     for j in range(nb_elements):
         char_ind = ind_init + j + 1
         new_state = f_oracle.data[char_ind]
+        ms_oracle.levels[level].actual_char = new_state
+        ms_oracle.levels[level].actual_char_ind = char_ind
+
         element = chr(new_state + letter_diff)
         ms_oracle.levels[level].concat_obj.concat_labels += element
         ms_oracle.levels[level].oracle.add_state(new_state)
