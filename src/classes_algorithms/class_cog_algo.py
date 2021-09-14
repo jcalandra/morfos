@@ -43,19 +43,23 @@ def rules_parametrization(matrix, ms_oracle, level, i, k, str_obj, input_data, e
         test_5 = 1
 
     if test_4:
+        print("po", potential_obj)
+        print("iterator", ms_oracle.levels[level].iterator)
         str_obj = potential_obj
-        input_data = [ord(potential_obj[ms_oracle.levels[level].iterator]) - LETTER_DIFF for i in range(len(potential_obj))]
+        input_data = [ord(potential_obj[i]) - LETTER_DIFF for i in range(len(potential_obj))]
 
-        ms_oracle.levels[level].iterator = len(ms_oracle.levels[level].concat_obj)
+        ms_oracle.levels[level].iterator = len(ms_oracle.levels[level].concat_obj.concat_labels)
         ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - len(
-            ms_oracle.levels[level].concat_obj) - 1
-        ms_oracle.levels[level].oracle.add_state(input_data[i])
-        ms_oracle.levels[level].actual_char = ms_oracle.levels[level].oracle.data[ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator + 1]
+            ms_oracle.levels[level].concat_obj.concat_labels) - 1
+        ms_oracle.levels[level].oracle.add_state(input_data[ms_oracle.levels[level].iterator])
+        ms_oracle.levels[level].actual_char = \
+            ms_oracle.levels[level].oracle.data[ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator + 1]
         ms_oracle.levels[level].data_length = len(ms_oracle.levels[level].formal_diagram.material_lines[0])
         ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
-    return test_1, test_2, test_3, test_4, test_5, str_obj, ms_oracle.levels[level].iterator, ms_oracle.levels[level].shift, input_data
+    return test_1, test_2, test_3, test_4, test_5, str_obj, ms_oracle.levels[level].iterator, \
+        ms_oracle.levels[level].shift, input_data
 
 
 def structure(ms_oracle, level, end_mk):
