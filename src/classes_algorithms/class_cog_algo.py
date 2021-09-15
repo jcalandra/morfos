@@ -1,6 +1,7 @@
 from parameters import LETTER_DIFF, processing, verbose
 import class_segmentation_rules
 import class_similarity_rules
+import matplotlib.pyplot as plt
 
 import class_mso
 
@@ -43,13 +44,14 @@ def rules_parametrization(ms_oracle, level, str_obj, input_data, end_mk):
         test_5 = 1
 
     if test_4:
+        plt.pause(30)
         str_obj = potential_obj
         input_data = [ord(potential_obj[i]) - LETTER_DIFF for i in range(len(potential_obj))]
 
         ms_oracle.levels[level].iterator = len(ms_oracle.levels[level].concat_obj.concat_labels)
         ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - len(
             ms_oracle.levels[level].concat_obj.concat_labels) - 1
-        ms_oracle.levels[level].oracle.add_state(input_data[ms_oracle.levels[level].iterator])
+        ms_oracle.levels[level].update_oracle(input_data[ms_oracle.levels[level].iterator])
         ms_oracle.levels[level].actual_char = \
             ms_oracle.levels[level].oracle.data[ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator + 1]
         ms_oracle.levels[level].data_length = len(ms_oracle.levels[level].formal_diagram.material_lines[0])
