@@ -104,6 +104,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
             mso.structure_init(flag, level)
+        matrix = [chr(fd_mso.letter_diff + ord(str_obj[0])), [[1]]]
 
         oracles[0] = level
         level_max = level

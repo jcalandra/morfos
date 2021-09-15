@@ -1,7 +1,6 @@
 from parameters import LETTER_DIFF, processing, verbose
 import class_segmentation_rules
 import class_similarity_rules
-import matplotlib.pyplot as plt
 
 import class_mso
 

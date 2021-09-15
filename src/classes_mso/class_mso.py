@@ -3,7 +3,7 @@ import class_materials
 import class_formal_diagrams
 import class_object
 from numpy import concatenate
-from parameters import SR, HOP_LENGTH, LETTER_DIFF
+from parameters import SR, HOP_LENGTH
 
 from data_computing import get_data
 
@@ -64,12 +64,10 @@ class MSOLevel:
         self.materials = class_materials.Materials()
         self.concat_obj = class_object.ConcatObj()
 
-        self.string = ""
         self.str_obj = ""
         self.actual_char = ""
         self.actual_char_ind = 0
         self.iterator = 0
-        self.data_length = 0
         self.shift = 0
 
         mso.add_level(self)
@@ -84,8 +82,6 @@ class MSOLevel:
         self.oracle.add_state(data)
         self.actual_char = self.oracle.data[self.shift + self.iterator + 1]
         self.actual_char_ind = self.shift + self.iterator + 1
-        self.string += str(self.actual_char + LETTER_DIFF)
-        self.data_length += 1
 
     def update_link(self, node):
         self.objects.append(node)
@@ -93,7 +89,7 @@ class MSOLevel:
     def update_similarity(self, mso, obj, data, level):
         self.update_oracle(data)
         self.update_objects(obj)
-        self.formal_diagram.update(obj.label, obj.id, mso, level)
+        self.formal_diagram.update(mso, level)
         self.formal_diagram_graph.update(mso, level)
         self.concat_obj.update(obj)
 

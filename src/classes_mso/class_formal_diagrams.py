@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from parameters import processing, SR, HOP_LENGTH, EVOL_PRINT, LETTER_DIFF
+from parameters import processing, EVOL_PRINT, LETTER_DIFF
 f_number = 0
 
 
@@ -104,7 +104,6 @@ class FormalDiagramGraph:
         plt.clf()
         global f_number
         f_number += 1
-        file_name_pyplot = "FD_level" + str(level)
         plt.title("Formal diagram of level " + str(level))
         if processing == 'symbols':
             plt.xlabel("time in number of states (formal memory)")
