@@ -17,7 +17,7 @@ PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geissler
 teta = 0.976
 d_threshold = 140
 # processing must be str 'symbols' or 'signal'
-processing = 'symbols'
+processing = 'signal'
 verbose = 0
 # ----------------- RULES -----------------
 # Rules that are activated or not and their
@@ -26,7 +26,7 @@ verbose = 0
 RULE_1 = 1
 RULE_2 = 1
 RULE_3 = 1
-RULE_4 = 1
+RULE_4 = 0
 RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0

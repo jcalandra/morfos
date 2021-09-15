@@ -8,7 +8,7 @@ class Materials:
 
     def update(self, rep, concat_obj, sim_tab):
         self.update_history(rep, concat_obj)
-        self.sim_matrix.update_sim_matrix(rep.char, sim_tab)
+        self.sim_matrix.update(rep.char, sim_tab)
 
 
 class SimMatrix:
@@ -19,6 +19,7 @@ class SimMatrix:
     def init(self, label, vec):
         self.labels = label
         self.values = [vec]
+        print("init matrix", self.labels, self.values)
 
     def update(self, new_char, sim_tab):
         self.labels += new_char

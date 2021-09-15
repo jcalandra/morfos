@@ -89,9 +89,7 @@ def fun_segmentation(ms_oracle, str_obj, level=0):
         ms_oracle.levels[level].init_oracle('f')
 
         if level == 0 and processing == 'symbols':
-            vec = [1]
-            ms_oracle.matrix.labels = chr(LETTER_DIFF + ord(str_obj[0]))
-            ms_oracle.matrix.values = [vec]
+            ms_oracle.matrix.init(chr(LETTER_DIFF + 1), [1])
 
     # Every new character is analysed.
     input_data = [ord(str_obj[ind_input]) - LETTER_DIFF for ind_input in range(len(str_obj))]

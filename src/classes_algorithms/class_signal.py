@@ -1,6 +1,5 @@
 import data_computing as dc
 import similarity_functions as sf
-import similarity_rules as sim_rules
 import parameters as prm
 import numpy as np
 import cv2
@@ -10,6 +9,7 @@ import plot
 import class_mso
 import class_s_mso
 import class_cog_algo
+import class_similarity_rules
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -183,10 +183,10 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
         blank_ind += 1
 
     if blank_ind == lim_ind and prev_mat == actual_max:
-        matrix[0] = matrix[0][:-1]
-        matrix[1].pop()
-        for i in range(len(matrix[1])):
-            matrix[1][i].pop()
+        matrix.labels = matrix.labels[:-1]
+        matrix.values.pop()
+        for i in range(len(matrix.values)):
+            matrix.values[i].pop()
         actual_max = actual_max - 1
         temp_max = temp_max - 1
         mtx = np.delete(mtx, - 1, 0)
@@ -195,6 +195,26 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
 
 
 # ============================================ COGNITIVE ALGORITHM =====================================================
+def level_up(ms_oracle, level):
+    # link update
+    if len(ms_oracle.levels) > level + 1:
+        # node = len(oracles[1][level + 1][0].data)
+        node = max(ms_oracle.levels[level].link) + 1
+    else:
+        node = 1
+    for ind in range(len(ms_oracle.levels[level].concat_obj.concat_labels)):
+        ms_oracle.levels[level].link.append(node)
+    # history_next update
+    new_char = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
+    # concat_obj update
+    ms_oracle.levels[level].concat_obj.concat_labels = ""
+    diff_mk = 1
+    class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1)
+    if prm.verbose == 1:
+        print("[INFO] Process in level 0...")
+    return diff_mk
+
+
 def df_init(ms_oracle, nb_points):
     """ Initialize the structure corresponding to the formal diagram of level 0."""
     # initialise matrix of each hop coordinates
@@ -217,7 +237,7 @@ def df_init(ms_oracle, nb_points):
     return df, nb_hop, data_length
 
 
-def algo_cog(audio_path, ms_oracle, end_mk=0):
+def algo_cog(audio_path, ms_oracle):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     nb_points = NB_SILENCE
@@ -239,9 +259,9 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
     level = 0
     flag = 'a'
     volume_data, suffix_method, input_data, dim = dims_oracle(nb_values, s_tab, v_tab)
-    ms_oracle.matrix = [chr(letter_diff + 1), [[1]]]
+    ms_oracle.matrix.init(chr(letter_diff + 1), [1])
     class_mso.MSOLevel(ms_oracle)
-    ms_oracle.levels[level].materials.sim_matrix.init(chr(letter_diff + 1), [1])
+    #ms_oracle.levels[level].materials.sim_matrix.init(chr(letter_diff + 1), [1])
     ms_oracle.levels[level].init_oracle(flag, teta, dim)
 
     # formal diagram of level 0
@@ -269,8 +289,6 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
         obs = input_data[i_hop]
         ms_oracle.levels[level].oracle.add_state(obs, input_data, volume_data, suffix_method)
         oracle_t = ms_oracle.levels[level].oracle
-        print("concat obj", ms_oracle.levels[level].link)
-        print("i_hop", i_hop)
         concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
 
         j_mat = oracle_t.data[i_hop + 1]
@@ -290,51 +308,25 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
             oracle_t = ms_oracle.levels[level].oracle
             j_mat = prev_mat
 
-        '''diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
 
                 if i_hop == nb_hop - 1:
-                    end_mk = 1
-                    concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
-                # link update
-                if len(ms_oracle.levels[level]) > level + 1:
-                    # node = len(oracles[1][level + 1][0].data)
-                    node = max(ms_oracle.levels[level].link) + 1
-                else:
-                    node = 1
-                for ind in range(len(concat_obj)):
-                    ms_oracle.levels[level].link.append(node)
-                # history_next update
-                new_char = sim_rules.char_next_level_similarity(ms_oracle, level)
-                # concat_obj update
-                concat_obj = ""
-                diff_mk = 1
-                class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1, end_mk=end_mk)
-                if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")
+                    ms_oracle.end_mk = 1
+                    ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[
+                                                                           level].concat_obj.concat_labels + chr(
+                        letter_diff + oracle_t.data[i_hop + 1] + 1)
+                diff_mk = level_up(ms_oracle, level)
         else:
             diff_mk = 0
             if i_hop == nb_hop - 1:
-                end_mk = 1
-                concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
-                # link update
-                if len(ms_oracle.levels) > level + 1:
-                    node = max(ms_oracle.level[level].link) + 1
-                else:
-                    node = 1
-                for ind in range(len(concat_obj)):
-                    ms_oracle.levels[level].link.append(node)
-                # history_next update
-                new_char = sim_rules.char_next_level_similarity(ms_oracle, level)
-                # concat_obj update
-                concat_obj = ""
-                diff_mk = 1
-                class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1, end_mk=end_mk)
-                if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")'''
+                ms_oracle.end_mk = 1
+                ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels + \
+                                                                   chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
+                diff_mk = level_up(ms_oracle, level)
 
         if j_mat > actual_max:
 
@@ -380,12 +372,12 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
 
         if j_mat > actual_max:
             temp_max = j_mat
-            vec = oracle_t.vec[len(ms_oracle.matrix[0]) - 1].copy()
+            vec = oracle_t.vec[len(ms_oracle.matrix.labels) - 1].copy()
             vec.append(1)
-            ms_oracle.matrix[0] += (chr(len(ms_oracle.matrix[0]) + letter_diff + 1))
-            ms_oracle.matrix[1].append(vec)
-            for i in range(len(ms_oracle.matrix[1]) - 1):
-                ms_oracle.matrix[1][i].append(ms_oracle.matrix[1][len(ms_oracle.matrix[1]) - 1][i])
+            ms_oracle.matrix.labels += (chr(len(ms_oracle.matrix.labels) + letter_diff + 1))
+            ms_oracle.matrix.values.append(vec)
+            for i in range(len(ms_oracle.matrix.values) - 1):
+                ms_oracle.matrix.values[i].append(ms_oracle.matrix.values[len(ms_oracle.matrix.values) - 1][i])
             new_mat_l = np.ones((1, nb_hop, 3), np.uint8)
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
@@ -426,49 +418,51 @@ def algo_cog(audio_path, ms_oracle, end_mk=0):
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
         history_next = ms_oracle.levels[level].materials.history
-        if len(concat_obj) == 1:
+        if len(ms_oracle.levels[level].concat_obj.concat_labels) == 1:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-2]) - letter_diff > len(ms_oracle.matrix[0]):
+                if ord(history_next[-1][1][-2]) - letter_diff > len(ms_oracle.matrix.labels):
                     tmp_char = history_next[-1][1][-1]
                     new_history_next_element = new_history_next_element[:-2]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                     new_history_next_element += tmp_char
-                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
-                history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
-            concat_obj = chr(letter_diff + oracle_t.data[i_hop] + 1)
+                ms_oracle.levels[level].materials.history[-1] = \
+                    (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
+            ms_oracle.levels[level].concat_obj.concat_labels = chr(letter_diff + oracle_t.data[i_hop] + 1)
+            history_next = ms_oracle.levels[level].materials.history
 
-        if len(concat_obj) == 2:
+        if len(ms_oracle.levels[level].concat_obj.concat_labels) == 2:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix[0]):
+                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
-                history_next[-1] = (history_next[-1][0], new_history_next_element,  history_next[-1][2])
-            concat_obj = chr(letter_diff + oracle_t.data[i_hop - 1] + 1) \
-                         + chr(letter_diff + oracle_t.data[i_hop] + 1)
+                ms_oracle.levels[level].materials.history[-1] = \
+                    (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
+            ms_oracle.levels[level].concat_obj.concat_labels = chr(letter_diff + oracle_t.data[i_hop - 1] + 1) + chr(
+                letter_diff + oracle_t.data[i_hop] + 1)
             # TODO: corriger la valeur dans la matrice
 
-        if len(concat_obj) >= 3:
-            concat_obj = concat_obj[:len(concat_obj) - 2] + chr(letter_diff + oracle_t.data[i_hop - 1] + 1) \
-                         + chr(letter_diff + oracle_t.data[i_hop] + 1)
-        concat_obj = concat_obj + chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
+        if len(ms_oracle.levels[level].concat_obj.concat_labels) >= 3:
+            ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels[
+                                                               :len(ms_oracle.levels[level].concat_obj.concat_labels) -
+                                                               2] + chr(letter_diff + oracle_t.data[i_hop - 1] + 1) + \
+                                                               chr(letter_diff + oracle_t.data[i_hop] + 1)
+        ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels + chr(
+            letter_diff + oracle_t.data[i_hop + 1] + 1)
 
         if temp_max > actual_max:
             actual_max = temp_max
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
-
-        ms_oracle.levels[level].materials.history = history_next
-        ms_oracle.levels[level].concat_obj.concat_labels = concat_obj
         ms_oracle.levels[level].formal_diagram.material_lines = formal_diagram
 
     if flag != 'f' and flag != 'v':
         ms_oracle.levels[level].oracle.f_array.finalize()
 
-    mtx = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
     distance = (seg_error + class_error) / nb_hop
 
     algocog_time = time.time() - start_time

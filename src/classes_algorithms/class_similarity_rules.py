@@ -27,7 +27,7 @@ def similarity_alignment(ms_oracle, level):
     sim_tab = []
     for i in range(len(ms_oracle.levels[level].materials.history)):
         sim_digit, sim_value = class_similarity_computation.compute_alignment(
-            ms_oracle.levels[level].materials.history[i][1], ms_oracle.levels[level].concat_obj.concat_labels, matrix)
+            ms_oracle.levels[level].materials.history[i][1], ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
         sim_tab.append(sim_value / class_similarity_computation.quotient)
         if sim_digit:
             new_char = ms_oracle.levels[level].materials.history[i][0]

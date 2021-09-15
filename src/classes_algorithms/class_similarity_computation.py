@@ -22,7 +22,7 @@ gap = parameters.GAP
 correc_value = parameters.CORREC_VALUE
 
 
-def compute_alignment(string_compared, actual_string, mat):
+def compute_alignment(string_compared, actual_string, mat, level=0):
     # initalisation
     alignment = -pow(10, 10)
     if len(actual_string) == 0:
@@ -33,6 +33,9 @@ def compute_alignment(string_compared, actual_string, mat):
     if not mat.values:
         mat.values = np.empty((0, 0))
     np_mat = np.array(mat.values) * quotient
+    print("level", level)
+    print("matrix label", mat.labels)
+    print("matrix values", mat.values)
     matrix = substitution_matrices.Array(alphabet=mat.labels, dims=2, data=np_mat)
 
     # conversion of the string if necessary
