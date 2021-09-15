@@ -85,7 +85,7 @@ def rule_3_existing_object(ms_oracle, level):
 
 
 # RULE 4: (abcd)(ab + e => (ab)(cd)(ab)(e
-def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
+def rule_4_recomputed_object(ms_oracle, level):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
@@ -106,12 +106,12 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
 
     # if there is only one character in concat_obj, that is already seen, it's rule 1
     if nb_elements <= 1:
-        return 0, str_obj
+        return 0
 
     # if the longest similar suffix is not an adequate value
     if f_oracle.sfx[actual_char_ind - nb_elements] is None or f_oracle.sfx[actual_char_ind - nb_elements] == 0 or\
             f_oracle.sfx[actual_char_ind - nb_elements] == actual_char_ind - nb_elements - 1:
-        return 0, str_obj
+        return 0
 
     # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
     if ALIGNEMENT_rule4:
@@ -119,20 +119,20 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
             sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
             # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
         if similarity_computation.compute_alignment(sub_suffix, concat_obj, matrix)[0] == 0:
-            return 0, str_obj
+            return 0,
 
     else:
         for j in range(nb_elements):
             if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] \
                     != f_oracle.data[actual_char_ind - nb_elements + j]:
-                return 0, str_obj
+                return 0
 
     # if the the longest similar suffix is constitued of different materials
     for i in range(1, nb_elements):
         if len(link) < f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements + 1 or \
                 link[f_oracle.sfx[actual_char_ind - nb_elements] + i - 1] !=\
                 link[f_oracle.sfx[actual_char_ind - nb_elements] + i]:
-            return 0, str_obj
+            return 0
 
     # if the longest similar suffix has only one caracter before it and RULE 5 is activated
     if RULE_5:
@@ -140,16 +140,16 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
                 link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] \
                 and link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] !=\
                 link[f_oracle.sfx[actual_char_ind - nb_elements] - 2]:
-            return 0, str_obj
+            return 0
 
     # if the actual concat_obj is not the longest common string :
     if ALIGNEMENT_rule4:
-        if similarity_computation.compute_alignment(sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
-                                                    matrix)[0] == 1:
-            return 0, str_obj
+        if similarity_computation.compute_alignment(
+                sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff), matrix)[0] == 1:
+            return 0
     else:
         if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
-            return 0, str_obj
+            return 0
 
     if len(ms_oracle.levels) > level + 1:
 
@@ -164,16 +164,16 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
                     history_next[real_value - 1][1], concat_obj, matrix)[0] == 1 or \
                     similarity_computation.compute_alignment(
                     history_next[real_value - 1][1], sub_suffix, matrix)[0] == 1:
-                return 0, str_obj
+                return 0
         else:
             if history_next[real_value - 1][1] == concat_obj:
-                return 0, str_obj
+                return 0
 
             if link[f_oracle.sfx[actual_char_ind - nb_elements]] != \
                     link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] and \
                     link[f_oracle.sfx[actual_char_ind - nb_elements]] !=\
                     link[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements]:
-                return 0, str_obj
+                return 0
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
@@ -191,18 +191,18 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
     ind_to_struct = 0
 
     # compute the string that has to be fully rebuilt at actual level before going back to lower levels
-    if actual_char_ind > len(str_obj) + k:
-        str_obj = ""
+    if actual_char_ind > len(ms_oracle.levels[level].str_obj) + k:
+        ms_oracle.levels[level].str_obj = ""
         for i in range(ind + 1, len(ms_oracle.levels[level].oracle.data)):
-            str_obj += chr(ms_oracle.levels[level].oracle.data[i] + letter_diff)
+            ms_oracle.levels[level].str_obj += chr(ms_oracle.levels[level].oracle.data[i] + letter_diff)
     else:
         if ind >= k:
-            str_obj = str_obj[ind - k:]
+            ms_oracle.levels[level].str_obj = ms_oracle.levels[level].str_obj[ind - k:]
         else:
             str_2apn = ""
             for i in range(ind + 1, k + 1):
                 str_2apn += chr(ms_oracle.levels[level].oracle.data[i] + letter_diff)
-            str_obj = str_2apn + str_obj
+            ms_oracle.levels[level].str_obj = str_2apn + ms_oracle.levels[level].str_obj
 
     # each level level_up superior or equal to actual level is recomputed
     while len(ms_oracle.levels) > level_up != level_tmp:
@@ -339,7 +339,7 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
             # formal diagram update at initial level
             ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
             ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
-        class_cog_algo.structure(ms_oracle, level, end_mk)
+        class_cog_algo.structure(ms_oracle, level)
         ms_oracle.levels[level].concat_obj.concat_labels = ""
 
     # concat_obj update at initial level
@@ -357,7 +357,7 @@ def rule_4_recomputed_object(ms_oracle, level, str_obj, end_mk):
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
     # Then go back to the main loop of the structuring function with the correct structure to rebuilt the oracles
-    return 1, str_obj
+    return 1
 
 
 # RULE 5: (a + a => (aa

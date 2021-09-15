@@ -23,6 +23,7 @@ class MSO:
         self.data_length = 0
         self.data_size = 0
         self.nb_hop = 0
+        self.end_mk = 0
 
         self.matrix = class_materials.SimMatrix()
 
@@ -64,6 +65,7 @@ class MSOLevel:
         self.concat_obj = class_object.ConcatObj()
 
         self.string = ""
+        self.str_obj = ""
         self.actual_char = ""
         self.actual_char_ind = 0
         self.iterator = 0
