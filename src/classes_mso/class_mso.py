@@ -56,7 +56,7 @@ class MSOLevel:
     """ A specific level of the Multi-Scale Oracle """
 
     def __init__(self, mso):
-        self.objects = []
+        self.objects = [class_object.Object()]
         self.oracle = None
         self.formal_diagram = class_formal_diagrams.FormalDiagram()
         self.formal_diagram_graph = class_formal_diagrams.FormalDiagramGraph(0, mso.name)

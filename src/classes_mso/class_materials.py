@@ -19,7 +19,6 @@ class SimMatrix:
     def init(self, label, vec):
         self.labels = label
         self.values = [vec]
-        print("init matrix", self.labels, self.values)
 
     def update(self, new_char, sim_tab):
         self.labels += new_char

@@ -293,8 +293,7 @@ def rule_4_recomputed_object(ms_oracle, level):
                 for j in range(len(ms_oracle.levels[level_up].formal_diagram.material_lines)):
                     for fd_ind in range(k_init, former_k_init):
                         ms_oracle.levels[level_up].formal_diagram.material_lines[j][fd_ind] = 1
-                print_formal_diagram_update(ms_oracle.levels[level_up].formal_diagram_graph, level_up,
-                                            ms_oracle.levels[level_up].formal_diagram, data_length)
+                ms_oracle.levels[level_up].formal_diagram_graph.update(ms_oracle, level_up)
 
                 # history next
                 while len(ms_oracle.levels[level_up].materials.history) > max(ms_oracle.levels[level_up].link):
@@ -330,6 +329,8 @@ def rule_4_recomputed_object(ms_oracle, level):
     if to_struct:
         for j in range(ind_to_struct):
             char_ind = ind_fo_init + j
+            #TODO: jcalandra 15/09/2021 bugfix
+            # débug au niveau signal
             new_state = ms_oracle.levels[level].oracle.data[char_ind]
             ms_oracle.levels[level].actual_char = new_state
             ms_oracle.levels[level].actual_char_ind = char_ind

@@ -87,6 +87,7 @@ class FormalDiagramGraph:
     def __init__(self, level, name, path="cognitive_algorithm_and_its_musical_applications/results/"):
         self.name = ""
         self.path = ""
+        self.fig_number = None
         self.set_name(name)
         self.set_path(path)
         self._print_formal_diagram_init(level)
@@ -100,7 +101,8 @@ class FormalDiagramGraph:
     def _print_formal_diagram_update(self, mso, level):
         """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
         # print("PRINT formal diagram update")
-        fig = plt.figure(level + 1)
+        self.fig_number = plt.figure(level + 1)
+        fig = self.fig_number
         plt.clf()
         global f_number
         f_number += 1

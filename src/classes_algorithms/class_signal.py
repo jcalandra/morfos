@@ -7,6 +7,7 @@ import time
 import plot
 
 import class_mso
+import class_object
 import class_s_mso
 import class_cog_algo
 import class_similarity_rules
@@ -178,7 +179,7 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     """ Modify the similarity matrix according the the corrected frames."""
     # TODO: regarder les ajouts et suppression dans oracle_t.vec
     blank_ind = 0
-    while mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
+    while blank_ind < len(mtx[prev_mat]) and mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
             and mtx[prev_mat][blank_ind][2] == BACKGROUND[2]:
         blank_ind += 1
 
@@ -202,12 +203,12 @@ def level_up(ms_oracle, level):
         node = max(ms_oracle.levels[level].link) + 1
     else:
         node = 1
-    for ind in range(len(ms_oracle.levels[level].concat_obj.concat_labels)):
+    for ind in range(ms_oracle.levels[level].concat_obj.size):
         ms_oracle.levels[level].link.append(node)
     # history_next update
     new_char = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
     # concat_obj update
-    ms_oracle.levels[level].concat_obj.concat_labels = ""
+    ms_oracle.levels[level].concat_obj = class_object.ConcatObj()
     diff_mk = 1
     class_cog_algo.fun_segmentation(ms_oracle, new_char, level=level + 1)
     if prm.verbose == 1:
@@ -261,7 +262,6 @@ def algo_cog(audio_path, ms_oracle):
     volume_data, suffix_method, input_data, dim = dims_oracle(nb_values, s_tab, v_tab)
     ms_oracle.matrix.init(chr(letter_diff + 1), [1])
     class_mso.MSOLevel(ms_oracle)
-    #ms_oracle.levels[level].materials.sim_matrix.init(chr(letter_diff + 1), [1])
     ms_oracle.levels[level].init_oracle(flag, teta, dim)
 
     # formal diagram of level 0
@@ -287,49 +287,61 @@ def algo_cog(audio_path, ms_oracle):
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
+        descriptors = class_object.Descriptors()
+        descriptors.update_concat_descriptors(obs)
         ms_oracle.levels[level].oracle.add_state(obs, input_data, volume_data, suffix_method)
         oracle_t = ms_oracle.levels[level].oracle
-        concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
 
         j_mat = oracle_t.data[i_hop + 1]
+        new_obj = class_object.Object()
+        new_rep = class_object.ObjRep()
+        label = chr(j_mat + letter_diff + 1)
+        audio = ms_oracle.audio[int(i_hop*hop_length):int((i_hop + 1)*hop_length)]
+        new_obj.update(label, descriptors, audio, new_rep)
+        ms_oracle.levels[level].objects.append(new_obj)
         value = 255 - v_tab[i_hop] * 255
 
         color3 = color2
         color2 = color
         color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
 
-        if i_hop > 2:
+        if i_hop == 1:
             prev_mat = oracle_t.data[i_hop]
+            prev_obj = ms_oracle.levels[level].objects[i_hop]
+
+        if i_hop == 2:
             prev2_mat = oracle_t.data[i_hop - 1]
+            prev2_obj = ms_oracle.levels[level].objects[i_hop - 1]
+
+        if i_hop > 2:
             prev3_mat = oracle_t.data[i_hop - 2]
+            prev3_obj = ms_oracle.levels[level].objects[i_hop - 2]
 
         if i_hop == nb_hop - 1 and j_mat != prev_mat:
             modify_oracle(ms_oracle.levels[level].oracle, prev_mat, j_mat, i_hop, input_data)
             oracle_t = ms_oracle.levels[level].oracle
             j_mat = prev_mat
+            new_obj.update(chr(j_mat + letter_diff + 1), descriptors,
+                           ms_oracle.audio[int(i_hop * hop_length):int((i_hop + 1) * hop_length)], new_rep)
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        if diff and len(concat_obj) > 3:
+        '''if diff and ms_oracle.levels[level].concat_obj.size > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
 
                 if i_hop == nb_hop - 1:
                     ms_oracle.end_mk = 1
-                    ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[
-                                                                           level].concat_obj.concat_labels + chr(
-                        letter_diff + oracle_t.data[i_hop + 1] + 1)
+                    ms_oracle.levels[level].concat_obj.update(new_obj)
                 diff_mk = level_up(ms_oracle, level)
         else:
             diff_mk = 0
             if i_hop == nb_hop - 1:
                 ms_oracle.end_mk = 1
-                ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels + \
-                                                                   chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
-                diff_mk = level_up(ms_oracle, level)
+                ms_oracle.levels[level].concat_obj.update(new_obj)
+                diff_mk = level_up(ms_oracle, level)'''
 
         if j_mat > actual_max:
-
             if i_hop > 2 and prev_mat != prev2_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
                     color = SEG_ERROR
@@ -339,14 +351,17 @@ def algo_cog(audio_path, ms_oracle):
                     modify_oracle(ms_oracle.levels[level].oracle, prev_mat, j_mat, i_hop, input_data)
                     oracle_t = ms_oracle.levels[level].oracle
                     j_mat = oracle_t.data[i_hop]
+                    new_obj.update(chr(j_mat + letter_diff + 1), new_obj.descriptors, new_obj.signal, new_obj.obj_rep)
 
                 else:
                     modify_oracle(ms_oracle.levels[level].oracle, prev2_mat, prev_mat, i_hop - 1, input_data)
                     oracle_t = ms_oracle.levels[level].oracle
                     digit, actual_max, temp_max, mtx = \
                         modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
+                    prev_obj.update(prev2_obj.label, prev_obj.descriptors, prev_obj.signal, prev_obj.obj_rep)
                     if digit == 1:
                         j_mat -= 1
+                    new_obj.update(chr(j_mat + letter_diff + 1), new_obj.descriptors, new_obj.signal, new_obj.obj_rep)
 
             elif i_hop > 2 and prev_mat != prev3_mat and CORRECTION_BIT:
                 if CORRECTION_BIT_COLOR:
@@ -357,17 +372,24 @@ def algo_cog(audio_path, ms_oracle):
                     oracle_t = ms_oracle.levels[level].oracle
                     j_mat = oracle_t.data[i_hop]
                     temp_max = j_mat
+                    prev_obj.update(chr(j_mat + letter_diff + 1), prev_obj.descriptors, prev_obj.signal,
+                                    prev_obj.obj_rep)
+                    new_obj.update(chr(j_mat + letter_diff + 1), new_obj.descriptors, new_obj.signal, new_obj.obj_rep)
                 else:
                     modify2_oracle(ms_oracle.levels[level].oracle, prev3_mat, prev2_mat, prev_mat, i_hop - 1, input_data)
                     oracle_t = ms_oracle.levels[level].oracle
                     digit, actual_max, temp_max, mtx = \
                         modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
+
                     if digit == 1:
                         j_mat -= 1
                     digit, actual_max, temp_max, mtx = \
                         modify_matrix(mtx, prev2_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 2)
+                    prev_obj.update(prev2_obj.label, prev_obj.descriptors, prev_obj.signal, prev_obj.obj_rep)
                     if digit == 1:
                         j_mat -= 1
+                        new_obj.update(chr(j_mat + letter_diff + 1), new_obj.descriptors,
+                                       new_obj.signal, new_obj.obj_rep)
                     seg_error = seg_error + 2
 
         if j_mat > actual_max:
@@ -396,8 +418,10 @@ def algo_cog(audio_path, ms_oracle):
                 oracle_t = ms_oracle.levels[level].oracle
                 digit, actual_max, temp_max, mtx = \
                     modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
+                new_obj.update(prev_obj.label, new_obj.descriptors, new_obj.signal, new_obj.obj_rep)
 
             if i_hop > 2 and prev_mat == prev2_mat and prev_mat != prev3_mat and j_mat != prev_mat and CORRECTION_BIT:
+                print("là")
                 if CORRECTION_BIT_COLOR:
                     color = CLASS_ERROR
                 class_error = class_error + 2
@@ -408,6 +432,7 @@ def algo_cog(audio_path, ms_oracle):
                     modify_matrix(mtx, prev_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 1)
                 digit, actual_max, temp_max, mtx = \
                     modify_matrix(mtx, prev2_mat, ms_oracle.matrix, actual_max, temp_max, i_hop - 2)
+                new_obj.update(prev_obj.label, new_obj.descriptors, new_obj.signal, new_obj.obj_rep)
 
         if i_hop > 3:
             for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
@@ -418,23 +443,31 @@ def algo_cog(audio_path, ms_oracle):
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
 
         history_next = ms_oracle.levels[level].materials.history
-        if len(ms_oracle.levels[level].concat_obj.concat_labels) == 1:
+        if ms_oracle.levels[level].concat_obj.size == 1:
+            print("on y va")
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
                 if ord(history_next[-1][1][-2]) - letter_diff > len(ms_oracle.matrix.labels):
                     tmp_char = history_next[-1][1][-1]
                     new_history_next_element = new_history_next_element[:-2]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
+                    new_history_next_element += chr(ms_oracle.levels[level].oracle.data[i_hop - 1] + letter_diff + 1)
                     new_history_next_element += tmp_char
                 if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
                     new_history_next_element = new_history_next_element[:-1]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
+                    new_history_next_element += chr(ms_oracle.levels[level].oracle.data[i_hop - 1] + letter_diff + 1)
                 ms_oracle.levels[level].materials.history[-1] = \
                     (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
-            ms_oracle.levels[level].concat_obj.concat_labels = chr(letter_diff + oracle_t.data[i_hop] + 1)
-            history_next = ms_oracle.levels[level].materials.history
+                history_next = ms_oracle.levels[level].materials.history
+            label = chr(letter_diff + ms_oracle.levels[level].oracle.data[i_hop] + 1)
+            audio = ms_oracle.audio[int((i_hop-1)*nb_hop):int(i_hop*nb_hop)]
+            descriptors = class_object.Descriptors()
+            descriptors.update_concat_descriptors(input_data[i_hop - 1])
+            prev_obj.update(label, descriptors, audio, new_rep)
+            objects = [prev_obj]
+            ms_oracle.levels[level].concat_obj.reset(objects)
 
-        if len(ms_oracle.levels[level].concat_obj.concat_labels) == 2:
+        if ms_oracle.levels[level].concat_obj.size == 2:
+            print("on y va")
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
                 if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
@@ -442,17 +475,47 @@ def algo_cog(audio_path, ms_oracle):
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
                 ms_oracle.levels[level].materials.history[-1] = \
                     (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
-            ms_oracle.levels[level].concat_obj.concat_labels = chr(letter_diff + oracle_t.data[i_hop - 1] + 1) + chr(
-                letter_diff + oracle_t.data[i_hop] + 1)
+
+            label2 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
+            audio2 = ms_oracle.audio[int((i_hop-2) * nb_hop):int((i_hop-1) * nb_hop)]
+            descriptors2 = class_object.Descriptors()
+            descriptors2.update_concat_descriptors(input_data[i_hop - 2])
+            prev2_obj.update(label2, descriptors2, audio2, new_rep)
+
+            label = chr(letter_diff + oracle_t.data[i_hop] + 1)
+            audio = ms_oracle.audio[int((i_hop-1) * nb_hop):int(i_hop * nb_hop)]
+            descriptors = class_object.Descriptors()
+            descriptors.update_concat_descriptors(input_data[i_hop - 1])
+            prev_obj.update(label, descriptors, audio, new_rep)
+            objects = [prev2_obj, prev_obj]
+            ms_oracle.levels[level].concat_obj.reset(objects)
             # TODO: corriger la valeur dans la matrice
 
-        if len(ms_oracle.levels[level].concat_obj.concat_labels) >= 3:
-            ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels[
-                                                               :len(ms_oracle.levels[level].concat_obj.concat_labels) -
-                                                               2] + chr(letter_diff + oracle_t.data[i_hop - 1] + 1) + \
-                                                               chr(letter_diff + oracle_t.data[i_hop] + 1)
-        ms_oracle.levels[level].concat_obj.concat_labels = ms_oracle.levels[level].concat_obj.concat_labels + chr(
-            letter_diff + oracle_t.data[i_hop + 1] + 1)
+        if ms_oracle.levels[level].concat_obj.size >= 3:
+            print("on y va")
+            label3 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
+            audio3 = ms_oracle.audio[int((i_hop - 2) * nb_hop):int((i_hop - 1) * nb_hop)]
+            descriptors3 = class_object.Descriptors()
+            descriptors3.update_concat_descriptors(input_data[i_hop - 2])
+            prev2_obj.update(label3, descriptors3, audio3, new_rep)
+
+            label2 = chr(letter_diff + oracle_t.data[i_hop] + 1)
+            audio2 = ms_oracle.audio[int((i_hop - 1) * nb_hop):int(i_hop * nb_hop)]
+            descriptors2 = class_object.Descriptors()
+            descriptors2.update_concat_descriptors(input_data[i_hop - 1])
+            prev_obj.update(label2, descriptors2, audio2, new_rep)
+
+            label = chr(letter_diff + oracle_t.data[i_hop + 1] + 1)
+            audio = ms_oracle.audio[int(i_hop * nb_hop):int((i_hop+1) * nb_hop)]
+            descriptors = class_object.Descriptors()
+            descriptors.update_concat_descriptors(input_data[i_hop - 1])
+            new_obj.update(label, descriptors, audio, new_rep)
+
+            ms_oracle.levels[level].concat_obj.pop()
+            ms_oracle.levels[level].concat_obj.pop()
+            ms_oracle.levels[level].concat_obj.update(prev2_obj)
+            ms_oracle.levels[level].concat_obj.update(prev_obj)
+        ms_oracle.levels[level].concat_obj.update(new_obj)
 
         if temp_max > actual_max:
             actual_max = temp_max
