@@ -446,39 +446,54 @@ def algo_cog(audio_path, ms_oracle):
         if ms_oracle.levels[level].concat_obj.size == 1:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-2]) - letter_diff > len(ms_oracle.matrix.labels):
-                    tmp_char = history_next[-1][1][-1]
+                if ord(history_next[-1][1][-2].label) - letter_diff > len(ms_oracle.matrix.labels):
+                    label3 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
+                    audio3 = ms_oracle.audio[int((i_hop - 2) * nb_hop):int((i_hop - 1) * nb_hop)]
+                    descriptors3 = class_object.Descriptors()
+                    descriptors3.update_concat_descriptors(input_data[i_hop - 2])
+                    prev2_obj.update(label3, descriptors3, audio3, new_rep)
+
+                    tmp_obj = history_next[-1][1][-1]
                     new_history_next_element = new_history_next_element[:-2]
-                    new_history_next_element += chr(ms_oracle.levels[level].oracle.data[i_hop - 1] + letter_diff + 1)
-                    new_history_next_element += tmp_char
-                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
+                    new_history_next_element.append(prev2_mat)
+                    new_history_next_element.append(tmp_obj)
+
+                if ord(history_next[-1][1][-1].label) - letter_diff > len(ms_oracle.matrix.labels):
+                    label3 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
+                    audio3 = ms_oracle.audio[int((i_hop - 2) * nb_hop):int((i_hop - 1) * nb_hop)]
+                    descriptors3 = class_object.Descriptors()
+                    descriptors3.update_concat_descriptors(input_data[i_hop - 2])
+                    prev2_obj.update(label3, descriptors3, audio3, new_rep)
+
                     new_history_next_element = new_history_next_element[:-1]
-                    new_history_next_element += chr(ms_oracle.levels[level].oracle.data[i_hop - 1] + letter_diff + 1)
+                    new_history_next_element.append(prev2_mat)
+
                 ms_oracle.levels[level].materials.history[-1] = \
                     (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
                 history_next = ms_oracle.levels[level].materials.history
-            label = chr(letter_diff + ms_oracle.levels[level].oracle.data[i_hop] + 1)
-            audio = ms_oracle.audio[int((i_hop-1)*nb_hop):int(i_hop*nb_hop)]
-            descriptors = class_object.Descriptors()
-            descriptors.update_concat_descriptors(input_data[i_hop - 1])
-            prev_obj.update(label, descriptors, audio, new_rep)
-            objects = [prev_obj]
-            ms_oracle.levels[level].concat_obj.reset(objects)
+
+                label = chr(letter_diff + ms_oracle.levels[level].oracle.data[i_hop] + 1)
+                audio = ms_oracle.audio[int((i_hop - 1) * nb_hop):int(i_hop * nb_hop)]
+                descriptors = class_object.Descriptors()
+                descriptors.update_concat_descriptors(input_data[i_hop - 1])
+                prev_obj.update(label, descriptors, audio, new_rep)
+                objects = [prev_obj]
+                ms_oracle.levels[level].concat_obj.reset(objects)
 
         if ms_oracle.levels[level].concat_obj.size == 2:
             if len(history_next) > 0:
                 new_history_next_element = history_next[-1][1]
-                if ord(history_next[-1][1][-1]) - letter_diff > len(ms_oracle.matrix.labels):
+                if ord(history_next[-1][1][-1].label) - letter_diff > len(ms_oracle.matrix.labels):
+                    label3 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
+                    audio3 = ms_oracle.audio[int((i_hop - 2) * nb_hop):int((i_hop - 1) * nb_hop)]
+                    descriptors3 = class_object.Descriptors()
+                    descriptors3.update_concat_descriptors(input_data[i_hop - 2])
+                    prev2_obj.update(label3, descriptors3, audio3, new_rep)
+
                     new_history_next_element = new_history_next_element[:-1]
-                    new_history_next_element += chr(oracle_t.data[i_hop - 1] + letter_diff + 1)
+                    new_history_next_element.append(prev2_obj)
                 ms_oracle.levels[level].materials.history[-1] = \
                     (ms_oracle.levels[level].materials.history[-1][0], new_history_next_element)
-
-            label2 = chr(letter_diff + oracle_t.data[i_hop - 1] + 1)
-            audio2 = ms_oracle.audio[int((i_hop-2) * nb_hop):int((i_hop-1) * nb_hop)]
-            descriptors2 = class_object.Descriptors()
-            descriptors2.update_concat_descriptors(input_data[i_hop - 2])
-            prev2_obj.update(label2, descriptors2, audio2, new_rep)
 
             label = chr(letter_diff + oracle_t.data[i_hop] + 1)
             audio = ms_oracle.audio[int((i_hop-1) * nb_hop):int(i_hop * nb_hop)]
