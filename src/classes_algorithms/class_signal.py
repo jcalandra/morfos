@@ -295,6 +295,7 @@ def algo_cog(audio_path, ms_oracle):
         j_mat = oracle_t.data[i_hop + 1]
         new_obj = class_object.Object()
         new_rep = class_object.ObjRep()
+        # TODO: jcalandra 17/09/2021 initialize the new_rep
         label = chr(j_mat + letter_diff + 1)
         audio = ms_oracle.audio[int(i_hop*hop_length):int((i_hop + 1)*hop_length)]
         new_obj.update(label, descriptors, audio, new_rep)
@@ -403,6 +404,7 @@ def algo_cog(audio_path, ms_oracle):
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
             mtx = np.concatenate((mtx, new_mat_l))
+            # TODO: jcalandra 17/09/2021 create new obj_rep
 
         else:
 

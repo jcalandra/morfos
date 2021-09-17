@@ -77,7 +77,7 @@ def similarity(ms_oracle, level):
         sim_tab_label.append(sim_value / class_similarity_computation.quotient)
 
         # compute similarity from signal
-        # TODO: jcalandra 17/09/2021 checke similarity computation at signal level
+        # TODO: jcalandra 17/09/2021 check similarity computation at signal level
         s_tab.append(ms_oracle.levels[level].materials.history[i][2])
         sim_digit_descriptors = class_similarity_computation.compute_signal_similarity(s_tab, i)
 
@@ -124,7 +124,6 @@ def char_next_level_similarity(ms_oracle, level):
     concat_rep = []
     for i in range(ms_oracle.levels[level].concat_obj.size):
         concat_rep.append(ms_oracle.levels[level].concat_obj.objects[i].obj_rep)
-    # TODO: jcalandra 17/09/2021 check history_update at signal level
     ms_oracle.levels[level].materials.history.append((new_rep, concat_rep))
     return new_obj
 
