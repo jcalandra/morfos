@@ -126,6 +126,7 @@ class FormalDiagramGraph:
             name = self.path + self.name + str(
                 f_number) + ".png"
             plt.savefig(name)
+        #plt.pause(1)
         return fig.number
 
     def update(self, mso, level):

@@ -3,6 +3,7 @@ import class_segmentation_rules
 import class_similarity_rules
 
 import class_mso
+import class_object
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -61,20 +62,20 @@ def rules_parametrization(ms_oracle, level, input_data):
 def structure(ms_oracle, level):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    new_char = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
+    new_obj = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
     if len(ms_oracle.levels) > level + 1:
         node = max(ms_oracle.levels[level].link) + 1
     else:
         node = 1
-    for ind in range(len(ms_oracle.levels[level].concat_obj.concat_labels)):
+    for ind in range(ms_oracle.levels[level].concat_obj.size):
         ms_oracle.levels[level].link.append(node)
     # send to the next f_oracle the node corresponding to concat_obj
-    fun_segmentation(ms_oracle, new_char, level + 1)
+    fun_segmentation(ms_oracle, new_obj, new_obj.label, level + 1)
     return 0
 
 
 # ================================= MAIN COGNITIVE ALGORITHM AT SYMBOLIC SCALE =========================================
-def fun_segmentation(ms_oracle, str_obj, level=0):
+def fun_segmentation(ms_oracle, objects, str_obj, level=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user."""
     # end of the recursive loop
@@ -103,6 +104,7 @@ def fun_segmentation(ms_oracle, str_obj, level=0):
     while ms_oracle.levels[level].iterator < len(str_obj):
         i = ms_oracle.levels[level].iterator
         ms_oracle.levels[level].update_oracle(input_data[i])
+        ms_oracle.levels[level].actual_object = objects[i]
 
         if level == 0 and processing == 'symbols' and \
                 ms_oracle.levels[level].actual_char > \
@@ -127,6 +129,7 @@ def fun_segmentation(ms_oracle, str_obj, level=0):
         test_1, test_2, test_3, test_4, test_5, input_data = rules_parametrization(ms_oracle, level, input_data)
         i = ms_oracle.levels[level].iterator
         str_obj = ms_oracle.levels[level].str_obj
+        objects = ms_oracle.levels[level].objects
         if level > 0 and ms_oracle.end_mk == 1 and i < len(str_obj) - 1:
             ms_oracle.end_mk = 0
             wait = 1
@@ -138,9 +141,8 @@ def fun_segmentation(ms_oracle, str_obj, level=0):
             structure(ms_oracle, level)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-            ms_oracle.levels[level].concat_obj.concat_labels = ''
-        ms_oracle.levels[level].concat_obj.concat_labels = \
-            ms_oracle.levels[level].concat_obj.concat_labels + chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
+            ms_oracle.levels[level].concat_obj = class_object.ConcatObj()
+        ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
 
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
@@ -151,7 +153,7 @@ def fun_segmentation(ms_oracle, str_obj, level=0):
             structure(ms_oracle, level)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-            ms_oracle.levels[level].concat_obj.labels = ''
+            ms_oracle.levels[level].concat_obj = class_object.ConcatObj()
         ms_oracle.levels[level].iterator += 1
         if verbose == 1:
             print("state number ", i, " in level ", level)

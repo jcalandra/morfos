@@ -67,6 +67,7 @@ class MSOLevel:
         self.str_obj = ""
         self.actual_char = ""
         self.actual_char_ind = 0
+        self.actual_obj = class_object.Object()
         self.iterator = 0
         self.shift = 0
 
