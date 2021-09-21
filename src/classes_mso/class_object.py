@@ -1,6 +1,7 @@
-from librosa import cqt, note_to_hz, amplitude_to_db
-from numpy import abs, max
-from parameters import SR, NB_VALUES, NOTES_PER_OCTAVE
+from librosa import cqt, note_to_hz, amplitude_to_db, feature
+from numpy import abs, max, array
+from parameters import SR, NB_VALUES, NOTES_PER_OCTAVE, MFCC_BIT, FFT_BIT
+from data_computing import get_frequency_windows
 
 
 class Object:
@@ -71,13 +72,24 @@ class ConcatObj:
         for i in range(self.descriptors.nb_descriptors):
             self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i])
 
+            for j in range(len(self.descriptors.mean_descriptors[i])):
+                self.descriptors.mean_descriptors[i][j] = \
+                    ((self.size - 1)*self.descriptors.mean_descriptors[i][j] +
+                     new_descriptors.mean_descriptors[i][j])/self.size
+
         # TODO: @jcalandra 07/09/2021 mean_descriptors
         #  calculer un descripteur moyenné sur toute la partie du signal concernée.
         #  vérifier que ce qui est obtenu est bien ce que l'on cherche
-        '''cqt_values = abs(cqt(self.concat_signal, sr=SR, hop_length=len(self.concat_signal),
-                             fmin=note_to_hz('C1'), n_bins=NB_VALUES, bins_per_octave=NOTES_PER_OCTAVE,
-                             window='blackmanharris', sparsity=0.01, norm=1))
-        self.descriptors.mean_descriptors = amplitude_to_db(cqt_values, ref=max)'''
+        '''if MFCC_BIT:
+            self.descriptors.mean_descriptors = feature.mfcc(y=concat_signal, sr=SR, hop_length=len(self.concat_signal), n_mfcc=20)[1:]
+        elif FFT_BIT:
+            self.descriptors.mean_descriptors = get_frequency_windows(concat_signal, SR, 0, len(self.concat_signal))
+        else:
+            cqt_values = abs(cqt(concat_signal, sr=SR, hop_length=len(self.concat_signal),
+                                 fmin=note_to_hz('C1'), n_bins=NB_VALUES, bins_per_octave=NOTES_PER_OCTAVE,
+                                 window='blackmanharris', sparsity=0.01, norm=1))
+            self.descriptors.mean_descriptors = amplitude_to_db(cqt_values, ref=max)
+        self.descriptors.mean_descriptors.tolist()'''
 
     def _update_labels(self, label):
         self.concat_labels += label
@@ -110,7 +122,9 @@ class ConcatObj:
             signals.extend(obj.signal)
             for i in range(descriptors.nb_descriptors):
                 descriptors.concat_descriptors[i].append(obj.descriptors.concat_descriptors[i])
-            descriptors.mean_descriptors.append(obj.descriptors.mean_descriptors)
+                for j in range(len(self.descriptors.mean_descriptors[i])):
+                    descriptors.mean_descriptors[i][j] = ((i - 1)*descriptors.mean_descriptors[i][j] +
+                                                          obj.descriptors.mean_descriptors[i][j])/i
         self._reset_concat_label(labels)
         self._reset_object(objects)
         self._reset_concat_signal(signals)
@@ -130,8 +144,8 @@ class ConcatObj:
         if len(self.descriptors.concat_descriptors) != 0:
             for i in range(self.descriptors.nb_descriptors):
                 self.descriptors.concat_descriptors[i].pop()
-        if len(self.descriptors.mean_descriptors) != 0:
-            self.descriptors.mean_descriptors.pop()
+            if len(self.descriptors.mean_descriptors) != 0:
+                self.descriptors.mean_descriptors.pop()
 
     def pop(self):
         self._pop_concat_label()
@@ -154,7 +168,7 @@ class ObjRep:
         self.nb = 0
 
     def init_signal(self, signal):
-        self.signal += signal
+        self.signal.extend(signal)
 
     def init_label(self, label):
         self.label += label
@@ -171,8 +185,10 @@ class ObjRep:
         self.init_descriptors(descriptors)
         self.init_nb()
 
+    # TODO: jcalandra 20/09/2021 update function obj_rep.update_signal()
     def update_signal(self, signal):
-        mean_trajectory(self.signal, signal)
+        self.signal = signal
+        # mean_trajectory(self.signal, signal)
 
     def update_label(self, label):
         self.label = label
@@ -180,11 +196,14 @@ class ObjRep:
     def update_descriptors(self, descriptors):
         self.nb += 1
         for i in range(self.descriptors.nb_descriptors):
-            self.descriptors.concat_descriptors[i] = \
-                ((self.nb - 1)*self.descriptors.concat_descriptors[i] + descriptors.concat_descriptors[i])/self.nb
-        for i in range(len(self.descriptors.mean_descriptors)):
-            self.descriptors.mean_descriptors[i] = \
-                ((self.nb - 1)*self.descriptors.mean_descriptors[i] + descriptors.mean_descriptors[i])/self.nb
+            for j in range(len(self.descriptors.concat_descriptors[i])):
+                # TODO: jcalandra 21/09/2021 dimension pb if vectors
+                self.descriptors.concat_descriptors[i][j] = \
+                    ((self.nb - 1)*self.descriptors.concat_descriptors[i][j] +
+                     descriptors.concat_descriptors[i][j])/self.nb
+            for j in range(len(self.descriptors.mean_descriptors[i])):
+                self.descriptors.mean_descriptors[i][j] = \
+                    ((self.nb - 1)*self.descriptors.mean_descriptors[i] + descriptors.mean_descriptors[i][j])/self.nb
 
     def update(self, signal, label, descriptors):
         self.update_signal(signal)
@@ -200,10 +219,9 @@ class ObjRep:
 
 class Descriptors:
     def __init__(self):
-        self.nb_descriptors = 1
+        self.nb_descriptors = 0
         self.concat_descriptors = []
         self.mean_descriptors = []
-        self.get_empty_descriptors(self.nb_descriptors)
 
     # TODO: @jcalandra 09/09/2021 Descriptors functions
     #  MAJ les fonctions pour la classe descripteurs.
@@ -216,15 +234,16 @@ class Descriptors:
     def get_empty_descriptors(self, nb_descriptors):
         for i in range(nb_descriptors):
             self.concat_descriptors.append([])
+            self.mean_descriptors.append([])
 
     def update(self, concat_descriptors, mean_descriptors):
         self.update_concat_descriptors(concat_descriptors)
         self.update_mean_descriptors(mean_descriptors)
 
-    def compute_concat_descriptors(self, descriptors):
+    def compute_concat_descriptors(self, signal):
         return
 
-    def compute_mean_descriptors(self, descripotors):
+    def compute_mean_descriptors(self, signal):
         return
 
     def compute(self, signal):

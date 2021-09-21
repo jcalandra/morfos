@@ -50,8 +50,8 @@ class Transition:
 
 
 # TODO: @jcalandra 09/09/2021
-# On constate que les classes ObjRep et TransitRep sont exactement les mêmes
-# Il faut faire une classe générique qui contient les deux
+#  On constate que les classes ObjRep et TransitRep sont exactement les mêmes
+#  Il faut faire une classe générique qui contient les deux
 class TransitRep:
     def __init__(self):
         self.transit_signal = []

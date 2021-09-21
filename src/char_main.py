@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 
 # This is the main loop starting the algorithm from a string
 # Remarque: ce fichier est probablement voué à être supprimé
-# TODO: maj pour que ce soit à nouveau fonctionnel
 
 
 # =========================================== MAIN FUNCTION FROM STRING ================================================

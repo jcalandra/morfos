@@ -30,7 +30,6 @@ def rule_1_similarity(history, actual_char):
     """ Compare the actual char which is analysed actual_char with all objects that are already seen in the actual level
     and stocked in the tab history[]. Return 1 if the actual_char has already been seen, otherwise the function appends
     it to the history tab and returns 0."""
-    # TODO : Ici, il faut utiliser le FO pour regarder si le matériau existe déjà.
     for i in range(len(history)):
         if actual_char == history[i]:
             return 1
@@ -44,9 +43,6 @@ def validated_hypothesis(history_next, concat_obj, actual_char):
     the already seen objects in the past that begins with the same concat_obj. If the strings are equals, hypothesis
      from the past are validated and there should be no structuration right now because this is middle of the creation
      of an already known object of upper level. The function returns 1 then, 0 otherwise."""
-    # TODO : Ici, il faut utiliser le FO pour retrouver le lien similaire précédent et regarder à quoi on s'attend pour
-    #  la suite des char.
-
     for i in range(len(history_next)):
         for j in range(len(history_next[i][1])):
             crop_car = str(history_next[i][1][j:j + len(concat_obj + actual_char)])
@@ -77,9 +73,6 @@ def rule_4_recomputed_object(structured_char, new_char, history_next, concat_obj
     structures structured_char, new_char and history_next has to be modify in consequences such as the substring become
     an entire object of upper level. If the function find similar strings, it returns the new new_char, otherwise it
     returns 0."""
-    # TODO : Ici, il faut utiliser le FO pour retrouver le lien similaire précédent et regarder si la suite des char est
-    #  la même
-
     # Comparisons between concat_obj and substrings of history_next.
     if len(concat_obj) == 1:
         return 0

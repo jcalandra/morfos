@@ -36,38 +36,20 @@ def similarity_alignment(ms_oracle, level):
     return None, None, sim_tab, 0
 
 
-def similarity_signal(ms_oracle, level):
-    sim_tab = []
-    s_tab = []
-    history_next = ms_oracle.levels[level].materials.history
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    window = class_similarity_computation.compute_window_audio(ms_oracle, level, concat_obj)
-    actual_object_descriptor = class_similarity_computation.compute_descriptor(window)
-    s_tab.append(actual_object_descriptor)
-    for i in range(len(ms_oracle.levels[level].materials.history)):
-        # s_tab corresponds to the descriptors from history_next_table concatenated with the descriptor extracted
-        # from actual_obj
-        s_tab.append(ms_oracle.levels[level].materials.history[i][2])
-        sim_digit, sim_value = class_similarity_computation.compute_signal_similarity(s_tab, i)
-        sim_tab.append(sim_value)
-        if sim_digit:
-            new_char = ms_oracle.levels[level].materials.history[i][0]
-            return new_char, actual_object_descriptor, sim_tab, 1
-    s_tab.pop(0)
-    return None, None, sim_tab, 0
-
-
 def similarity(ms_oracle, level):
     if level > 0:
         matrix = ms_oracle.levels[level - 1].materials.sim_matrix
     else:
         matrix = ms_oracle.matrix
 
-    sim_tab_label = []
-    window = class_similarity_computation.compute_window_audio(
-        ms_oracle, level, ms_oracle.levels[level].concat_obj.concat_labels)
-    actual_object_descriptor = class_similarity_computation.compute_descriptor(window)
-    s_tab = [actual_object_descriptor]
+    sim_tab_label = s_tab_concat = []
+
+    window = ms_oracle.levels[level].concat_obj.concat_signal
+    actual_object_descriptor = class_object.Descriptors()
+    actual_object_descriptor.compute(window)
+    for i in range(actual_object_descriptor.nb_descriptors):
+        s_tab_concat = [[actual_object_descriptor.concat_descriptors[i]]]
+    s_tab_mean = [actual_object_descriptor.mean_descriptors]
 
     for i in range(len(ms_oracle.levels[level].materials.history)):
         # compute alignment from labels
@@ -77,22 +59,20 @@ def similarity(ms_oracle, level):
         sim_tab_label.append(sim_value / class_similarity_computation.quotient)
 
         # compute similarity from signal
-        # TODO: jcalandra 17/09/2021 check similarity computation at signal level
-        s_tab.append(ms_oracle.levels[level].materials.history[i][2])
-        sim_digit_descriptors = class_similarity_computation.compute_signal_similarity(s_tab, i)
+        for j in range(actual_object_descriptor.nb_descriptors):
+            s_tab_concat[j].append(ms_oracle.levels[level].materials.history[i][0].descriptors.concat_descriptors[j])
+        s_tab_mean.append(ms_oracle.levels[level].materials.history[i][0].descriptors.mean_descriptors)
+        sim_digit_descriptors = class_similarity_computation.compute_signal_similarity(s_tab_concat, s_tab_mean, i)
 
         if sim_digit_label and sim_digit_descriptors:
             new_rep = ms_oracle.levels[level].materials.history[i][0]
-            # TODO: jcalandra 17/09/2021 update the representative with information of the new object
+            new_rep. update(window, new_rep.label, actual_object_descriptor)
             return new_rep, sim_tab_label
 
     # compute new representative
     new_char = chr(letter_diff + len(ms_oracle.levels[level].materials.history) + 1)
     new_rep = class_object.ObjRep()
-    new_descriptors = class_object.Descriptors()
-    # TODO: jcalandra001 17/09/2021 check new_descriptors.compute function
-    new_descriptors.compute(ms_oracle.levels[level].concat_obj.concat_signal)
-    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, new_descriptors)
+    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
     return new_rep, sim_tab_label
 
 

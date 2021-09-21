@@ -4,6 +4,7 @@ from Bio.Align import substitution_matrices
 import similarity_functions as sim_f
 import parameters
 import librosa
+import data_computing
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
 
@@ -71,43 +72,13 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 
-def compute_window_audio(ms_oracle, level, actual_object):
-    # descriptor corresponds to the descriptor that is computed from the actual_object
-    descriptor = []
-    # TODO: when object structure will be modified,
-    #  k_init = actual_object.init,
-    #  k_end = k_init + len(actual_object.label) - 1
-    k_init = len(ms_oracle.levels[level].link) + 1
-    k_end = k_init + len(actual_object) - 1
-    if level > 0:
-        lv = level - 1
-        while lv >= 0:
-            link = ms_oracle.levels[lv].link
-            link_r = link.copy()
-            link_r.reverse()
-            k_init = link.index(k_init)
-            k_end = len(link) - link_r.index(k_end) - 1
-
-    window = ms_oracle.audio[k_init:k_end + 1]
-    return window
-
-
-def compute_descriptor(window):
-    hop_length = len(window)
-    #if MFCC_BIT:
-    descriptor = librosa.feature.mfcc(y=window, sr=rate, hop_length=hop_length, n_mfcc=20)[1:]
-    '''elif FFT_BIT:
-        descriptor = data_computing.get_frequency_windows(window, rate, 0, hop_length)
-    else:
-        descriptor = np.abs(librosa.cqt(window, sr=rate, hop_length=hop_length, fmin=librosa.note_to_hz(fmin),
-                     n_bins=nb_notes, bins_per_octave=NPO, window='blackmanharris', sparsity=0.01, norm=1))
-        descriptor = librosa.amplitude_to_db(descriptor, ref=np.max)'''
-    return descriptor
-
-
-def compute_signal_similarity(s_tab, compared_object_ind):
+def compute_signal_similarity(concat_tab, mean_tab, compared_object_ind):
     # freq_static_sim_fft is ok because s_tab is in the according shape
-    similarity = sim_f.frequency_static_similarity_fft(s_tab, compared_object_ind, len(s_tab) - 1)
+    for i in range(len(concat_tab)):
+        similarity = sim_f.frequency_static_similarity_fft(concat_tab[i], compared_object_ind, len(concat_tab[i] - 1))
+        if similarity >= threshold:
+            return 1, similarity
+    similarity = sim_f.frequency_static_similarity_fft(mean_tab, compared_object_ind, len(mean_tab) - 1)
     if similarity >= threshold:
         return 1, similarity
     return 0, similarity

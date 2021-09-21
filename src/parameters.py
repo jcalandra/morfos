@@ -14,7 +14,7 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
-teta = 0.976
+teta = 0.976  # 0.976
 d_threshold = 140
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'

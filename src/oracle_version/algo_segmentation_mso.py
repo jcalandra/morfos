@@ -13,11 +13,6 @@ wait = 0
 processing = prm.processing
 
 
-# TODO: modifier les objets: un objet doit être une structure qui contient
-#  - un label
-#  - un ensemble de fonctions et les paramètres associés
-
-
 # ============================================ SEGMENTATION FUNCTION ===================================================
 def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
                           concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
