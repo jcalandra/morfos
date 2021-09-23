@@ -4,6 +4,7 @@ import class_formal_diagrams
 import class_object
 from numpy import concatenate
 from parameters import SR, HOP_LENGTH
+import matplotlib.pyplot as plt
 
 from data_computing import get_data
 
@@ -33,14 +34,15 @@ class MSO:
     def get_audio(self, audio_path):
         data, rate, data_size, data_length = get_data(audio_path)
         self.data_length = data_length
-        self.audio = data
+        for i in range(len(data)):
+            self.audio.append(data[i])
         self.rate = rate
         self.data_size = data_size
         self.nb_hop = int(data_size/HOP_LENGTH)
 
     def update_audio(self, added_data, data_length, nb_hop):
         self.data_length = data_length
-        self.audio = concatenate((added_data, self.audio))
+        self.audio = added_data.tolist() + self.audio
         self.nb_hop = nb_hop
 
     def get_symbol(self, symbol, nb_hop):

@@ -35,7 +35,6 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
         mat.values = np.empty((0, 0))
     np_mat = np.array(mat.values) * quotient
     matrix = substitution_matrices.Array(alphabet=mat.labels, dims=2, data=np_mat)
-
     # conversion of the string if necessary
     sx = string_compared
     for j in range(transpo):
@@ -74,10 +73,14 @@ fmin = parameters.NOTE_MIN
 
 def compute_signal_similarity(concat_tab, mean_tab, compared_object_ind):
     # freq_static_sim_fft is ok because s_tab is in the according shape
+    '''similarity = 0
     for i in range(len(concat_tab)):
-        similarity = sim_f.frequency_static_similarity_fft(concat_tab[i], compared_object_ind, len(concat_tab[i] - 1))
-        if similarity >= threshold:
-            return 1, similarity
+        print("oh", len(concat_tab[i][compared_object_ind]), concat_tab[i][compared_object_ind])
+        print("ah", len(concat_tab[i][len(concat_tab[i]) - 1]), concat_tab[i][len(concat_tab[i]) - 1])
+        similarity += sim_f.frequency_static_similarity_cqt(concat_tab[i], compared_object_ind, len(concat_tab[i]) - 1)
+    similarity = similarity/len(concat_tab)
+    if similarity >= threshold:
+        return 1, similarity'''
     similarity = sim_f.frequency_static_similarity_fft(mean_tab, compared_object_ind, len(mean_tab) - 1)
     if similarity >= threshold:
         return 1, similarity

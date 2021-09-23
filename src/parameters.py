@@ -15,6 +15,7 @@ PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
 
 teta = 0.976  # 0.976
+superpose_threshold = 0.94
 d_threshold = 140
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
@@ -26,7 +27,7 @@ verbose = 0
 RULE_1 = 1
 RULE_2 = 1
 RULE_3 = 1
-RULE_4 = 0
+RULE_4 = 1
 RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0
@@ -39,7 +40,7 @@ ALIGNEMENT_rule4 = 0
 
 QUOTIENT = 100
 TRANSPOSITION = 1
-LETTER_DIFF = 0
+LETTER_DIFF = 97
 
 GAP_VALUE = -5
 EXT_GAP_VALUE = -1
@@ -53,7 +54,7 @@ CORREC_VALUE = GAP_VALUE/2
 # at precision 2, 0.927 at precision 1
 TETA = teta
 AUDIBLE_THRESHOLD = 0.00001
-# fft : 25; mfcc : 60 # cqt : 140
+# fft : 35; mfcc : 60 # cqt : 140
 D_THRESHOLD = d_threshold
 GRAPH_COMPARISON = 0
 
@@ -128,7 +129,7 @@ EVOL_PRINT = 1
 
 # ------------ ALGOCOG ----------------
 
-CORRECTION_BIT = 1
+CORRECTION_BIT = 0
 CORRECTION_BIT_COLOR = 0
 SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0

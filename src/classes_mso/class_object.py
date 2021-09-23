@@ -1,8 +1,3 @@
-from librosa import cqt, note_to_hz, amplitude_to_db, feature
-from numpy import abs, max, array
-from parameters import SR, NB_VALUES, NOTES_PER_OCTAVE, MFCC_BIT, FFT_BIT
-from data_computing import get_frequency_windows
-
 
 class Object:
     def __init__(self):
@@ -57,39 +52,26 @@ class ConcatObj:
         self.size = 0
 
     def init(self, new_obj):
-        self.objects = new_obj
-        self.concat_signal = new_obj.concat_signal
+        self.objects = [new_obj]
+        self.concat_signal = new_obj.signal
         self.descriptors.copy(new_obj.descriptors)
-        self.concat_labels = new_obj.labels
+        self.concat_labels = new_obj.label
+        self.size = 1
 
     def _update_objects(self, obj):
         self.objects.append(obj)
 
     def _update_signal(self, signal):
-        self.concat_signal.extend(signal)
+        self.concat_signal += signal
 
     def _update_descriptors(self, new_descriptors):
         for i in range(self.descriptors.nb_descriptors):
-            self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i])
-
+            for j in range(len(new_descriptors.concat_descriptors[i])):
+                self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i][j])
             for j in range(len(self.descriptors.mean_descriptors[i])):
                 self.descriptors.mean_descriptors[i][j] = \
                     ((self.size - 1)*self.descriptors.mean_descriptors[i][j] +
                      new_descriptors.mean_descriptors[i][j])/self.size
-
-        # TODO: @jcalandra 07/09/2021 mean_descriptors
-        #  calculer un descripteur moyenné sur toute la partie du signal concernée.
-        #  vérifier que ce qui est obtenu est bien ce que l'on cherche
-        '''if MFCC_BIT:
-            self.descriptors.mean_descriptors = feature.mfcc(y=concat_signal, sr=SR, hop_length=len(self.concat_signal), n_mfcc=20)[1:]
-        elif FFT_BIT:
-            self.descriptors.mean_descriptors = get_frequency_windows(concat_signal, SR, 0, len(self.concat_signal))
-        else:
-            cqt_values = abs(cqt(concat_signal, sr=SR, hop_length=len(self.concat_signal),
-                                 fmin=note_to_hz('C1'), n_bins=NB_VALUES, bins_per_octave=NOTES_PER_OCTAVE,
-                                 window='blackmanharris', sparsity=0.01, norm=1))
-            self.descriptors.mean_descriptors = amplitude_to_db(cqt_values, ref=max)
-        self.descriptors.mean_descriptors.tolist()'''
 
     def _update_labels(self, label):
         self.concat_labels += label
@@ -105,7 +87,7 @@ class ConcatObj:
         self.concat_labels = labels
 
     def _reset_object(self, objects):
-        self.concat_labels = objects
+        self.objects = objects
 
     def _reset_concat_signal(self, signals):
         self.concat_signal = signals
@@ -114,17 +96,15 @@ class ConcatObj:
         self.descriptors.copy(descriptors)
 
     def reset(self, objects):
-        labels = ""
-        signals = []
+        labels = objects[0].label
+        signals = objects[0].signal
         descriptors = Descriptors()
-        for obj in objects:
+        descriptors.copy(objects[0].descriptors)
+        for obj in objects[1:]:
             labels += obj.label
             signals.extend(obj.signal)
             for i in range(descriptors.nb_descriptors):
-                descriptors.concat_descriptors[i].append(obj.descriptors.concat_descriptors[i])
-                for j in range(len(self.descriptors.mean_descriptors[i])):
-                    descriptors.mean_descriptors[i][j] = ((i - 1)*descriptors.mean_descriptors[i][j] +
-                                                          obj.descriptors.mean_descriptors[i][j])/i
+                descriptors.update(obj.descriptors.concat_descriptors[i], obj.descriptors.mean_descriptors[i])
         self._reset_concat_label(labels)
         self._reset_object(objects)
         self._reset_concat_signal(signals)
@@ -142,16 +122,24 @@ class ConcatObj:
 
     def _pop_descriptors(self):
         if len(self.descriptors.concat_descriptors) != 0:
+            if len(self.descriptors.concat_descriptors[0]) > 1:
+                for i in range(self.descriptors.nb_descriptors):
+                    for j in range(len(self.descriptors.mean_descriptors[i])):
+                        self.descriptors.mean_descriptors[i][j] = \
+                            self.descriptors.mean_descriptors[i][j] - \
+                            self.descriptors.concat_descriptors[i][len(self.descriptors.concat_descriptors[i]) - 1][j]\
+                            / len(self.descriptors.concat_descriptors[i])
+            else:
+                self.descriptors.mean_descriptors.pop()
             for i in range(self.descriptors.nb_descriptors):
                 self.descriptors.concat_descriptors[i].pop()
-            if len(self.descriptors.mean_descriptors) != 0:
-                self.descriptors.mean_descriptors.pop()
 
     def pop(self):
         self._pop_concat_label()
         self._pop_concat_signal()
         self._pop_descriptors()
         self._pop_object()
+        self.size = self.size - 1
 
 
 # TODO: @jcalandra 09/09/2021 trajectoire moyenne
@@ -196,14 +184,14 @@ class ObjRep:
     def update_descriptors(self, descriptors):
         self.nb += 1
         for i in range(self.descriptors.nb_descriptors):
-            for j in range(len(self.descriptors.concat_descriptors[i])):
-                # TODO: jcalandra 21/09/2021 dimension pb if vectors
-                self.descriptors.concat_descriptors[i][j] = \
-                    ((self.nb - 1)*self.descriptors.concat_descriptors[i][j] +
-                     descriptors.concat_descriptors[i][j])/self.nb
+            '''for j in range(len(self.descriptors.concat_descriptors[i])):
+                for k in range(len(self.descriptors.concat_descriptors[i][j])):
+                    self.descriptors.concat_descriptors[i][j][k] = \
+                        ((self.nb - 1)*self.descriptors.concat_descriptors[i][j][k] +
+                         descriptors.concat_descriptors[i][j][k])/self.nb'''
             for j in range(len(self.descriptors.mean_descriptors[i])):
                 self.descriptors.mean_descriptors[i][j] = \
-                    ((self.nb - 1)*self.descriptors.mean_descriptors[i] + descriptors.mean_descriptors[i][j])/self.nb
+                    ((self.nb - 1)*self.descriptors.mean_descriptors[i][j] + descriptors.mean_descriptors[i][j])/self.nb
 
     def update(self, signal, label, descriptors):
         self.update_signal(signal)
@@ -219,17 +207,33 @@ class ObjRep:
 
 class Descriptors:
     def __init__(self):
-        self.nb_descriptors = 0
+        self.nb_descriptors = 1
         self.concat_descriptors = []
         self.mean_descriptors = []
 
     # TODO: @jcalandra 09/09/2021 Descriptors functions
     #  MAJ les fonctions pour la classe descripteurs.
-    def update_concat_descriptors(self, descriptors):
-        self.concat_descriptors.append(descriptors)
+    def init_concat_descriptors(self, descriptors):
+        self.concat_descriptors.append([descriptors])
 
-    def update_mean_descriptors(self, descriptors):
+    def init_mean_descriptors(self, descriptors):
         self.mean_descriptors.append(descriptors)
+
+    def init(self, concat_descriptors, mean_descriptors):
+        self.init_concat_descriptors(concat_descriptors)
+        self.init_mean_descriptors(mean_descriptors)
+
+    def update_concat_descriptors(self, concat_descriptors):
+        for i in range(self.nb_descriptors):
+            for j in range(len(self.concat_descriptors[i])):
+                self.concat_descriptors[i].append(concat_descriptors[i])
+
+    def update_mean_descriptors(self, mean_descriptors):
+        for i in range(self.nb_descriptors):
+            for j in range(len(self.mean_descriptors[i])):
+                self.mean_descriptors[i][j] = \
+                    ((len(self.concat_descriptors[0]) - 1) * self.mean_descriptors[i][j] +
+                     mean_descriptors[j]) / len(self.concat_descriptors[0])
 
     def get_empty_descriptors(self, nb_descriptors):
         for i in range(nb_descriptors):

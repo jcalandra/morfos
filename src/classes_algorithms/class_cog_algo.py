@@ -62,15 +62,18 @@ def rules_parametrization(ms_oracle, level, input_data):
 def structure(ms_oracle, level):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    new_obj = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
+    new_obj_tab = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
     if len(ms_oracle.levels) > level + 1:
         node = max(ms_oracle.levels[level].link) + 1
     else:
         node = 1
     for ind in range(ms_oracle.levels[level].concat_obj.size):
         ms_oracle.levels[level].link.append(node)
+    label = ""
+    for obj in new_obj_tab:
+        label += obj.label
     # send to the next f_oracle the node corresponding to concat_obj
-    fun_segmentation(ms_oracle, new_obj, new_obj.label, level + 1)
+    fun_segmentation(ms_oracle, new_obj_tab, label, level + 1)
     return 0
 
 
@@ -142,7 +145,12 @@ def fun_segmentation(ms_oracle, objects, str_obj, level=0):
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             ms_oracle.levels[level].concat_obj = class_object.ConcatObj()
-        ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
+            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
+        else:
+            if ms_oracle.levels[level].concat_obj.size == 0:
+                ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
+            else:
+                ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
 
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):

@@ -425,6 +425,15 @@ def algo_cog(audio_path, oracles, end_mk=0):
             mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
             mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
+            for mat in range(1, oracle_t.data[i_hop - 1]):
+                if matrix[1][oracle_t.data[i_hop - 1]][mat] > prm.superpose_threshold:
+                    mtx[mat][i_hop - 2] = color3
+            for mat in range(1, oracle_t.data[i_hop]):
+                if matrix[1][oracle_t.data[i_hop]][mat] > prm.superpose_threshold:
+                    mtx[mat][i_hop - 1] = color2
+        for mat in range(1, oracle_t.data[i_hop + 1]):
+            if matrix[1][oracle_t.data[i_hop + 1]][mat] > prm.superpose_threshold:
+                mtx[mat][i_hop] = color
 
         if len(concat_obj) == 1:
             if len(history_next) > 0:

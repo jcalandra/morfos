@@ -42,38 +42,38 @@ def similarity(ms_oracle, level):
     else:
         matrix = ms_oracle.matrix
 
-    sim_tab_label = s_tab_concat = []
+    sim_tab_label = []
 
     window = ms_oracle.levels[level].concat_obj.concat_signal
     actual_object_descriptor = class_object.Descriptors()
-    actual_object_descriptor.compute(window)
-    for i in range(actual_object_descriptor.nb_descriptors):
-        s_tab_concat = [[actual_object_descriptor.concat_descriptors[i]]]
-    s_tab_mean = [actual_object_descriptor.mean_descriptors]
+    actual_object_descriptor.copy(ms_oracle.levels[level].concat_obj.descriptors)
+    s_tab_concat = actual_object_descriptor.concat_descriptors
+    s_tab_mean = actual_object_descriptor.mean_descriptors
 
     for i in range(len(ms_oracle.levels[level].materials.history)):
         # compute alignment from labels
         sim_digit_label, sim_value = class_similarity_computation.compute_alignment(
-            ms_oracle.levels[level].materials.history[i][1], ms_oracle.levels[level].concat_obj.concat_labels, matrix,
-            level)
+            ms_oracle.levels[level].materials.history[i][1].concat_labels,
+            ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
         sim_tab_label.append(sim_value / class_similarity_computation.quotient)
 
         # compute similarity from signal
         for j in range(actual_object_descriptor.nb_descriptors):
-            s_tab_concat[j].append(ms_oracle.levels[level].materials.history[i][0].descriptors.concat_descriptors[j])
-        s_tab_mean.append(ms_oracle.levels[level].materials.history[i][0].descriptors.mean_descriptors)
-        sim_digit_descriptors = class_similarity_computation.compute_signal_similarity(s_tab_concat, s_tab_mean, i)
+            s_tab_concat.append(ms_oracle.levels[level].materials.history[i][0].descriptors.concat_descriptors[j])
+            s_tab_mean.append(ms_oracle.levels[level].materials.history[i][0].descriptors.mean_descriptors[j])
+        sim_digit_descriptors, sim_tab_descriptor = class_similarity_computation.compute_signal_similarity(s_tab_concat, s_tab_mean, 0)
 
-        if sim_digit_label and sim_digit_descriptors:
+        if sim_digit_descriptors:
             new_rep = ms_oracle.levels[level].materials.history[i][0]
+            # TODO: jcalandra 22/09/2021 maj le reorésentant (corriger le code, bug)
             new_rep. update(window, new_rep.label, actual_object_descriptor)
-            return new_rep, sim_tab_label
+            return new_rep, sim_tab_label, 1
 
     # compute new representative
     new_char = chr(letter_diff + len(ms_oracle.levels[level].materials.history) + 1)
     new_rep = class_object.ObjRep()
     new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
-    return new_rep, sim_tab_label
+    return new_rep, sim_tab_label, 0
 
 
 def char_next_level_similarity(ms_oracle, level):
@@ -81,15 +81,18 @@ def char_next_level_similarity(ms_oracle, level):
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""
 
-    new_rep, sim_tab = similarity(ms_oracle, level)
+    new_rep, sim_tab, sim_digit = similarity(ms_oracle, level)
 
     # new_obj update
     new_signal = ms_oracle.levels[level].concat_obj.concat_signal
     new_descriptors = class_object.Descriptors()
-    new_descriptors.compute(new_signal)
+    new_descriptors.copy(ms_oracle.levels[level].concat_obj.descriptors)
 
     new_obj = class_object.Object()
     new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+
+    if sim_digit:
+        return [new_obj]
 
     # material.sim_matrix update
     sim_tab.append(1)
@@ -101,10 +104,11 @@ def char_next_level_similarity(ms_oracle, level):
                 ms_oracle.levels[level].materials.sim_matrix.values) - 1][i])
 
     # material.history update
-    concat_rep = []
-    for i in range(ms_oracle.levels[level].concat_obj.size):
-        concat_rep.append(ms_oracle.levels[level].concat_obj.objects[i].obj_rep)
+    concat_rep = class_object.ConcatObj()
+    concat_rep.init(ms_oracle.levels[level].concat_obj.objects[0].obj_rep)
+    for i in range(1, ms_oracle.levels[level].concat_obj.size):
+        concat_rep.update(ms_oracle.levels[level].concat_obj.objects[i].obj_rep)
     ms_oracle.levels[level].materials.history.append((new_rep, concat_rep))
-    return new_obj
+    return [new_obj]
 
 
