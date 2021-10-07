@@ -7,16 +7,17 @@
 # Main informations about the signal to
 # process
 
-NAME = "Geisslerlied"
+NAME = "Weeknd_BlindingLights"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/Geisslerlied/"
+PATH_OBJ = PATH_OBJ_BASIS + ""
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/The_Wknd/"
 
-teta = 0.976  # 0.976
-superpose_threshold = 0.94
-d_threshold = 140
+teta = 0.98  # 0.976
+superpose_threshold = 0.95
+min_matrix = 0.96
+d_threshold = 160
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
@@ -27,7 +28,7 @@ verbose = 0
 RULE_1 = 1
 RULE_2 = 1
 RULE_3 = 1
-RULE_4 = 1
+RULE_4 = 0
 RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0
@@ -40,7 +41,7 @@ ALIGNEMENT_rule4 = 0
 
 QUOTIENT = 100
 TRANSPOSITION = 1
-LETTER_DIFF = 97
+LETTER_DIFF = 1
 
 GAP_VALUE = -5
 EXT_GAP_VALUE = -1
@@ -112,24 +113,27 @@ BACKGROUND = (0, 0, 255)  # white
 SEGMENTATION = (0, 255, 255)  # red
 SEG_ERROR = (60, 255, 255)  # light green
 CLASS_ERROR = (60, 255, 150)  # dark green
+SILENT_FRAME = BACKGROUND
+
+
 
 # --------- INTERFACE ---------------
 # parameters to save or to show in .bmp
 # or from pyplot
 TO_SAVE_BMP = 0
 TO_SHOW_BMP = 0
-TO_SAVE_PYP = 0
-TO_SHOW_PYP = 1
+TO_SAVE_PYP = 1
+TO_SHOW_PYP = 0
 
 # to show or not the oracle at level 0
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 1
+EVOL_PRINT = 0
 
 # ------------ ALGOCOG ----------------
 
-CORRECTION_BIT = 0
+CORRECTION_BIT = 1
 CORRECTION_BIT_COLOR = 0
 SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0

@@ -10,7 +10,7 @@ import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
 import similarity_rules as sim_rules
 
-#import compute_dynamics as cd
+# import compute_dynamics as cd
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -297,7 +297,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
             modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
             j_mat = prev_mat
 
-        diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        '''diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
@@ -341,7 +341,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")
+                    print("[INFO] Process in level 0...")'''
 
         if j_mat > actual_max:
 
@@ -426,14 +426,14 @@ def algo_cog(audio_path, oracles, end_mk=0):
             mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
             for mat in range(1, oracle_t.data[i_hop - 1]):
-                if matrix[1][oracle_t.data[i_hop - 1]][mat] > prm.superpose_threshold:
-                    mtx[mat][i_hop - 2] = color3
+                value = min((1 - matrix[1][oracle_t.data[i_hop - 1]][mat])/(1 - prm.min_matrix) * 255,255)
+                mtx[mat][i_hop - 2] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
             for mat in range(1, oracle_t.data[i_hop]):
-                if matrix[1][oracle_t.data[i_hop]][mat] > prm.superpose_threshold:
-                    mtx[mat][i_hop - 1] = color2
+                value = min((1 - matrix[1][oracle_t.data[i_hop]][mat])/(1 - prm.min_matrix) * 255,255)
+                mtx[mat][i_hop - 1] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
         for mat in range(1, oracle_t.data[i_hop + 1]):
-            if matrix[1][oracle_t.data[i_hop + 1]][mat] > prm.superpose_threshold:
-                mtx[mat][i_hop] = color
+            value = min((1 - matrix[1][oracle_t.data[i_hop + 1]][mat])/(1 - prm.min_matrix) * 255, 255)
+            mtx[mat][i_hop] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
 
         if len(concat_obj) == 1:
             if len(history_next) > 0:
