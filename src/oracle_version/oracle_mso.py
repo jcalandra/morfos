@@ -587,13 +587,7 @@ class MO(FactorOracle):
             dvec = []
             I = []  # I retourne les indices du tableau pour lesquels la distance est supérieure au seuil
             for j in range(len(self.trn[k])):
-                fss = 0
-                if prm.FFT_BIT:
-                    fss = sf.frequency_static_similarity_fft(s_tab, i - 1, self.trn[k][j] - 1)
-                elif prm.MFCC_BIT:
-                    fss = sf.frequency_static_similarity_mfcc(s_tab, self.trn[k][j] - 1, i - 1)
-                elif prm.CQT_BIT:
-                    fss = sf.frequency_static_similarity_cqt(s_tab, self.trn[k][j] - 1, i - 1)
+                fss = sf.frequency_static_similarity(s_tab, self.trn[k][j] - 1, i - 1)
                 dvec.append(fss)
                 if dvec[j] > self.params['threshold'] and self.data[self.trn[k][j]] != 0:
                     I.append(j)
@@ -647,13 +641,7 @@ class MO(FactorOracle):
 
             J = []
             for j in range(n):
-                fss = 0
-                if prm.FFT_BIT:
-                    fss = sf.frequency_static_similarity_fft(compare_tab_rep, i - 1 + n, j)
-                elif prm.MFCC_BIT:
-                    fss = sf.frequency_static_similarity_mfcc(compare_tab_rep, j, i - 1 + n)
-                elif prm.CQT_BIT:
-                    fss = sf.frequency_static_similarity_cqt(compare_tab_rep, j, i - 1 + n)
+                fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
                 comp_rep.append(fss)
                 if j != 0 and comp_rep[j] > self.params['threshold']:
                     J.append(j)
@@ -703,14 +691,9 @@ class MO(FactorOracle):
                        (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
                        (not suffix_candidate):
                         for j in range(len(self.latent[mat_rep])):
-                            fss = 0
                             actual_compared = self.latent[mat_rep][j]
-                            if prm.FFT_BIT:
-                                fss = sf.frequency_static_similarity_fft(s_tab, i - 1, actual_compared - 1)
-                            elif prm.MFCC_BIT:
-                                fss = sf.frequency_static_similarity_mfcc(s_tab, actual_compared - 1, i - 1)
-                            elif prm.CQT_BIT:
-                                fss = sf.frequency_static_similarity_cqt(s_tab, actual_compared - 1, i - 1)
+                            fss = sf.frequency_static_similarity(s_tab, actual_compared - 1, i - 1)
+
                             if fss > self.params['threshold']:
                                 if method == 'complete':
                                     suffix_candidate.append((actual_compared, 1))

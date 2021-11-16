@@ -1,5 +1,5 @@
 import similarity_computation
-from parameters import LETTER_DIFF
+from parameters import LETTER_DIFF, STRICT_EQUALITY, ALIGNMENT
 letter_diff = LETTER_DIFF
 
 
@@ -69,7 +69,12 @@ def char_next_level_similarity(oracles, level):
     concat_obj = oracles[1][level][3]
     matrix_next = oracles[1][level][6]
 
-    new_char, new_descriptor, sim_tab, digit = similarity_alignment(oracles, level)
+    if STRICT_EQUALITY:
+        new_char, new_descriptor, sim_tab, digit = similarity_strict(oracles, level)
+    elif ALIGNMENT:
+        new_char, new_descriptor, sim_tab, digit = similarity_alignment(oracles, level)
+    else:
+        new_char, new_descriptor, sim_tab, digit = similarity_alignment(oracles, level)
     if digit:
         return new_char
 

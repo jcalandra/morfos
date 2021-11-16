@@ -7,21 +7,65 @@
 # Main informations about the signal to
 # process
 
-NAME = "Weeknd_BlindingLights"
+NAME = "Geisslerlied"
 FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + ""
+PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/The_Wknd/"
 
-teta = 0.98  # 0.976
-superpose_threshold = 0.95
-min_matrix = 0.96
-d_threshold = 160
+teta = 0.975  # 0.976
+if teta > 1:
+    teta = 1
+elif teta < 0:
+    teta = 0
+
+superpose_threshold = 0.94
+if superpose_threshold > 1:
+    superpose_threshold = 1
+elif superpose_threshold < 0:
+    superpose_threshold = 0
+
+min_matrix = 0.94
+if min_matrix > 1:
+    min_matrix = 1
+elif min_matrix < 0:
+    min_matrix = 0
+
+d_threshold = 0.1  # 0.1 for dynamic, 150 for fourier
+if d_threshold < 0:
+    d_threshold = 0
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 verbose = 0
-# ----------------- RULES -----------------
+
+
+# === SIMILARITY AND SEGMENTATION RULES ===
+# -------- SIGNAL SIMILARITY RULES --------
+DIFF_CONCORDANCE = 1
+EUCLID_DISTANCE = 0
+
+if DIFF_CONCORDANCE + EUCLID_DISTANCE != 1:
+    DIFF_CONCORDANCE = 1
+    EUCLID_DISTANCE = 0
+
+# ------ SIGNAL SEGMENTATION RULES --------
+DIFF_FOURIER = 0
+DIFF_DYNAMIC = 1
+
+if DIFF_FOURIER + DIFF_DYNAMIC != 1:
+    DIFF_FOURIER = 1
+    DIFF_DYNAMIC = 0
+
+# ------- SYMBOLS SIMILARITY RULES --------
+STRICT_EQUALITY = 0
+ALIGNMENT = 1
+
+if STRICT_EQUALITY + ALIGNMENT != 1:
+    STRICT_EQUALITY = 0
+    ALIGNMENT = 1
+
+# -------SYMBOLS SEGMENTATION RULES -------
 # Rules that are activated or not and their
 # parameters
 
@@ -41,7 +85,7 @@ ALIGNEMENT_rule4 = 0
 
 QUOTIENT = 100
 TRANSPOSITION = 1
-LETTER_DIFF = 1
+LETTER_DIFF = 96
 
 GAP_VALUE = -5
 EXT_GAP_VALUE = -1
@@ -73,6 +117,11 @@ INIT = 0
 MFCC_BIT = 0
 CQT_BIT = 1
 FFT_BIT = 0
+
+if MFCC_BIT + CQT_BIT + FFT_BIT != 1:
+    MFCC_BIT = 0
+    CQT_BIT = 1
+    FFT_BIT = 0
 
 if CQT_BIT:
     NB_VALUES = NB_NOTES
@@ -122,18 +171,18 @@ SILENT_FRAME = BACKGROUND
 # or from pyplot
 TO_SAVE_BMP = 0
 TO_SHOW_BMP = 0
-TO_SAVE_PYP = 1
-TO_SHOW_PYP = 0
+TO_SAVE_PYP = 0
+TO_SHOW_PYP = 1
 
 # to show or not the oracle at level 0
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 0
+EVOL_PRINT = 1
 
 # ------------ ALGOCOG ----------------
 
-CORRECTION_BIT = 1
+CORRECTION_BIT = 0
 CORRECTION_BIT_COLOR = 0
 SEGMENTATION_BIT = 0
 WRITE_RESULTS = 0

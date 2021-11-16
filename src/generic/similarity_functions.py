@@ -13,6 +13,11 @@ AUDIBLE_THRESHOLD = prm.AUDIBLE_THRESHOLD
 D_THRESHOLD = prm.D_THRESHOLD
 NB_NOTES = prm.NB_NOTES
 
+DIFF_CONCORDANCE = prm.DIFF_CONCORDANCE
+EUCLID_DISTANCE = prm.EUCLID_DISTANCE
+DIFF_FOURIER = prm.DIFF_FOURIER
+DIFF_DYNAMIC = prm.DIFF_DYNAMIC
+
 # ================================================= DISTANCES ==========================================================
 # ---------------------- STATIC FUNCTIONS ------------------------
 
@@ -26,10 +31,9 @@ def volume_static_similarity(v_tab, id_hop_a, id_hop_b):
 
 
 # Spectrum
-# FFT
-def frequency_static_similarity_fft(s_tab, id_hop_a, id_hop_b):  # common energy
+def diff_concordance(s_tab, id_hop_a, id_hop_b):
     """ Compute the cosine similarity of the frequencies between the frame
-    id_hop_a and the frame id_hop_b."""
+        id_hop_a and the frame id_hop_b."""
     square_a = square_b = cs = 0
     n = len(s_tab[id_hop_a])
     # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j
@@ -49,9 +53,8 @@ def frequency_static_similarity_fft(s_tab, id_hop_a, id_hop_b):  # common energy
     return cs
 
 
-# MFCC
-def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
-    """ Compute the euclid distance between each mfcc of two different hops."""
+def euclid_distance(s_tab, id_hop_a, id_hop_b):
+    """ Compute the euclid distance. """
     n = len(s_tab[id_hop_a])
     e_distance = 0
     for k in range(n):
@@ -60,28 +63,57 @@ def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
     if e_distance == 0:
         fcc = 1
     else:
-        fcc = 1/e_distance
+        fcc = 1 / e_distance
     return fcc
+
+
+# FFT
+def frequency_static_similarity_fft(s_tab, id_hop_a, id_hop_b):  # common energy
+    """ Compute the similarity between frequencies according to the chosen method."""
+    if DIFF_CONCORDANCE:
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    elif EUCLID_DISTANCE:
+        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+    else:
+        # concordance is chosen
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    return cs
+
+
+# MFCC
+def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
+    """ Compute the euclid distance between each mfcc of two different hops."""
+    if DIFF_CONCORDANCE:
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    elif EUCLID_DISTANCE:
+        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+    else:
+        # euclid_distance is chosen
+        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+    return cs
 
 
 def frequency_static_similarity_cqt(s_tab, id_hop_a, id_hop_b):
     """ Compute the cosine similarity between each cqt of two different hops."""
-    square_a = square_b = cs = 0
-    n = len(s_tab[id_hop_a])
-    # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j
-    for j in range(n):
-        square_a = square_a + (s_tab[id_hop_a][j]) ** 2
-        square_b = square_b + (s_tab[id_hop_b][j]) ** 2
-    square = math.sqrt(square_a) * math.sqrt(square_b)
-    # compute the cosine
-    for j in range(1, n):
-        cs = cs + s_tab[id_hop_a][j] * s_tab[id_hop_b][j]
-    if square > 0:
-        cs = cs / square
-    elif square_a == 0 and square_b == 0:
-        cs = 1
+    if DIFF_CONCORDANCE:
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    elif EUCLID_DISTANCE:
+        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
     else:
-        cs = 0
+        # concordance is chosen
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    return cs
+
+
+def frequency_static_similarity(s_tab, id_hop_a, id_hop_b):
+    """ Compute the cosine similarity between each cqt of two different hops."""
+    if DIFF_CONCORDANCE:
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
+    elif EUCLID_DISTANCE:
+        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+    else:
+        # concordance is chosen
+        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
     return cs
 
 
@@ -189,6 +221,23 @@ def frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
 
 # ============================================ COMPARISON ==============================================================
 
+'''def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
+    """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
+    fss = fss2 = 0
+    if FFT_BIT:
+        fss = frequency_static_similarity(s_tab, i_hop_a, i_hop_b)
+        fss2 = frequency_static_similarity(s_tab, i_hop_a, i_hop_c)
+    if MFCC_BIT or CQT_BIT:
+        s_tab_trans = s_tab.transpose()
+        fss = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_b)
+        fss2 = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_c)
+    if max(fss2, fss) == fss:
+        good_mat = j_mat
+    else:
+        good_mat = prev2_mat
+    return good_mat'''
+
+
 def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
     """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
     fss = fss2 = 0
@@ -263,15 +312,20 @@ def dissimilarity(i_hop, s_tab, v_tab):
     """ Compute the dissimilarity between the frequencies of i_hop and i_hop - 1."""
     sdd = 0
     if FFT_BIT:
-        sdd = frequency_dynamic_dissimilarity_fft2(s_tab, i_hop, i_hop - 1)
+        if DIFF_FOURIER:
+            sdd = frequency_dynamic_dissimilarity_fft2(s_tab, i_hop, i_hop - 1)
+        elif DIFF_DYNAMIC:
+            sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
+        else:
+            sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
     elif MFCC_BIT or CQT_BIT:
-        sdd = frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, i_hop, i_hop - 1)
-    # vdd = volume_kullback_leibler(v_tab, i_hop, i_hop - 1)
-    if v_tab[i_hop] != 0:
-        seuil = D_THRESHOLD
-    else:
-        seuil = D_THRESHOLD
-    if sdd > seuil:
+        if DIFF_FOURIER:
+            sdd = frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, i_hop, i_hop - 1)
+        elif DIFF_DYNAMIC:
+            sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
+        else:
+            sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
+    if sdd > D_THRESHOLD:
         return 1
     return 0
 

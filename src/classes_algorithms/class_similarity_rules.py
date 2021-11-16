@@ -1,6 +1,6 @@
 import class_similarity_computation
 import class_object
-from parameters import LETTER_DIFF
+from parameters import LETTER_DIFF, STRICT_EQUALITY, ALIGNMENT
 letter_diff = LETTER_DIFF
 
 
@@ -52,9 +52,26 @@ def similarity(ms_oracle, level):
 
     for i in range(len(ms_oracle.levels[level].materials.history)):
         # compute alignment from labels
-        sim_digit_label, sim_value = class_similarity_computation.compute_alignment(
-            ms_oracle.levels[level].materials.history[i][1].concat_labels,
-            ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
+        if STRICT_EQUALITY:
+            concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+            history_next_i = ms_oracle.levels[level].materials.history[i][1].concat_labels
+            sim_digit_label = 0
+            if len(concat_obj) == len(history_next_i):
+                j = 0
+                while history_next_i[j] == concat_obj[j]:
+                    j = j + 1
+                    if j == len(history_next_i):
+                        sim_digit_label = 1
+                        break
+            sim_value = sim_digit_label*class_similarity_computation.quotient
+        elif ALIGNMENT:
+            sim_digit_label, sim_value = class_similarity_computation.compute_alignment(
+                ms_oracle.levels[level].materials.history[i][1].concat_labels,
+                ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
+        else:
+            sim_digit_label, sim_value = class_similarity_computation.compute_alignment(
+                ms_oracle.levels[level].materials.history[i][1].concat_labels,
+                ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
         sim_tab_label.append(sim_value / class_similarity_computation.quotient)
 
         # compute similarity from signal
@@ -63,7 +80,7 @@ def similarity(ms_oracle, level):
             s_tab_mean.append(ms_oracle.levels[level].materials.history[i][0].descriptors.mean_descriptors[j])
         sim_digit_descriptors, sim_tab_descriptor = class_similarity_computation.compute_signal_similarity(s_tab_concat, s_tab_mean, 0)
 
-        if sim_digit_descriptors:
+        if sim_digit_label and sim_digit_descriptors:
             new_rep = ms_oracle.levels[level].materials.history[i][0]
             # TODO: jcalandra 22/09/2021 maj le reorésentant (corriger le code, bug)
             new_rep. update(window, new_rep.label, actual_object_descriptor)

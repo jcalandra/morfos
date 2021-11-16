@@ -108,7 +108,7 @@ def compute_descriptor(window):
 
 def compute_signal_similarity(s_tab, compared_object_ind):
     # freq_static_sim_fft is ok because s_tab is in the according shape
-    similarity = sim_f.frequency_static_similarity_fft(s_tab, compared_object_ind, len(s_tab) - 1)
+    similarity = sim_f.frequency_static_similarity(s_tab, compared_object_ind, len(s_tab) - 1)
     if similarity >= threshold:
         return 1, similarity
     return 0, similarity

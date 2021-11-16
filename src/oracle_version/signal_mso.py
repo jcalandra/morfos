@@ -297,7 +297,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
             modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data)
             j_mat = prev_mat
 
-        '''diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        diff = sf.dissimilarity(i_hop, s_tab, v_tab)
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
@@ -341,7 +341,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 diff_mk = 1
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
-                    print("[INFO] Process in level 0...")'''
+                    print("[INFO] Process in level 0...")
 
         if j_mat > actual_max:
 
