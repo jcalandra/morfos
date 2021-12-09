@@ -112,14 +112,14 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-    if prm.POLYPHONY:
-        side_materials(oracles, level, formal_diagram, actual_char, n, k_init, color)
+    if prm.POLYPHONY and prm.processing == 'signal':
+        side_materials(oracles, level, formal_diagram, actual_char, n, k_init)
     for i in range(n):
         formal_diagram[actual_char - 1][k_init + i - 1] = color
     return 0
 
 
-def side_materials(oracles, level, formal_diagram, actual_char, n, k_init, color):
+def side_materials(oracles, level, formal_diagram, actual_char, n, k_init):
     if level == 0:
         matrix_values = oracles[1][0][7][1]
     else:

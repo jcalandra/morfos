@@ -106,7 +106,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         if level == 0 and processing == 'symbols':
             vec = [1]
-            matrix = [chr(fd_mso.letter_diff + ord(str_obj[0])), [vec]]
+            matrix = [chr(ord(str_obj[0])), [vec]]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
         elif level > 0:
             matrix = oracles[1][level - 1][6]
@@ -139,10 +139,10 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         actual_char_ind = k + i + 1
 
         if level == 0 and processing == 'symbols' and \
-                actual_char > max([ord(matrix[0][ind]) for ind in range(len(matrix[0]))]):
+                actual_char > max([ord(matrix[0][ind]) - letter_diff for ind in range(len(matrix[0]))]):
             vec = [0 for ind_vec in range(len(matrix[0]))]
             vec.append(1)
-            matrix[0] += chr(actual_char + fd_mso.letter_diff)
+            matrix[0] += chr(actual_char + letter_diff)
             matrix[1].append(vec)
             for ind_mat in range(len(matrix[1]) - 1):
                 matrix[1][ind_mat].append(matrix[1][len(matrix[1]) - 1][ind_mat])
@@ -170,6 +170,8 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # If the tests are positives, there is structuration.
         if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
             # or (end_mk == 1 and len(concat_obj) != 0):
+            if prm.verbose == 1:
+                print("[INFO] structure in level " + str(level) + "...")
             structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
@@ -191,5 +193,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         i += 1
         if prm.verbose == 1:
             print("state number ", i, " in level ", level)
+            print("actual char", actual_char, "actual char ind", actual_char_ind)
 
     return 1

@@ -69,6 +69,10 @@ def char_next_level_similarity(oracles, level):
     concat_obj = oracles[1][level][3]
     matrix_next = oracles[1][level][6]
 
+    if level == 0:
+        matrix = oracles[1][level][7]
+    else:
+        matrix = oracles[1][level - 1][6]
     if STRICT_EQUALITY:
         new_char, new_descriptor, sim_tab, digit = similarity_strict(oracles, level)
     elif ALIGNMENT:

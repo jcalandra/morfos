@@ -85,12 +85,16 @@ ALIGNEMENT_rule4 = 0
 # SPECIFIC PARAMETRISATION ===============
 # ------------- ALIGNEMENT ----------------
 # Alignement parameters
-
+# quotient to divide then multiply the
+# alignment value for precision
 QUOTIENT = 100
+#useless parameter for now
 TRANSPOSITION = 1
 
 # letter to numbers difference
-LETTER_DIFF = 1
+# for symbols put letter_diff = 96
+# for signal put letter_diff = 0
+LETTER_DIFF = 96
 
 # Reajust the similarity matrix values
 GAP_VALUE = -5

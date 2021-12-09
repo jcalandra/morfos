@@ -35,7 +35,6 @@ def example():
     Debussy4 = ''
     for i in range(len(Debussy3)):
         Debussy4 += chr(Debussy3[i] + 96)
-    print(Debussy4)
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
     Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
