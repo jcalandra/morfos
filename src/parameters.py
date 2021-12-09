@@ -170,7 +170,7 @@ TEMPO = 120
 
 # Boolean to chose to reclassify or not
 # transitory frames
-CORRECTION_BIT = 0
+CORRECTION_BIT = 1
 # Boolean to chose to print in different
 # color or not transitory frames that
 # are moves
