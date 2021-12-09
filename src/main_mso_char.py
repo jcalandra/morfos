@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # =========================================== MAIN FUNCTION FROM STRING ================================================
 def main(char_ex):
-    """ Main loop for the cognitive algorithm starting from a string describing the audio."""
+    """ Main loop for the cognitive algorithm using the MSO and a string describing the audio."""
     # initialisation of the structures
     data_length = len(char_ex)
     level_max = -1

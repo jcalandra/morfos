@@ -20,7 +20,7 @@ INIT = prm.INIT
 
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
 def main():
-    """ Main function of the cognitive algorithm."""
+    """ Main function of the cognitive algorithm producing a hiérarchy of formal diagrams from signal using MSO."""
     path = PATH_OBJ + NAME + FORMAT
     start_time_full = time.time()
 
