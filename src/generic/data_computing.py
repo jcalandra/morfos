@@ -3,6 +3,7 @@ import pydub
 from matplotlib.pyplot import *
 import math
 import parameters as prm
+from sklearn import preprocessing
 
 # In this file are implemented all functions that process the signal
 
@@ -318,7 +319,6 @@ def get_cqt(data, rate, hop_length, nb_notes, init, fmin):
     """ Get the cqt from the audio 'data'."""
     cqt_values = np.abs(librosa.cqt(data[init:], sr=rate, hop_length=hop_length, fmin=librosa.note_to_hz(fmin),
                            n_bins=nb_notes, bins_per_octave=NPO, window='blackmanharris', sparsity=0.01, norm=1))
-
     cqt_values = librosa.amplitude_to_db(cqt_values, ref=np.max)
     return cqt_values
 

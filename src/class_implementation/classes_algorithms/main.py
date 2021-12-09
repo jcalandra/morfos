@@ -45,7 +45,7 @@ def main_char(char_ex):
     nb_hop = len(char_ex)
     mso = class_mso.MSO(NAME)
     mso.get_symbol(char_ex, nb_hop)
-    class_cog_algo.fun_segmentation(mso, char_ex)
+    class_cog_algo.fun_segmentation(mso, [], char_ex)
 
     # printing the results in the shell
     for i in range(len(mso.levels)):

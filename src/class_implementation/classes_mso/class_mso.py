@@ -2,9 +2,7 @@ import oracle_mso
 import class_materials
 import class_formal_diagrams
 import class_object
-from numpy import concatenate
 from parameters import SR, HOP_LENGTH
-import matplotlib.pyplot as plt
 
 from data_computing import get_data
 

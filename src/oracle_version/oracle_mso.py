@@ -550,7 +550,7 @@ class MO(FactorOracle):
 
         # Experiment with pointer-based
         self.f_array.add(new_data)
-        audible_threshold = 0.1
+        audible_threshold = prm.AUDIBLE_THRESHOLD
 
         self.n_states += 1  # Nombre d'états
         i = self.n_states - 1  # Inidce correspondant au dernier état

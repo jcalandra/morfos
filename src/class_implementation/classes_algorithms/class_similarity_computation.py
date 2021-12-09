@@ -43,8 +43,6 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
             sy += chr(ord(i) - j)
 
         # Needleman-Wunsch alignment
-        print("sx = ", sx)
-        print("sy = ", sy)
         nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap)
         if len(nw_align) == 0:
             return 0, 0
@@ -83,7 +81,8 @@ def compute_signal_similarity(concat_tab, mean_tab, compared_object_ind):
     similarity = similarity/len(concat_tab)
     if similarity >= threshold:
         return 1, similarity'''
-    similarity = sim_f.frequency_static_similarity_fft(mean_tab, compared_object_ind, len(mean_tab) - 1)
-    if similarity >= threshold:
+    similarity = sim_f.frequency_static_similarity(mean_tab, compared_object_ind, len(mean_tab) - 1)
+    if similarity >= 0.944:
+        print("material", len(mean_tab))
         return 1, similarity
     return 0, similarity

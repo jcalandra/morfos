@@ -112,7 +112,8 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-    side_materials(oracles, level, formal_diagram, actual_char, n, k_init, color)
+    if prm.POLYPHONY:
+        side_materials(oracles, level, formal_diagram, actual_char, n, k_init, color)
     for i in range(n):
         formal_diagram[actual_char - 1][k_init + i - 1] = color
     return 0
@@ -126,17 +127,6 @@ def side_materials(oracles, level, formal_diagram, actual_char, n, k_init, color
     for i in range(1, actual_char - 1):
         for j in range(n):
             formal_diagram[i][k_init + j - 1] = min((1 - matrix_values[actual_char - 1][i])/(1 - prm.min_matrix), 1)
-
-
-def side_materials2(oracles, level, formal_diagram, actual_char, n, k_init, color):
-    if level == 0:
-        matrix_values = oracles[1][0][7][1]
-    else:
-        matrix_values = oracles[1][level - 1][6][1]
-    for i in range(1, actual_char - 1):
-        if matrix_values[actual_char - 1][i] > prm.superpose_threshold:
-            for j in range(n):
-                formal_diagram[i][k_init + j - 1] = color + 0.1
 
 
 # ======================================== FORMAL DIAGRAM 3D (TESTS) ===================================================

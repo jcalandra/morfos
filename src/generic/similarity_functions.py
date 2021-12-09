@@ -38,8 +38,10 @@ def diff_concordance(s_tab, id_hop_a, id_hop_b):
     n = len(s_tab[id_hop_a])
     # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j
     for j in range(n):
-        square_a = square_a + (s_tab[id_hop_a][j]) ** 2
-        square_b = square_b + (s_tab[id_hop_b][j]) ** 2
+        a = s_tab[id_hop_a][j]
+        b = s_tab[id_hop_b][j]
+        square_a = square_a + a ** 2
+        square_b = square_b + b ** 2
     square = math.sqrt(square_a) * math.sqrt(square_b)
     # compute the cosine
     for j in range(1, n):

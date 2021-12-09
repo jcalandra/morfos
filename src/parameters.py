@@ -14,25 +14,21 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/The_Wknd/"
 
-teta = 0.975  # 0.976
+teta = 0.975 # 0.976
 if teta > 1:
     teta = 1
 elif teta < 0:
     teta = 0
 
-superpose_threshold = 0.94
-if superpose_threshold > 1:
-    superpose_threshold = 1
-elif superpose_threshold < 0:
-    superpose_threshold = 0
+POLYPHONY = 1
 
-min_matrix = 0.94
-if min_matrix > 1:
-    min_matrix = 1
+min_matrix = 1
+if min_matrix >= 1:
+    min_matrix = 0.999
 elif min_matrix < 0:
     min_matrix = 0
 
-d_threshold = 0.1  # 0.1 for dynamic, 150 for fourier
+d_threshold = 150  # 0.1 for dynamic, 150 for fourier
 if d_threshold < 0:
     d_threshold = 0
 # processing must be str 'symbols' or 'signal'
@@ -50,8 +46,8 @@ if DIFF_CONCORDANCE + EUCLID_DISTANCE != 1:
     EUCLID_DISTANCE = 0
 
 # ------ SIGNAL SEGMENTATION RULES --------
-DIFF_FOURIER = 0
-DIFF_DYNAMIC = 1
+DIFF_FOURIER = 1
+DIFF_DYNAMIC = 0
 
 if DIFF_FOURIER + DIFF_DYNAMIC != 1:
     DIFF_FOURIER = 1
@@ -72,7 +68,7 @@ if STRICT_EQUALITY + ALIGNMENT != 1:
 RULE_1 = 1
 RULE_2 = 1
 RULE_3 = 1
-RULE_4 = 0
+RULE_4 = 1
 RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0
@@ -85,7 +81,7 @@ ALIGNEMENT_rule4 = 0
 
 QUOTIENT = 100
 TRANSPOSITION = 1
-LETTER_DIFF = 96
+LETTER_DIFF = 0
 
 GAP_VALUE = -5
 EXT_GAP_VALUE = -1
@@ -98,7 +94,7 @@ CORREC_VALUE = GAP_VALUE/2
 # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.97
 # at precision 2, 0.927 at precision 1
 TETA = teta
-AUDIBLE_THRESHOLD = 0.00001
+AUDIBLE_THRESHOLD = 0.01
 # fft : 35; mfcc : 60 # cqt : 140
 D_THRESHOLD = d_threshold
 GRAPH_COMPARISON = 0
