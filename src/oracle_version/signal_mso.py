@@ -4,7 +4,6 @@ import parameters as prm
 import numpy as np
 import cv2
 import time
-import plot
 from mso import *
 import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
@@ -309,6 +308,15 @@ def algo_cog(audio_path, oracles, end_mk=0):
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
 
     for i_hop in range(nb_hop):  # while
+        ## CHECKPOINT ##
+        # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
+        # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
+        # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
+        # certaines valeurs
+        checkpoint = i_hop/nb_hop*100
+        if prm.verbose == 1:
+            print("CHECKPOINT : ", checkpoint, "%")
+        ## CHECKPOINT ##
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
