@@ -73,5 +73,5 @@ def example():
     main_char(Mozart)
 
 
-main()
+example()
 

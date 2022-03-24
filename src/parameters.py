@@ -39,7 +39,7 @@ elif min_matrix < 0:
 
 # Choose here either to process the cognitive algorithm from signal or character string
 # processing must be str 'symbols' or 'signal'
-processing = 'symbols'
+processing = 'signal'
 
 # Display comments
 verbose = 0
@@ -128,6 +128,9 @@ GRAPH_COMPARISON = 0
 
 SR = 22050
 HOP_LENGTH = 1024
+if processing == 'symbols':
+    SR = 1
+    HOP_LENGTH = 1
 
 PRECISION = 4
 NB_NOTES = 48*PRECISION
@@ -280,3 +283,7 @@ cost_comparaison_2 = 1
 cost_labelisation = 1
 cost_maj_link = 1
 cost_level_up = 1
+
+#info objects
+global objects
+global first_occ

@@ -208,6 +208,7 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     if blank_ind == lim_ind and prev_mat == actual_max:
         matrix[0] = matrix[0][:-1]
         matrix[1].pop()
+        prm.first_occ[0].pop()
         for i in range(len(matrix[1])):
             matrix[1][i].pop()
         actual_max = actual_max - 1
@@ -247,6 +248,8 @@ def matrix_init(rate, data_size, data_length, nb_points):
     for i in range(nb_hop):
         new_mat[0][i] = BACKGROUND
     mtx = new_mat.copy()
+    prm.first_occ.append([])
+    prm.first_occ[0].append(0)
     return mtx, nb_hop, data_length
 
 
@@ -293,6 +296,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         [f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
     oracles[2] = data
+    prm.objects.append([])
 
     # ------- ALGORITHM -------
     prev_mat = prev2_mat = prev3_mat = 0
@@ -306,7 +310,6 @@ def algo_cog(audio_path, oracles, end_mk=0):
     start_time = time.time()
 
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
-
     for i_hop in range(nb_hop):  # while
         # CHECKPOINT #
         # Si le format fourni en entrée du logiciel est un fichier audio.
@@ -465,6 +468,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
             for i in range(nb_hop):
                 new_mat_l[0][i] = BACKGROUND
             mtx = np.concatenate((mtx, new_mat_l))
+            first_occ_mat = i_hop*(prm.HOP_LENGTH/prm.SR)
+            prm.first_occ[level].append(first_occ_mat)
 
         else:
 
@@ -547,6 +552,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         g_oracle = oracle_mso.create_oracle('f')
         for ind in range(i_hop + 1):
             g_oracle.add_state(oracle_t.data[ind + 1] + 1)
+
         f_oracle = g_oracle
         oracles[1][level][0] = f_oracle
         oracles[1][level][1] = link
@@ -554,6 +560,24 @@ def algo_cog(audio_path, oracles, end_mk=0):
         oracles[1][level][3] = concat_obj
         oracles[1][level][4] = formal_diagram
         oracles[1][level][5] = formal_diagram_graph
+
+        sound = links = 0 # à définir
+        mat_num = oracle_t.data[i_hop + 1]
+        x = (prm.HOP_LENGTH/prm.SR)*(i_hop + 1)
+        y = prm.first_occ[level][mat_num]
+        z = prm.HOP_LENGTH/prm.SR
+        object = {"links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level, "sound": sound}
+        prm.objects[level].append(object)
+
+        if i_hop > 3:
+            mat_num_prev1 = oracle_t.data[i_hop]
+            mat_num_prev2 = oracle_t.data[i_hop - 1]
+            prm.objects[level][len(prm.objects[level]) - 2]["mat_num"] = mat_num_prev1
+            prm.objects[level][len(prm.objects[level]) - 3]["mat_num"] = mat_num_prev2
+            y_prev1 = prm.first_occ[level][mat_num_prev1]
+            y_prev2 = prm.first_occ[level][mat_num_prev2]
+            prm.objects[level][len(prm.objects[level]) - 2]["coordinates"]["y"] = y_prev1
+            prm.objects[level][len(prm.objects[level]) - 3]["coordinates"]["y"] = y_prev2
 
     if flag != 'f' and flag != 'v':
         oracle_t.f_array.finalize()

@@ -105,6 +105,7 @@ def fun_segmentation(ms_oracle, objects, str_obj, level=0):
     if verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
     while ms_oracle.levels[level].iterator < len(str_obj):
+
         i = ms_oracle.levels[level].iterator
         ms_oracle.levels[level].update_oracle(input_data[i])
         ms_oracle.levels[level].actual_object = objects[i]

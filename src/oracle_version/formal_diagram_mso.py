@@ -51,7 +51,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     if processing == 'symbols':
         plt.imshow(formal_diagram, extent=[0, int(data_length), len(formal_diagram), 0])
     elif processing == 'signal':
-        plt.imshow(formal_diagram, extent=[0, int(data_length / SR * HOP_LENGTH), len(formal_diagram), 0])
+        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
     if TO_SAVE_PYP:
         plt.savefig(path_results + file_name_pyplot)
     if EVOL_PRINT == 1:
@@ -69,6 +69,8 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     formal_diagram.append(new_mat)
     if level == 0:
         n = 1
+        prm.objects = []
+        prm.first_occ = []
     else:
         k_end = 1
         lv = level - 1
@@ -81,6 +83,17 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
         n = k_end
     for i in range(n):
         formal_diagram[0][i] = 1.1/4
+
+    prm.objects.append([])
+    prm.first_occ.append([])
+    sound = links = 0 # a définir
+    mat_num = 0
+    x = (n - 1)*(1/prm.SR)*prm.HOP_LENGTH
+    y = 0
+    z = n*(1/prm.SR)*prm.HOP_LENGTH
+    object = {"links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level":level, "sound": sound}
+    prm.objects[level].append(object)
+    prm.first_occ[level].append(y)
     return 1
 
 
@@ -112,10 +125,20 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
+        first_occ_mat = (k_init + n - 2)*(prm.HOP_LENGTH/prm.SR)
+        prm.first_occ[level].append(first_occ_mat)
     if prm.POLYPHONY and prm.processing == 'signal':
         side_materials(oracles, level, formal_diagram, actual_char, n, k_init)
     for i in range(n):
         formal_diagram[actual_char - 1][k_init + i - 1] = color
+
+    sound = links = 0 # à définir
+    mat_num = actual_char - 1
+    x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)
+    y = prm.first_occ[level][mat_num]
+    z = n*(1/prm.SR)*prm.HOP_LENGTH
+    object = {"links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level": level, "sound": sound}
+    prm.objects[level].append(object)
     return 0
 
 
