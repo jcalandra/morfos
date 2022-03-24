@@ -234,7 +234,7 @@ TO_SAVE_PYP = 0
 TO_SHOW_PYP = 1
 
 # to show or not the oracles
-PLOT_ORACLE = 1
+PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
 EVOL_PRINT = 1
@@ -260,7 +260,7 @@ SYNTHESIS = 0
 
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
-COMPUTE_COSTS = 0
+COMPUTE_COSTS = 1
 cost_new_oracle = 1
 
 cost_numerisation = 1

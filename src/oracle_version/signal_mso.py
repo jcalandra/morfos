@@ -62,6 +62,7 @@ cost_labelisation = prm.cost_labelisation
 cost_maj_link = prm.cost_maj_link
 cost_level_up = prm.cost_level_up
 
+
 # ======================================== ORACLE INITIALISATION AND CORRECTION ========================================
 def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
     """ Modify the oracle 'oracle_t' according to the last corrected frame of mat 'j_mat' at instant 'i_hop'."""
@@ -251,16 +252,14 @@ def matrix_init(rate, data_size, data_length, nb_points):
 
 def algo_cog(audio_path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
-    if prm.COMPUTE_COSTS == 1:
-        prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
-        gamma_t = alpha_t = delta_t = beta_t = 0
+    prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
+    gamma_t = alpha_t = delta_t = beta_t = 0
 
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     data, rate, data_size, data_length, nb_points = prep_data(audio_path)
     mtx, nb_hop, data_length = matrix_init(rate, data_size, data_length, nb_points)
     if prm.COMPUTE_COSTS == 1:
         gamma_t += cost_numerisation
-
 
     if prm.verbose == 1:
         print("[INFO] Computing frequencies and volume...")
@@ -290,7 +289,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
         structure_init(flag, level)
     vec = [1]
     matrix = [chr(fd_mso.letter_diff + 1), [vec]]
-    oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
+    oracles[1].append(
+        [f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
     oracles[2] = data
 
@@ -308,15 +308,15 @@ def algo_cog(audio_path, oracles, end_mk=0):
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
 
     for i_hop in range(nb_hop):  # while
-        ## CHECKPOINT ##
+        # CHECKPOINT #
         # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
         # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
         # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
         # certaines valeurs
-        checkpoint = i_hop/nb_hop*100
+        checkpoint = i_hop / nb_hop * 100
         if prm.verbose == 1:
             print("CHECKPOINT : ", checkpoint, "%")
-        ## CHECKPOINT ##
+        # CHECKPOINT #
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
@@ -498,14 +498,14 @@ def algo_cog(audio_path, oracles, end_mk=0):
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
             if prm.POLYPHONY:
                 for mat in range(1, oracle_t.data[i_hop - 1]):
-                    value = min((1 - matrix[1][oracle_t.data[i_hop - 1]][mat])/(1 - prm.min_matrix) * 255,255)
+                    value = min((1 - matrix[1][oracle_t.data[i_hop - 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
                     mtx[mat][i_hop - 2] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
                 for mat in range(1, oracle_t.data[i_hop]):
-                    value = min((1 - matrix[1][oracle_t.data[i_hop]][mat])/(1 - prm.min_matrix) * 255,255)
+                    value = min((1 - matrix[1][oracle_t.data[i_hop]][mat]) / (1 - prm.min_matrix) * 255, 255)
                     mtx[mat][i_hop - 1] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
         if prm.POLYPHONY:
             for mat in range(1, oracle_t.data[i_hop + 1]):
-                value = min((1 - matrix[1][oracle_t.data[i_hop + 1]][mat])/(1 - prm.min_matrix) * 255, 255)
+                value = min((1 - matrix[1][oracle_t.data[i_hop + 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
                 mtx[mat][i_hop] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
 
         if len(concat_obj) == 1:
@@ -528,9 +528,9 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 if ord(history_next[-1][1][-1]) - fd_mso.letter_diff > len(matrix[0]):
                     new_history_next_element = new_history_next_element[:-1]
                     new_history_next_element += chr(oracle_t.data[i_hop - 1] + fd_mso.letter_diff + 1)
-                history_next[-1] = (history_next[-1][0], new_history_next_element,  history_next[-1][2])
-            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \
-                         + chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
+                history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
+            concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) + \
+                         chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
             # TODO: corriger la valeur dans la matrice
 
         if len(concat_obj) >= 3:

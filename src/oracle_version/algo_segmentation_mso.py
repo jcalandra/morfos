@@ -13,7 +13,6 @@ wait = 0
 processing = prm.processing
 
 # COSTS
-global alpha_t, delta_t, beta_t
 
 cost_new_oracle = prm.cost_new_oracle
 
@@ -132,12 +131,14 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level == 0 and processing == 'symbols':
             vec = [1]
             matrix = [chr(ord(str_obj[0])), [vec]]
-            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
+            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph,
+                               matrix_next, matrix])
         elif level > 0:
             matrix = oracles[1][level - 1][6]
-            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
+            oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph,
+                               matrix_next])
 
-        if prm.COMPUTE_COSTS and level == 0:
+        if prm.COMPUTE_COSTS:
             prm.lambda_0 += cost_level_up
 
     else:
@@ -147,7 +148,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         concat_obj = oracles[1][level][3]
         formal_diagram = oracles[1][level][4]
         formal_diagram_graph = oracles[1][level][5]
-        matrix_next = oracles[1][level][6]
         if level > 0:
             matrix = oracles[1][level - 1][6]
         else:
@@ -169,6 +169,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             new_mat = 1
         else:
             new_mat = 0
+        alpha_t = delta_t = alpha_or_delta_t = 0
         if prm.COMPUTE_COSTS == 1:
             alpha_t = delta_t = 0
             alpha_or_delta_t = cost_oracle_acq_symb
@@ -191,6 +192,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             fd_mso.formal_diagram_init(formal_diagram, data_length, oracles, level)
         else:
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
+
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_maj_df
 
