@@ -39,7 +39,7 @@ elif min_matrix < 0:
 
 # Choose here either to process the cognitive algorithm from signal or character string
 # processing must be str 'symbols' or 'signal'
-processing = 'signal'
+processing = 'symbols'
 
 # Display comments
 verbose = 0
@@ -260,7 +260,7 @@ SYNTHESIS = 0
 
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
-COMPUTE_COSTS = 1
+COMPUTE_COSTS = 0
 cost_new_oracle = 1
 
 cost_numerisation = 1
