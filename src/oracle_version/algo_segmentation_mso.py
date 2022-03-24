@@ -162,6 +162,15 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     if prm.verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
     while i < len(str_obj):
+        # CHECKPOINT #
+        # Si le format fournit en entrée du logiciel est une chaîne de caractères.
+        # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
+        # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
+        # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
+        # certaines valeurs
+        if level == 0 and processing == 'symbols':
+            checkpoint = (k + i)/(k + len(str_obj))
+        # END CHECKPOINT #
 
         f_oracle.add_state(input_data[i])
         # if there is only one object in this class of material, it's a new material

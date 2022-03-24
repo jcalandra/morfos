@@ -309,6 +309,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
 
     for i_hop in range(nb_hop):  # while
         # CHECKPOINT #
+        # Si le format fourni en entrée du logiciel est un fichier audio.
         # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
         # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
         # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
@@ -316,7 +317,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         checkpoint = i_hop / nb_hop * 100
         if prm.verbose == 1:
             print("CHECKPOINT : ", checkpoint, "%")
-        # CHECKPOINT #
+        # END CHECKPOINT #
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
