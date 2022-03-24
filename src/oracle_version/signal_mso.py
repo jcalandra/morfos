@@ -41,6 +41,28 @@ init = prm.INIT
 nb_values = prm.NB_VALUES
 teta = prm.TETA
 
+# COSTS
+global gamma_t
+cost_new_oracle = prm.cost_new_oracle
+
+cost_numerisation = prm.cost_numerisation
+cost_desc_computation = prm.cost_desc_computation
+cost_oracle_acq_signal = prm.cost_oracle_acq_signal
+cost_seg_test_1 = prm.cost_seg_test_1
+
+cost_new_mat_creation = prm.cost_new_mat_creation
+cost_maj_historique = prm.cost_maj_historique
+cost_maj_df = prm.cost_maj_df
+cost_oracle_acq_symb = prm.cost_oracle_acq_symb
+cost_seg_test_2 = prm.cost_seg_test_2
+cost_maj_concat_obj = prm.cost_maj_concat_obj
+cost_test_EOS = prm.cost_test_EOS
+
+cost_comparaison_2 = prm.cost_comparaison_2
+cost_labelisation = prm.cost_labelisation
+cost_maj_link = prm.cost_maj_link
+cost_level_up = prm.cost_level_up
+
 # ======================================== ORACLE INITIALISATION AND CORRECTION ========================================
 def modify_oracle(oracle_t, prev_mat, j_mat, i_hop, input_data):
     """ Modify the oracle 'oracle_t' according to the last corrected frame of mat 'j_mat' at instant 'i_hop'."""
@@ -230,13 +252,22 @@ def matrix_init(rate, data_size, data_length, nb_points):
 
 def algo_cog(audio_path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
+    if prm.COMPUTE_COSTS == 1:
+        prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
+        gamma_t = alpha_t = delta_t = beta_t = 0
+
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     data, rate, data_size, data_length, nb_points = prep_data(audio_path)
     mtx, nb_hop, data_length = matrix_init(rate, data_size, data_length, nb_points)
+    if prm.COMPUTE_COSTS == 1:
+        gamma_t += cost_numerisation
+
 
     if prm.verbose == 1:
         print("[INFO] Computing frequencies and volume...")
     v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
+    if prm.COMPUTE_COSTS == 1:
+        gamma_t += cost_desc_computation
 
     value = 255 - v_tab[0] * 255
     color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
@@ -251,6 +282,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     # ------- CREATE AND BUILD VMO -------
     flag = 'a'
     volume_data, suffix_method, input_data, oracle_t = build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab)
+    if prm.COMPUTE_COSTS == 1:
+        prm.lambda_0 += cost_new_oracle
 
     # ------- INITIALISATION OF OTHER STRUCTURES -------
     level = 0
@@ -280,6 +313,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]
         oracle_t.add_state(obs, input_data, volume_data, suffix_method)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_oracle_acq_signal
 
         j_mat = oracle_t.data[i_hop + 1]
         value = 255 - v_tab[i_hop] * 255
@@ -298,6 +333,12 @@ def algo_cog(audio_path, oracles, end_mk=0):
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_seg_test_1
+            print("gamma_", i_hop, " level ", level, ": ", gamma_t)
+            prm.gamma += gamma_t
+            gamma_t = cost_numerisation + cost_desc_computation
+
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
@@ -314,11 +355,21 @@ def algo_cog(audio_path, oracles, end_mk=0):
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_maj_link
                 # history_next update
                 new_char = sim_rules.char_next_level_similarity(oracles, level)
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_comparaison_2 + cost_labelisation
                 # concat_obj update
                 concat_obj = ""
+
                 diff_mk = 1
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_level_up
+                    print("beta_", i_hop, " level ", level, ": ", beta_t)
+                    prm.beta += beta_t
+                    beta_t = 0
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
@@ -334,11 +385,23 @@ def algo_cog(audio_path, oracles, end_mk=0):
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_maj_link
                 # history_next update
                 new_char = sim_rules.char_next_level_similarity(oracles, level)
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_comparaison_2 + cost_labelisation
                 # concat_obj update
                 concat_obj = ""
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_maj_concat_obj
+                    prm.beta += beta_t
+                    beta_t = 0
+
                 diff_mk = 1
+                if prm.COMPUTE_COSTS == 1:
+                    beta_t += cost_level_up
+                    print("beta_", i_hop, " level ", level, ": ", beta_t)
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
@@ -507,9 +570,5 @@ def algo_cog(audio_path, oracles, end_mk=0):
         name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
         print("name : ", name)
         s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
-
-    if PLOT_ORACLE == 1:
-        im = plot.start_draw(oracle_t, size=(900 * 4, 400 * 4))
-        im.show()
 
     return mtx, data_length, data_size, distance, algocog_time

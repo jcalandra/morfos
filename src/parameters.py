@@ -11,7 +11,9 @@ FORMAT = '.wav'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/The_Wknd/"
+PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
+
+global lambda_0, gamma, alpha, delta, beta
 
 # This is the similarity threshold
 teta = 0.975
@@ -26,10 +28,10 @@ if d_threshold < 0:
     d_threshold = 0
 
 # This is a boolean parameter to display or not a pseudo-polyphony. Work only with MSO implementation.
-POLYPHONY = 1
+POLYPHONY = 0
 
 # A value that determine the color variation if pseudo-polyphony is displayed
-min_matrix = 1
+min_matrix = 0.999
 if min_matrix >= 1:
     min_matrix = 0.999
 elif min_matrix < 0:
@@ -75,7 +77,7 @@ if STRICT_EQUALITY + ALIGNMENT != 1:
 RULE_1 = 1
 RULE_2 = 1
 RULE_3 = 1
-RULE_4 = 1
+RULE_4 = 0
 RULE_5 = 1
 
 ALIGNEMENT_rule3 = 0
@@ -112,7 +114,7 @@ GAP = chr(0)
 TETA = teta
 
 # Value under with the signal is considered as silence
-AUDIBLE_THRESHOLD = 0.01
+AUDIBLE_THRESHOLD = 0.00001
 
 # value exemples for segmentation threshold:
 # fft : 35; mfcc : 60 # cqt : 140
@@ -231,8 +233,8 @@ TO_SHOW_BMP = 0
 TO_SAVE_PYP = 0
 TO_SHOW_PYP = 1
 
-# to show or not the oracle at level 0
-PLOT_ORACLE = 0
+# to show or not the oracles
+PLOT_ORACLE = 1
 # to show the evolution of the formal
 # diagrams
 EVOL_PRINT = 1
@@ -255,3 +257,26 @@ SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 # If we want to resynthesis the obtained VMO
 # at level 0.
 SYNTHESIS = 0
+
+# COSTS
+# TODO: le calcul des coûts n'est pas encore finalisé.
+COMPUTE_COSTS = 0
+cost_new_oracle = 1
+
+cost_numerisation = 1
+cost_desc_computation = 1
+cost_oracle_acq_signal = 1
+cost_seg_test_1 = 1
+
+cost_new_mat_creation = 1
+cost_maj_historique = 1
+cost_maj_df = 1
+cost_oracle_acq_symb = 1
+cost_seg_test_2 = 1
+cost_maj_concat_obj = 1
+cost_test_EOS = 1
+
+cost_comparaison_2 = 1
+cost_labelisation = 1
+cost_maj_link = 1
+cost_level_up = 1

@@ -1,5 +1,6 @@
 from algo_segmentation_mso import *
 import matplotlib.pyplot as plt
+import plot
 
 # This is the main loop starting the algorithm from a string
 # Remarque: ce fichier est probablement voué à être supprimé
@@ -22,6 +23,10 @@ def main(char_ex):
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", oracles[1][i][1])
         print("history next : ", oracles[1][i][2])
+
+        if prm.PLOT_ORACLE:
+            im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
+            im.show()
     plt.pause(3000)
 
 
@@ -38,7 +43,10 @@ def example():
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
     Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    main(Mozart)
+    Chouvel1 = 'aaabaacbabbaccaadabcabdacdadbadcacaddbbcbbdbccbcdbdcbddcccdcdddaa'
+    Chouvel2_post = 'bcdabbccadcbabcaabdbcbdccbbbaadddcddbbdacacdcabacccdbddadbadaaacbc'
+    Chouvel2 = 'abcdaabbdcbadabddacabacbbaaaddcccbccaacdbdbcbdadbbbcaccdcadcdddbab'
+    main(Geisslerlied)
 
 example()
 

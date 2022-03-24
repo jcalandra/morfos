@@ -12,6 +12,29 @@ letter_diff = prm.LETTER_DIFF
 wait = 0
 processing = prm.processing
 
+# COSTS
+global alpha_t, delta_t, beta_t
+
+cost_new_oracle = prm.cost_new_oracle
+
+cost_numerisation = prm.cost_numerisation
+cost_desc_computation = prm.cost_desc_computation
+cost_oracle_acq_signal = prm.cost_oracle_acq_signal
+cost_seg_test_1 = prm.cost_seg_test_1
+
+cost_new_mat_creation = prm.cost_new_mat_creation
+cost_maj_historique = prm.cost_maj_historique
+cost_maj_df = prm.cost_maj_df
+cost_oracle_acq_symb = prm.cost_oracle_acq_symb
+cost_seg_test_2 = prm.cost_seg_test_2
+cost_maj_concat_obj = prm.cost_maj_concat_obj
+cost_test_EOS = prm.cost_test_EOS
+
+cost_comparaison_2 = prm.cost_comparaison_2
+cost_labelisation = prm.cost_labelisation
+cost_maj_link = prm.cost_maj_link
+cost_level_up = prm.cost_level_up
+
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
 def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
@@ -93,6 +116,8 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
     #  Initialisation of the structures
     if level > oracles[0]:
+        if prm.COMPUTE_COSTS and level == 0:
+            prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
         if prm.verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         flag = 'f'
@@ -111,6 +136,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         elif level > 0:
             matrix = oracles[1][level - 1][6]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next])
+
+        if prm.COMPUTE_COSTS and level == 0:
+            prm.lambda_0 += cost_level_up
 
     else:
         f_oracle = oracles[1][level][0]
@@ -134,12 +162,23 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     if prm.verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
     while i < len(str_obj):
+
         f_oracle.add_state(input_data[i])
+        # if there is only one object in this class of material, it's a new material
+        if len(f_oracle.latent[input_data[i] - 1]) == 1:
+            new_mat = 1
+        else:
+            new_mat = 0
+        if prm.COMPUTE_COSTS == 1:
+            alpha_t = delta_t = 0
+            alpha_or_delta_t = cost_oracle_acq_symb
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
 
         if level == 0 and processing == 'symbols' and \
                 actual_char > max([ord(matrix[0][ind]) - letter_diff for ind in range(len(matrix[0]))]):
+            if prm.COMPUTE_COSTS == 1:
+                alpha_t = cost_new_mat_creation
             vec = [0 for ind_vec in range(len(matrix[0]))]
             vec.append(1)
             matrix[0] += chr(actual_char + letter_diff)
@@ -152,6 +191,8 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             fd_mso.formal_diagram_init(formal_diagram, data_length, oracles, level)
         else:
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
+        if prm.COMPUTE_COSTS == 1:
+            alpha_or_delta_t += cost_maj_df
 
         oracles[1][level][5] = fd_mso.print_formal_diagram_update(
             formal_diagram_graph, level, formal_diagram, data_length)
@@ -168,23 +209,47 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             level_wait = level
 
         # If the tests are positives, there is structuration.
+        if prm.COMPUTE_COSTS == 1:
+            alpha_or_delta_t += cost_seg_test_2
         if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
             # or (end_mk == 1 and len(concat_obj) != 0):
             if prm.verbose == 1:
                 print("[INFO] structure in level " + str(level) + "...")
+            if prm.COMPUTE_COSTS == 1:
+                beta_t = cost_comparaison_2 + cost_labelisation + cost_maj_link + cost_level_up
+                print("beta_", actual_char_ind, " level ", level, ": ", beta_t)
+                prm.beta += beta_t
             structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
+        if prm.COMPUTE_COSTS == 1:
+            alpha_or_delta_t += cost_maj_concat_obj
         oracles[1][level][3] = concat_obj
 
         # Automatically structuring if this is the End Of String
+        if prm.COMPUTE_COSTS == 1:
+            alpha_or_delta_t += cost_test_EOS
+            if new_mat:
+                delta_t = 0
+                alpha_t += alpha_or_delta_t
+            else:
+                alpha_t = 0
+                delta_t += alpha_or_delta_t
+            print("delta_", actual_char_ind, " level ", level, ": ", delta_t)
+            print("alpha_", actual_char_ind, " level ", level, ": ", alpha_t)
+            prm.delta += delta_t
+            prm.alpha += alpha_t
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
             end_mk = 1
             wait = 0
             level_wait = -1
         if end_mk == 1:
+            if prm.COMPUTE_COSTS == 1:
+                beta_t = cost_comparaison_2 + cost_labelisation + cost_maj_link + cost_level_up
+                print("beta_", actual_char_ind, " level ", level, ": ", beta_t)
+                prm.beta += beta_t
             structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
