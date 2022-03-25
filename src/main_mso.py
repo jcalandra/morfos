@@ -55,8 +55,7 @@ def main():
                   " z=", prm.objects[i][j]["coordinates"]["z"],
                   "mat num:", prm.objects[i][j]["mat_num"],
                   "level:", prm.objects[i][j]["level"],
-                  "len sound:", len(prm.objects[i][j]["sound"]),
-                  "sound:", prm.objects[i][j]["sound"])
+                  "len sound:", len(prm.objects[i][j]["sound"]))
 
             if prm.SYNTHESIS:
                 name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\

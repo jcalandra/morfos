@@ -562,7 +562,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         oracles[1][level][4] = formal_diagram
         oracles[1][level][5] = formal_diagram_graph
 
-        links = 0 # à définir
+        links = []
         max_limit = min((i_hop + 1)*prm.HOP_LENGTH, len(prm.data))
         sound = prm.data[i_hop*prm.HOP_LENGTH:max_limit]
         id = i_hop

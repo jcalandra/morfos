@@ -68,17 +68,19 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     new_mat = [1 for i in range(data_length)]
     formal_diagram.append(new_mat)
     if level == 0:
-        n = 1
+        n = k_end_link = 1
         prm.objects = []
         prm.first_occ = []
     else:
-        k_end = 1
+        k_end = k_end_link = 1
         lv = level - 1
         while lv >= 0:
             link = oracles[1][lv][1]
             link_r = link.copy()
             link_r.reverse()
             k_end = len(link_r) - link_r.index(k_end) - 1
+            if lv == level - 1:
+                k_end_link = k_end
             lv = lv - 1
         n = k_end
     for i in range(n):
@@ -86,7 +88,9 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 
     prm.objects.append([])
     prm.first_occ.append([])
-    links = 0 # a définir
+    links = []
+    for i in range(k_end_link):
+        links.append(i)
     if processing == 'signal':
         sound = prm.data[0:n*prm.HOP_LENGTH]
     else:
@@ -111,9 +115,11 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if processing == 'symbols':
         actual_char = actual_char - oracles[1][level][0].data[1] + 1
     if level == 0:
-        n = 1
+        n = k_init_link = k_end_link = 1
     else:
         k_end = k_init
+        k_init_link = k_init
+        k_end_link = k_init
         lv = level - 1
         while lv >= 0:
             link = oracles[1][lv][1]
@@ -125,6 +131,9 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
             sub_link_r = sub_link_r[:true_len]
             sub_link_r.reverse()
             k_end = true_len - sub_link_r.index(k_end) - 1
+            if lv == level - 1:
+                k_init_link = k_init
+                k_end_link = k_end
             lv = lv - 1
         n = k_end - k_init + 1
     color = (actual_char_ind % 4 + 0.1)/4
@@ -138,7 +147,9 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     for i in range(n):
         formal_diagram[actual_char - 1][k_init + i - 1] = color
 
-    links = 0 # à définir
+    links = []
+    for i in range(k_init_link - 1, k_end_link):
+        links.append(i)
     if processing == 'signal':
         sound = prm.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
     else:
