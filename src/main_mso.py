@@ -3,6 +3,7 @@ import plot
 import matplotlib.pyplot as plt
 import signal_mso as sig_mso
 import parameters as prm
+import scipy.io.wavfile as wave
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -56,6 +57,11 @@ def main():
                   "level:", prm.objects[i][j]["level"],
                   "len sound:", len(prm.objects[i][j]["sound"]),
                   "sound:", prm.objects[i][j]["sound"])
+
+            if prm.SYNTHESIS:
+                name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
+                       path.split('/')[-1][:-4]+ "_level" + str(i) + "_obj" + str(j) + "_synthesis.wav"
+                wave.write(name, prm.SR, prm.objects[i][j]["sound"])
 
         if prm.PLOT_ORACLE:
             im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
