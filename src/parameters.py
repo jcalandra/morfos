@@ -283,8 +283,3 @@ cost_comparaison_2 = 1
 cost_labelisation = 1
 cost_maj_link = 1
 cost_level_up = 1
-
-#info objects
-global data
-global objects
-global first_occ

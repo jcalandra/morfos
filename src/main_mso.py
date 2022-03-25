@@ -3,6 +3,7 @@ import plot
 import matplotlib.pyplot as plt
 import signal_mso as sig_mso
 import parameters as prm
+import objects_storage as obj_s
 import scipy.io.wavfile as wave
 # import formal_diagram_mso as fd_mso
 
@@ -30,8 +31,8 @@ def main():
     tab_f_oracle = []
     audio = []
     mso_oracle = [level_max, tab_f_oracle, audio]
-    prm.objects = []
-    prm.first_occ = []
+    obj_s.objects_init()
+    obj_s.first_occ_init()
 
     sig_mso.algo_cog(path, mso_oracle)
     print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
@@ -47,20 +48,20 @@ def main():
         print("history next : ", mso_oracle[1][i][2])
         print("matrix_next : ", mso_oracle[1][i][6])
 
-        for j in range(len(prm.objects[i])):
-            print("elmt id:",prm.objects[i][j]["id"],
-                  "links:", prm.objects[i][j]["links"],
-                  "coordinates: x=", prm.objects[i][j]["coordinates"]["x"],
-                  " y=",prm.objects[i][j]["coordinates"]["y"],
-                  " z=", prm.objects[i][j]["coordinates"]["z"],
-                  "mat num:", prm.objects[i][j]["mat_num"],
-                  "level:", prm.objects[i][j]["level"],
-                  "len sound:", len(prm.objects[i][j]["sound"]))
+        for j in range(len(obj_s.objects[i])):
+            print("elmt id:",obj_s.objects[i][j]["id"],
+                  "links:", obj_s.objects[i][j]["links"],
+                  "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
+                  " y=",obj_s.objects[i][j]["coordinates"]["y"],
+                  " z=", obj_s.objects[i][j]["coordinates"]["z"],
+                  "mat num:", obj_s.objects[i][j]["mat_num"],
+                  "level:", obj_s.objects[i][j]["level"],
+                  "len sound:", len(obj_s.objects[i][j]["sound"]))
 
             if prm.SYNTHESIS:
                 name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
                        path.split('/')[-1][:-4]+ "_level" + str(i) + "_obj" + str(j) + "_synthesis.wav"
-                wave.write(name, prm.SR, prm.objects[i][j]["sound"])
+                wave.write(name, prm.SR, obj_s.objects[i][j]["sound"])
 
         if prm.PLOT_ORACLE:
             im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))

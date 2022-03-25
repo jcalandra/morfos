@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import parameters as prm
 import numpy as np
+import objects_storage as obj_s
 from mpl_toolkits.mplot3d import Axes3D
 
 # In this file are implemented all the fonctions for the initialization and the update of the formal diagram and
@@ -69,8 +70,8 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     formal_diagram.append(new_mat)
     if level == 0:
         n = k_end_link = 1
-        prm.objects = []
-        prm.first_occ = []
+        obj_s.objects_init()
+        obj_s.first_occ_init()
     else:
         k_end = k_end_link = 1
         lv = level - 1
@@ -86,13 +87,13 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     for i in range(n):
         formal_diagram[0][i] = 1.1/4
 
-    prm.objects.append([])
-    prm.first_occ.append([])
+    obj_s.objects_add_level()
+    obj_s.first_occ_add_level()
     links = []
     for i in range(k_end_link):
         links.append(i)
     if processing == 'signal':
-        sound = prm.data[0:n*prm.HOP_LENGTH]
+        sound = obj_s.data[0:n*prm.HOP_LENGTH]
     else:
         sound = None
     id = 0
@@ -100,10 +101,8 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     x = n*(1/prm.SR)*prm.HOP_LENGTH
     y = 0
     z = n*(1/prm.SR)*prm.HOP_LENGTH
-    object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level":level,
-              "sound": sound}
-    prm.objects[level].append(object)
-    prm.first_occ[level].append(y)
+    obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
+    obj_s.first_occ_add_obj(level, y)
     return 1
 
 
@@ -141,7 +140,7 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
         first_occ_mat = k_init*(prm.HOP_LENGTH/prm.SR)
-        prm.first_occ[level].append(first_occ_mat)
+        obj_s.first_occ_add_obj(level, first_occ_mat)
     if prm.POLYPHONY and prm.processing == 'signal':
         side_materials(oracles, level, formal_diagram, actual_char, n, k_init)
     for i in range(n):
@@ -151,17 +150,15 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     for i in range(k_init_link - 1, k_end_link):
         links.append(i)
     if processing == 'signal':
-        sound = prm.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
+        sound = obj_s.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
     else:
         sound = None
     id = actual_char_ind - 1
     mat_num = actual_char - 1
     x = (k_init + n)*(prm.HOP_LENGTH/prm.SR)
-    y = prm.first_occ[level][mat_num]
+    y = obj_s.first_occ[level][mat_num]
     z = n*(1/prm.SR)*prm.HOP_LENGTH
-    object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level": level,
-              "sound": sound}
-    prm.objects[level].append(object)
+    obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
     return 0
 
 

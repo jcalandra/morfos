@@ -8,6 +8,8 @@ from mso import *
 import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
 import similarity_rules as sim_rules
+import objects_storage as obj_s
+
 
 # import compute_dynamics as cd
 
@@ -208,7 +210,7 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     if blank_ind == lim_ind and prev_mat == actual_max:
         matrix[0] = matrix[0][:-1]
         matrix[1].pop()
-        prm.first_occ[0].pop()
+        obj_s.first_occ_remove_obj(0)
         for i in range(len(matrix[1])):
             matrix[1][i].pop()
         actual_max = actual_max - 1
@@ -222,15 +224,15 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
 def prep_data(audio_path):
     """ Prepare the signal from continue to discrete values and add silence at the beginning."""
     here_time = time.time()
-    prm.data, rate, data_size, data_length = dc.get_data(audio_path)
+    data, rate, data_size, data_length = dc.get_data(audio_path)
     temps_data = time.time() - here_time
     if prm.verbose == 1:
         print("Temps data : %s secondes ---" % temps_data)
 
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
-    prm.data = np.concatenate((a, prm.data))
-    data = prm.data
+    data = np.concatenate((a, data))
+    obj_s.data_init(data)
     return data, rate, data_size, data_length, nb_points
 
 
@@ -249,8 +251,8 @@ def matrix_init(rate, data_size, data_length, nb_points):
     for i in range(nb_hop):
         new_mat[0][i] = BACKGROUND
     mtx = new_mat.copy()
-    prm.first_occ.append([])
-    prm.first_occ[0].append(0)
+    obj_s.first_occ_add_level()
+    obj_s.first_occ_add_obj(0, 0)
     return mtx, nb_hop, data_length
 
 
@@ -297,7 +299,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         [f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
     oracles[2] = data
-    prm.objects.append([])
+    obj_s.objects_add_level()
 
     # ------- ALGORITHM -------
     prev_mat = prev2_mat = prev3_mat = 0
@@ -470,7 +472,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 new_mat_l[0][i] = BACKGROUND
             mtx = np.concatenate((mtx, new_mat_l))
             first_occ_mat = i_hop*(prm.HOP_LENGTH/prm.SR)
-            prm.first_occ[level].append(first_occ_mat)
+            obj_s.first_occ_add_obj(level, first_occ_mat)
 
         else:
 
@@ -563,26 +565,20 @@ def algo_cog(audio_path, oracles, end_mk=0):
         oracles[1][level][5] = formal_diagram_graph
 
         links = []
-        max_limit = min((i_hop + 1)*prm.HOP_LENGTH, len(prm.data))
-        sound = prm.data[i_hop*prm.HOP_LENGTH:max_limit]
+        sound = obj_s.data[i_hop*prm.HOP_LENGTH:(i_hop + 1)*prm.HOP_LENGTH]
         id = i_hop
         mat_num = oracle_t.data[i_hop + 1]
         x = (prm.HOP_LENGTH/prm.SR)*(i_hop + 1)
-        y = prm.first_occ[level][mat_num]
+        y = obj_s.first_occ[level][mat_num]
         z = prm.HOP_LENGTH/prm.SR
-        object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level,
-                  "sound": sound}
-        prm.objects[level].append(object)
+        obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
 
         if i_hop > 3:
             mat_num_prev1 = oracle_t.data[i_hop]
             mat_num_prev2 = oracle_t.data[i_hop - 1]
-            prm.objects[level][len(prm.objects[level]) - 2]["mat_num"] = mat_num_prev1
-            prm.objects[level][len(prm.objects[level]) - 3]["mat_num"] = mat_num_prev2
-            y_prev1 = prm.first_occ[level][mat_num_prev1]
-            y_prev2 = prm.first_occ[level][mat_num_prev2]
-            prm.objects[level][len(prm.objects[level]) - 2]["coordinates"]["y"] = y_prev1
-            prm.objects[level][len(prm.objects[level]) - 3]["coordinates"]["y"] = y_prev2
+            y_prev1 = obj_s.first_occ[level][mat_num_prev1]
+            y_prev2 = obj_s.first_occ[level][mat_num_prev2]
+            obj_s.objects_modify_prev_obj(level, mat_num_prev1, mat_num_prev2, y_prev1, y_prev2)
 
     if flag != 'f' and flag != 'v':
         oracle_t.f_array.finalize()
