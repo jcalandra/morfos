@@ -49,10 +49,12 @@ def main():
         for j in range(len(prm.objects[i])):
             print("elmt id:",prm.objects[i][j]["id"],
                   "links:", prm.objects[i][j]["links"],
-                  "coordinates: x=", prm.objects[i][j]["coordinates"]["x"], " y=",prm.objects[i][j]["coordinates"]["y"],
+                  "coordinates: x=", prm.objects[i][j]["coordinates"]["x"],
+                  " y=",prm.objects[i][j]["coordinates"]["y"],
                   " z=", prm.objects[i][j]["coordinates"]["z"],
                   "mat num:", prm.objects[i][j]["mat_num"],
                   "level:", prm.objects[i][j]["level"],
+                  "len sound:", len(prm.objects[i][j]["sound"]),
                   "sound:", prm.objects[i][j]["sound"])
 
         if prm.PLOT_ORACLE:

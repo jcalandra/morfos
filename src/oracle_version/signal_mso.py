@@ -222,14 +222,15 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
 def prep_data(audio_path):
     """ Prepare the signal from continue to discrete values and add silence at the beginning."""
     here_time = time.time()
-    data, rate, data_size, data_length = dc.get_data(audio_path)
+    prm.data, rate, data_size, data_length = dc.get_data(audio_path)
     temps_data = time.time() - here_time
     if prm.verbose == 1:
         print("Temps data : %s secondes ---" % temps_data)
 
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
-    data = np.concatenate((a, data))
+    prm.data = np.concatenate((a, prm.data))
+    data = prm.data
     return data, rate, data_size, data_length, nb_points
 
 
@@ -554,14 +555,16 @@ def algo_cog(audio_path, oracles, end_mk=0):
             g_oracle.add_state(oracle_t.data[ind + 1] + 1)
 
         f_oracle = g_oracle
-        oracles[1][level][0] = f_oracle
+        oracles[1][level][0] = oracle_t
         oracles[1][level][1] = link
         oracles[1][level][2] = history_next
         oracles[1][level][3] = concat_obj
         oracles[1][level][4] = formal_diagram
         oracles[1][level][5] = formal_diagram_graph
 
-        sound = links = 0 # à définir
+        links = 0 # à définir
+        max_limit = min((i_hop + 1)*prm.HOP_LENGTH, len(prm.data))
+        sound = prm.data[i_hop*prm.HOP_LENGTH:max_limit]
         id = i_hop
         mat_num = oracle_t.data[i_hop + 1]
         x = (prm.HOP_LENGTH/prm.SR)*(i_hop + 1)

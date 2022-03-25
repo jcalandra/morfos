@@ -86,10 +86,14 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
 
     prm.objects.append([])
     prm.first_occ.append([])
-    sound = links = 0 # a définir
+    links = 0 # a définir
+    if processing == 'signal':
+        sound = prm.data[0:n*prm.HOP_LENGTH]
+    else:
+        sound = None
     id = 0
     mat_num = 0
-    x = (n - 1)*(1/prm.SR)*prm.HOP_LENGTH
+    x = n*(1/prm.SR)*prm.HOP_LENGTH
     y = 0
     z = n*(1/prm.SR)*prm.HOP_LENGTH
     object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level":level,
@@ -127,17 +131,21 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-        first_occ_mat = (k_init + n - 2)*(prm.HOP_LENGTH/prm.SR)
+        first_occ_mat = k_init*(prm.HOP_LENGTH/prm.SR)
         prm.first_occ[level].append(first_occ_mat)
     if prm.POLYPHONY and prm.processing == 'signal':
         side_materials(oracles, level, formal_diagram, actual_char, n, k_init)
     for i in range(n):
         formal_diagram[actual_char - 1][k_init + i - 1] = color
 
-    sound = links = 0 # à définir
+    links = 0 # à définir
+    if processing == 'signal':
+        sound = prm.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
+    else:
+        sound = None
     id = actual_char_ind - 1
     mat_num = actual_char - 1
-    x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)
+    x = (k_init + n)*(prm.HOP_LENGTH/prm.SR)
     y = prm.first_occ[level][mat_num]
     z = n*(1/prm.SR)*prm.HOP_LENGTH
     object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num, "level": level,
