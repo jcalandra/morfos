@@ -1,6 +1,7 @@
 from algo_segmentation_mso import *
 import matplotlib.pyplot as plt
 import plot
+import objects_storage as obj_s
 
 # This is the main loop starting the algorithm from a string
 # Remarque: ce fichier est probablement voué à être supprimé
@@ -23,6 +24,16 @@ def main(char_ex):
         print("new_fd_" + str(i) + ": ", new_fd[i])
         print("link_" + str(i) + ": ", oracles[1][i][1])
         print("history next : ", oracles[1][i][2])
+
+        for j in range(len(obj_s.objects[i])):
+            print("elmt id:",obj_s.objects[i][j]["id"],
+                  "links:", obj_s.objects[i][j]["links"],
+                  "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
+                  " y=",obj_s.objects[i][j]["coordinates"]["y"],
+                  " z=", obj_s.objects[i][j]["coordinates"]["z"],
+                  "mat num:", obj_s.objects[i][j]["mat_num"],
+                  "level:", obj_s.objects[i][j]["level"],
+                  "sound:", obj_s.objects[i][j]["sound"])
 
         if prm.PLOT_ORACLE:
             im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))

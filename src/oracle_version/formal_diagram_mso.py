@@ -49,10 +49,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     for i in range(len(formal_diagram)):
         string += chr(i + letter_diff + 1)
     # plt.yticks([i for i in range(len(string))], string)
-    if processing == 'symbols':
-        plt.imshow(formal_diagram, extent=[0, int(data_length), len(formal_diagram), 0])
-    elif processing == 'signal':
-        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
+    plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
     if TO_SAVE_PYP:
         plt.savefig(path_results + file_name_pyplot)
     if EVOL_PRINT == 1:
@@ -139,7 +136,7 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if actual_char > len(formal_diagram):
         new_mat = [1 for i in range(data_length)]
         formal_diagram.append(new_mat)
-        first_occ_mat = k_init*(prm.HOP_LENGTH/prm.SR)
+        first_occ_mat = (k_init - 1)*(prm.HOP_LENGTH/prm.SR)
         obj_s.first_occ_add_obj(level, first_occ_mat)
     if prm.POLYPHONY and prm.processing == 'signal':
         side_materials(oracles, level, formal_diagram, actual_char, n, k_init)
@@ -155,7 +152,7 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
         sound = None
     id = actual_char_ind - 1
     mat_num = actual_char - 1
-    x = (k_init + n)*(prm.HOP_LENGTH/prm.SR)
+    x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)
     y = obj_s.first_occ[level][mat_num]
     z = n*(1/prm.SR)*prm.HOP_LENGTH
     obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
