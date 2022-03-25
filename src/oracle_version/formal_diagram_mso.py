@@ -135,7 +135,7 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
         formal_diagram[actual_char - 1][k_init + i - 1] = color
 
     sound = links = 0 # à définir
-    id = actual_char_ind
+    id = actual_char_ind - 1
     mat_num = actual_char - 1
     x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)
     y = prm.first_occ[level][mat_num]
