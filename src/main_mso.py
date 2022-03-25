@@ -47,7 +47,7 @@ def main():
         print("matrix_next : ", mso_oracle[1][i][6])
 
         for j in range(len(prm.objects[i])):
-            print("elmt id:",j,
+            print("elmt id:",prm.objects[i][j]["id"],
                   "links:", prm.objects[i][j]["links"],
                   "coordinates: x=", prm.objects[i][j]["coordinates"]["x"], " y=",prm.objects[i][j]["coordinates"]["y"],
                   " z=", prm.objects[i][j]["coordinates"]["z"],

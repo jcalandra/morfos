@@ -562,11 +562,13 @@ def algo_cog(audio_path, oracles, end_mk=0):
         oracles[1][level][5] = formal_diagram_graph
 
         sound = links = 0 # à définir
+        id = i_hop
         mat_num = oracle_t.data[i_hop + 1]
         x = (prm.HOP_LENGTH/prm.SR)*(i_hop + 1)
         y = prm.first_occ[level][mat_num]
         z = prm.HOP_LENGTH/prm.SR
-        object = {"links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level, "sound": sound}
+        object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level,
+                  "sound": sound}
         prm.objects[level].append(object)
 
         if i_hop > 3:
