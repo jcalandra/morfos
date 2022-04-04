@@ -14,6 +14,9 @@ PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
 
 global lambda_0, gamma, alpha, delta, beta
+global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab
+global lambda_time, gamma_time, alpha_time, delta_time, beta_time
+global total_cost, total_cost_tab, total_cost_sum, total_cost_time
 
 # This is the similarity threshold
 teta = 0.975
@@ -240,7 +243,7 @@ TO_SHOW_PYP = 1
 PLOT_ORACLE = 0
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 1
+EVOL_PRINT = 0
 
 # ------------ VMO ---------------
 # Parameters that are specifics to the
@@ -263,7 +266,7 @@ SYNTHESIS = 0
 
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
-COMPUTE_COSTS = 0
+COMPUTE_COSTS = 1
 cost_new_oracle = 1
 
 cost_numerisation = 1

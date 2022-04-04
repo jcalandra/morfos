@@ -48,15 +48,29 @@ def main():
         print("history next : ", mso_oracle[1][i][2])
         print("matrix_next : ", mso_oracle[1][i][6])
 
-        for j in range(len(obj_s.objects[i])):
-            print("elmt id:",obj_s.objects[i][j]["id"],
-                  "links:", obj_s.objects[i][j]["links"],
-                  "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
-                  " y=",obj_s.objects[i][j]["coordinates"]["y"],
-                  " z=", obj_s.objects[i][j]["coordinates"]["z"],
-                  "mat num:", obj_s.objects[i][j]["mat_num"],
-                  "level:", obj_s.objects[i][j]["level"],
-                  "len sound:", len(obj_s.objects[i][j]["sound"]))
+        if prm.COMPUTE_COSTS:
+            plt.figure(figsize=(32, 20))
+            plt.title("total cost, level" + str(i))
+            plt.xlabel("time")
+            plt.ylabel("total cost")
+            plt.plot(prm.total_cost_time[i], prm.total_cost_tab[i])
+
+            plt.figure(figsize=(32, 20))
+            plt.title("total cost sum, level" + str(i))
+            plt.xlabel("time")
+            plt.ylabel("total cost sum")
+            plt.plot(prm.total_cost_time[i], prm.total_cost_sum[i])
+
+        if prm.verbose:
+            for j in range(len(obj_s.objects[i])):
+                print("elmt id:",obj_s.objects[i][j]["id"],
+                      "links:", obj_s.objects[i][j]["links"],
+                      "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
+                      " y=",obj_s.objects[i][j]["coordinates"]["y"],
+                      " z=", obj_s.objects[i][j]["coordinates"]["z"],
+                      "mat num:", obj_s.objects[i][j]["mat_num"],
+                      "level:", obj_s.objects[i][j]["level"],
+                      "len sound:", len(obj_s.objects[i][j]["sound"]))
 
             if prm.SYNTHESIS:
                 name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
@@ -73,6 +87,46 @@ def main():
         print("alpha = ", prm.alpha)
         print("delta = ", prm.delta)
         print("beta = ", prm.beta)
+
+        print("lambda_tab = ", prm.lambda_tab)
+        print("lambda_time = ", prm.lambda_time)
+        print("gamma_tab = ", prm.gamma_tab)
+        print("gamma_time = ", prm.gamma_time)
+        print("alpha_tab = ", prm.alpha_tab)
+        print("alpha_time = ", prm.alpha_time)
+        print("delta_tab = ", prm.delta_tab)
+        print("delta_time = ", prm.delta_time)
+        print("beta_tab = ", prm.beta_tab)
+        print("beta_time = ", prm.beta_time)
+        print("total_cost_tab = ", prm.total_cost_tab)
+        print("total_cost_sum = ", prm.total_cost_sum)
+        print("total_cost_time = ", prm.total_cost_time)
+
+        plt.figure(figsize=(32, 20))
+        plt.title("lambda")
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.lambda_time, prm.lambda_tab)
+        plt.figure(figsize=(32, 20))
+        plt.title("gamma")
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.gamma_time, prm.gamma_tab)
+        plt.figure(figsize=(32, 20))
+        plt.title("alpha")
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.alpha_time, prm.alpha_tab)
+        plt.figure(figsize=(32, 20))
+        plt.title("delta")
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.delta_time, prm.delta_tab)
+        plt.figure(figsize=(32, 20))
+        plt.title("beta")
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.beta_time, prm.beta_tab)
 
     plt.pause(3000)
 

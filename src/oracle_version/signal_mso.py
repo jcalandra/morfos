@@ -10,7 +10,6 @@ import algo_segmentation_mso as as_mso
 import similarity_rules as sim_rules
 import objects_storage as obj_s
 
-
 # import compute_dynamics as cd
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
@@ -259,6 +258,19 @@ def matrix_init(rate, data_size, data_length, nb_points):
 def algo_cog(audio_path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
+    prm.lambda_tab = [prm.lambda_0]
+    prm.lambda_time = [0]
+    prm.gamma_tab = [prm.gamma]
+    prm.gamma_time = [0]
+    prm.alpha_tab = [prm.alpha]
+    prm.alpha_time = [0]
+    prm.delta_tab = [prm.delta]
+    prm.delta_time = [0]
+    prm.beta_tab = [prm.beta]
+    prm.beta_time = [0]
+    prm.total_cost_tab = []
+    prm.total_cost_sum = []
+    prm.total_cost_time = []
     gamma_t = alpha_t = delta_t = beta_t = 0
 
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
@@ -288,6 +300,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
     volume_data, suffix_method, input_data, oracle_t = build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab)
     if prm.COMPUTE_COSTS == 1:
         prm.lambda_0 += cost_new_oracle
+        prm.lambda_tab.append(prm.lambda_0)
+        prm.lambda_time.append(0)
+        prm.total_cost_tab.append([])
+        prm.total_cost_sum.append([])
+        prm.total_cost_time.append([])
 
     # ------- INITIALISATION OF OTHER STRUCTURES -------
     level = 0
@@ -348,12 +365,6 @@ def algo_cog(audio_path, oracles, end_mk=0):
             j_mat = prev_mat
 
         diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        if prm.COMPUTE_COSTS == 1:
-            gamma_t += cost_seg_test_1
-            print("gamma_", i_hop, " level ", level, ": ", gamma_t)
-            prm.gamma += gamma_t
-            gamma_t = cost_numerisation + cost_desc_computation
-
         if diff and len(concat_obj) > 3:
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
@@ -370,21 +381,12 @@ def algo_cog(audio_path, oracles, end_mk=0):
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_maj_link
                 # history_next update
                 new_char = sim_rules.char_next_level_similarity(oracles, level)
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_comparaison_2 + cost_labelisation
                 # concat_obj update
                 concat_obj = ""
 
                 diff_mk = 1
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_level_up
-                    print("beta_", i_hop, " level ", level, ": ", beta_t)
-                    prm.beta += beta_t
-                    beta_t = 0
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
@@ -400,23 +402,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
                     node = 1
                 for ind in range(len(concat_obj)):
                     link.append(node)
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_maj_link
                 # history_next update
                 new_char = sim_rules.char_next_level_similarity(oracles, level)
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_comparaison_2 + cost_labelisation
                 # concat_obj update
                 concat_obj = ""
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_maj_concat_obj
-                    prm.beta += beta_t
-                    beta_t = 0
-
                 diff_mk = 1
-                if prm.COMPUTE_COSTS == 1:
-                    beta_t += cost_level_up
-                    print("beta_", i_hop, " level ", level, ": ", beta_t)
                 as_mso.fun_segmentation(oracles, new_char, nb_hop, level=level + 1, end_mk=end_mk)
                 if prm.verbose == 1:
                     print("[INFO] Process in level 0...")
@@ -552,11 +542,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
         fd_mso.print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, nb_hop)
 
-        g_oracle = oracle_mso.create_oracle('f')
+        '''g_oracle = oracle_mso.create_oracle('f')
         for ind in range(i_hop + 1):
             g_oracle.add_state(oracle_t.data[ind + 1] + 1)
 
-        f_oracle = g_oracle
+        f_oracle = g_oracle'''
         oracles[1][level][0] = oracle_t
         oracles[1][level][1] = link
         oracles[1][level][2] = history_next
@@ -572,6 +562,22 @@ def algo_cog(audio_path, oracles, end_mk=0):
         y = obj_s.first_occ[level][mat_num]
         z = prm.HOP_LENGTH/prm.SR
         obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_seg_test_1
+            if prm.verbose:
+                print("gamma_", i_hop, " level ", level, ": ", gamma_t)
+            prm.gamma += gamma_t
+            prm.gamma_tab.append(prm.gamma)
+            time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
+            prm.gamma_time.append(time_t)
+            prm.total_cost_tab[level].append(prm.total_cost)
+            if len(prm.total_cost_sum[level]) == 0:
+                tc_sum = prm.total_cost
+            else:
+                tc_sum = prm.total_cost_sum[level][len(prm.total_cost_sum[level]) -1] + prm.total_cost
+            prm.total_cost_sum[level].append(tc_sum)
+            prm.total_cost_time[level].append(time_t)
+            gamma_t = cost_numerisation + cost_desc_computation
 
         if i_hop > 3:
             mat_num_prev1 = oracle_t.data[i_hop]

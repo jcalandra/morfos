@@ -443,6 +443,13 @@ class FO(FactorOracle):
         self.lrs.append(0)
         self.data.append(new_symbol)
 
+        # Initialisation des coûts
+        cost_ext_forward_link = 0
+        cost_nb_comparison = 0
+        cost_sfx = 0
+        cost_new_mat = 0
+        cost_update_mat = 0
+
         self.n_states += 1
 
         i = self.n_states - 1
@@ -453,22 +460,28 @@ class FO(FactorOracle):
 
         # Adding forward links
         while k is not None:
+            cost_nb_comparison += len(self.trn[k])
             _symbols = [self.data[state] for state in self.trn[k]]
             if self.data[i] not in _symbols:
                 self.trn[k].append(i)
+                cost_ext_forward_link += 1
                 pi_1 = k
                 k = self.sfx[k]
             else:
                 break
 
         if k is None:
+            cost_sfx += 1
             self.sfx[i] = 0
+            cost_new_mat += 1
             self.lrs[i] = 0
         else:
+            cost_update_mat += 1
             _query = [[self.data[state], state] for state in
                       self.trn[k] if self.data[state] == self.data[i]]
             _query = sorted(_query, key=lambda _query: _query[1])
             _state = _query[0][1]
+            cost_sfx += 1
             self.sfx[i] = _state
             self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
 
@@ -476,6 +489,7 @@ class FO(FactorOracle):
         if k is not None:
             self.lrs[i] += 1
             self.sfx[i] = k
+            cost_sfx += 1
         self.rsfx[self.sfx[i]].append(i)
 
         if self.lrs[i] > self.max_lrs[i - 1]:
@@ -485,6 +499,10 @@ class FO(FactorOracle):
 
         self.avg_lrs.append(self.avg_lrs[i - 1] * ((i - 1.0) / (self.n_states - 1.0)) +
                             self.lrs[i] * (1.0 / (self.n_states - 1.0)))
+
+        prm.total_cost = cost_ext_forward_link + cost_nb_comparison + cost_sfx + cost_new_mat + cost_update_mat
+        if prm.verbose:
+            print("total cost ", i - 1,"=", prm.total_cost)
 
     def accept(self, context):
         """ Check if the context could be accepted by the oracle
@@ -540,13 +558,24 @@ class MO(FactorOracle):
         self.latent = []
 
     def add_state(self, new_data, s_tab, v_tab, method='inc'):
-        # TODO : faire la comparaison soit avec les rsfx, soit avec les trn[i][0]
         """Create new state and update related links and compressed state"""
         # Initialisation de toutes les structures pour l'état i
         self.sfx.append(0)
         self.rsfx.append([])
         self.trn.append([])
         self.lrs.append(0)
+
+        # Initialisation des coûts
+        cost_ext_forward_link = 0
+        cost_nb_comparison = 0
+        cost_sfx_candidate = 0
+        cost_sfx = 0
+        cost_new_mat = 0
+        cost_update_mat = 0
+        # representant
+        cost_comp_rep = 0
+        # uniquement pour le mode 'complete'
+        cost_parcours_wo_efl = 0
 
         # Experiment with pointer-based
         self.f_array.add(new_data)
@@ -567,143 +596,161 @@ class MO(FactorOracle):
         else:
             suffix_candidate = 0
 
+        # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
+        # un silence
+        if k is not None and v_tab[i-1] < audible_threshold:
+            if method == 'inc':
+                suffix_candidate = 1
+            elif method == 'complete':
+                suffix_candidate.append((1, 1))
+            else:
+                suffix_candidate = 1
+
         # Recherche du suffixe adéquat et calcul des distances
-        while k is not None:
+        if method == 'inc' and suffix_candidate == 0 or method == 'complete' and suffix_candidate == []:
+            while k is not None:
 
-            # dvec correspond au tableau des distances entre tous les liens en avant du suffixe et l'état actuel
-            # Le choix de la distance est effectué dans le fichier parameters et similarity_functions
-            # (distance cosine)
-            # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
-            # un silence
-            if v_tab[i-1] < audible_threshold:
-                if method == 'inc':
-                    suffix_candidate = 1
-                elif method == 'complete':
-                    suffix_candidate.append((1, 1))
+                # dvec correspond au tableau des distances entre tous les liens en avant du suffixe et l'état actuel
+                # Le choix de la distance est effectué dans le fichier parameters et similarity_functions
+                # (distance cosine)
+                dvec = []
+                # remarque: on compare avec tous les liens avants, on ne s'arrête pas dès qu'on trouve un assez proche
+                cost_nb_comparison += len(self.trn[k])
+                I = []  # I retourne les indices du tableau pour lesquels la distance est supérieure au seuil
+                for j in range(len(self.trn[k])):
+                    fss = sf.frequency_static_similarity(s_tab, self.trn[k][j] - 1, i - 1)
+                    dvec.append(fss)
+                    if dvec[j] > self.params['threshold'] and self.data[self.trn[k][j]] != 0:
+                        I.append(j)
+
+                # S'il n'y a pas de transition en avant du suffixe similaire à l'état actuel
+                if len(I) == 0:
+                    self.trn[k].append(i)  # Add new forward link to unvisited state
+                    cost_ext_forward_link += 1
+                    pi_1 = k
+                    if method != 'complete':
+                        k = self.sfx[k]
+
+                # Si il y a au moins une transition qui est considérée comme similaire à partir du suffixe
                 else:
-                    suffix_candidate = 1
-                break
+                    dvec_sc = []
+                    for j in range(len(I)):
+                        dvec_sc.append(dvec[I[j]])
 
-            dvec = []
-            I = []  # I retourne les indices du tableau pour lesquels la distance est supérieure au seuil
-            for j in range(len(self.trn[k])):
-                fss = sf.frequency_static_similarity(s_tab, self.trn[k][j] - 1, i - 1)
-                dvec.append(fss)
-                if dvec[j] > self.params['threshold'] and self.data[self.trn[k][j]] != 0:
-                    I.append(j)
+                    if method == 'inc':
+                        # S'il y en a exactement une seule, alors le suffixe est celle-ci
+                        cost_sfx_candidate += 1
+                        if len([I[0]]) == 1:
+                            suffix_candidate = self.trn[k][I[0]]
+                        # Sinon on prend la meilleure des transition (la similarité la plus élevée)
+                        else:
+                            suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
+                        # pour la méthode 'inc', on s'arrête au premier suffixe dont un lien a été trouvé
+                        break
+                    elif method == 'complete':
+                        # prend le lien en question et la valeur de sa distance avec l'état actuel
+                        suffix_candidate.append((self.trn[k][I[np.argmax(dvec_sc)]], np.max(dvec)))
+                        cost_sfx_candidate += 1
 
-            # S'il n'y a pas de transition en avant du suffixe similaire à l'état actuel
-            if len(I) == 0:
-                self.trn[k].append(i)  # Add new forward link to unvisited state
-                pi_1 = k
-                if method != 'complete':
+                        if len(suffix_candidate) > 1:
+                            k = self.sfx[k]
+                            cost_parcours_wo_efl += 1
+                            break
+                    else:  # même comportement que pour 'inc'
+                        cost_sfx_candidate += 1
+                        suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
+                        break
+
+                if method == 'complete':  # Pour la methode 'complete', on parcourt tous les suffixes jusque k = None
+                    cost_parcours_wo_efl += 1
                     k = self.sfx[k]
 
-            # Si il y a au moins une transition qui est considérée comme similaire à partir du suffixe
-            else:
-                dvec_sc = []
-                for j in range(len(I)):
-                    dvec_sc.append(dvec[I[j]])
+            if k is None or\
+                    (PARCOURS and method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE):
+                # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
+                # meilleur que celui trouvé ou que rien du tout.
+                n = len(self.rep)
+                comp_rep = []
+                cost_comp_rep += n
+                if n > 0:
+                    compare_tab_rep = [self.rep[0][0]]
+                    for j in range(1, n):
+                        compare_tab_rep = np.append(compare_tab_rep, [self.rep[j][0]], axis=0)
+                    compare_tab_rep = np.concatenate((compare_tab_rep, s_tab))
 
-                if method == 'inc':
-                    # S'il y en a exactement une seule, alors le suffixe est celle-ci
-                    if len([I[0]]) == 1:
-                        suffix_candidate = self.trn[k][I[0]]
-                    # Sinon on prend la meilleure des transition (la similarité la plus élevée)
-                    else:
-                        suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
-                    # pour la méthode 'inc', on s'arrête au premier suffixe dont un lien a été trouvé
-                    break
-                elif method == 'complete':
-                    # prend le lien en question et la valeur de sa distance avec l'état actuel
-                    suffix_candidate.append((self.trn[k][I[np.argmax(dvec_sc)]], np.max(dvec)))
+                    J = []
+                    for j in range(n):
+                        fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
+                        comp_rep.append(fss)
+                        if j != 0 and comp_rep[j] > self.params['threshold']:
+                            J.append(j)
 
-                    if len(suffix_candidate) > 1:
-                        k = self.sfx[k]
-                        break
-                else:  # même comportement que pour 'inc'
-                    suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
-                    break
+                    comp_rep_sc = []
+                    for j in range(len(J)):
+                        comp_rep_sc.append(comp_rep[J[j]])
+                    if len(J) != 0 and v_tab[i-1] > audible_threshold:
+                        if method == 'inc':
+                            cost_sfx_candidate += 1
+                            # S'il y en a exactement une seule, alors le suffixe est celle-ci
+                            if len([J[0]]) == 1:
+                                suffix_candidate = self.latent[J[0]][0]
+                            # Sinon on prend la meilleure des transition (la similarité la plus élevée)
+                            else:
+                                suffix_candidate = self.latent[J[np.argmax(comp_rep_sc)]][0]
+                        elif method == 'complete':
+                            # prend le lien en question et la valeur de sa distance avec l'état actuel
+                            suffix_candidate.append((self.latent[J[np.argmax(comp_rep_sc)]][0], np.max(comp_rep)))
+                            cost_sfx_candidate += 1
+                        else:  # même comportement que pour 'inc'
+                            cost_sfx_candidate += 1
+                            suffix_candidate = self.latent[J[np.argmax(comp_rep_sc)]][0]
 
-            if method == 'complete':  # Pour la methode 'complete', on parcourt tous les suffixes jusque k = None
-                k = self.sfx[k]
+                    if PARCOURS:
+                        if method == 'complete':
+                            sorted_suffix_candidates = sorted(suffix_candidate, key=lambda suffix: suffix[1], reverse=True)
+                        else:
+                            sorted_suffix_candidates = []
+                        if len(comp_rep) > 1 and \
+                                (not suffix_candidate or
+                                 (method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE) or
+                                 (method == 'complete' and
+                                  len(self.latent[self.data[sorted_suffix_candidates[0][0]]]) < INCERTITUDE)):
+                            mat_rep = np.argmax(comp_rep[1:]) + 1
 
-        # if REPRESENTANTS == 1:
-        # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
-        # meilleur que celui trouvé ou que rien du tout.
-        n = len(self.rep)
-        comp_rep = []
-        if n > 0:
-            compare_tab_rep = [self.rep[0][0]]
-            for j in range(1, n):
-                compare_tab_rep = np.append(compare_tab_rep, [self.rep[j][0]], axis=0)
-            compare_tab_rep = np.concatenate((compare_tab_rep, s_tab))
+                            if len(comp_rep) > 2 and ((method == 'complete' and len(sorted_suffix_candidates) > 0 and
+                                                      mat_rep == self.data[sorted_suffix_candidates[0][0]])
+                                                      or (method == 'inc' and mat_rep == self.data[suffix_candidate])):
+                                new_comp_rep = comp_rep.copy()
+                                new_comp_rep.pop(mat_rep)
+                                sec_mat_value = np.max(new_comp_rep[1:])
+                                sec_mat_rep = np.argmax(new_comp_rep[1:]) + 1
+                                if mat_rep < sec_mat_rep:
+                                    sec_mat_rep = sec_mat_rep + 1
+                                if sec_mat_value > self.params['threshold']:
+                                    mat_rep = sec_mat_rep
+                            if (method == 'complete' and len(sorted_suffix_candidates) > 0 and
+                                mat_rep != self.data[sorted_suffix_candidates[0][0]]) or \
+                               (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
+                               (not suffix_candidate):
+                                for j in range(len(self.latent[mat_rep])):
+                                    actual_compared = self.latent[mat_rep][j]
+                                    cost_nb_comparison += 1
+                                    fss = sf.frequency_static_similarity(s_tab, actual_compared - 1, i - 1)
 
-            J = []
-            for j in range(n):
-                fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
-                comp_rep.append(fss)
-                if j != 0 and comp_rep[j] > self.params['threshold']:
-                    J.append(j)
-
-            comp_rep_sc = []
-            for j in range(len(J)):
-                comp_rep_sc.append(comp_rep[J[j]])
-            if len(J) != 0 and v_tab[i-1] > audible_threshold:
-                if method == 'inc':
-                    # S'il y en a exactement une seule, alors le suffixe est celle-ci
-                    if len([J[0]]) == 1:
-                        suffix_candidate = self.latent[J[0]][0]
-                    # Sinon on prend la meilleure des transition (la similarité la plus élevée)
-                    else:
-                        suffix_candidate = self.latent[J[np.argmax(comp_rep_sc)]][0]
-                elif method == 'complete':
-                    # prend le lien en question et la valeur de sa distance avec l'état actuel
-                    suffix_candidate.append((self.latent[J[np.argmax(comp_rep_sc)]][0], np.max(comp_rep)))
-                else:  # même comportement que pour 'inc'
-                    suffix_candidate = self.latent[J[np.argmax(comp_rep_sc)]][0]
-
-            if PARCOURS == 1:
-                if method == 'complete':
-                    sorted_suffix_candidates = sorted(suffix_candidate, key=lambda suffix: suffix[1], reverse=True)
-                else:
-                    sorted_suffix_candidates = []
-                if len(comp_rep) > 1 and \
-                        (not suffix_candidate or
-                         (method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE) or
-                         (method == 'complete' and
-                          len(self.latent[self.data[sorted_suffix_candidates[0][0]]]) < INCERTITUDE)):
-                    mat_rep = np.argmax(comp_rep[1:]) + 1
-
-                    if len(comp_rep) > 2 and ((method == 'complete' and len(sorted_suffix_candidates) > 0 and
-                                              mat_rep == self.data[sorted_suffix_candidates[0][0]])
-                                              or (method == 'inc' and mat_rep == self.data[suffix_candidate])):
-                        new_comp_rep = comp_rep.copy()
-                        new_comp_rep.pop(mat_rep)
-                        sec_mat_value = np.max(new_comp_rep[1:])
-                        sec_mat_rep = np.argmax(new_comp_rep[1:]) + 1
-                        if mat_rep < sec_mat_rep:
-                            sec_mat_rep = sec_mat_rep + 1
-                        if sec_mat_value > self.params['threshold']:
-                            mat_rep = sec_mat_rep
-                    if (method == 'complete' and len(sorted_suffix_candidates) > 0 and
-                        mat_rep != self.data[sorted_suffix_candidates[0][0]]) or \
-                       (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
-                       (not suffix_candidate):
-                        for j in range(len(self.latent[mat_rep])):
-                            actual_compared = self.latent[mat_rep][j]
-                            fss = sf.frequency_static_similarity(s_tab, actual_compared - 1, i - 1)
-
-                            if fss > self.params['threshold']:
-                                if method == 'complete':
-                                    suffix_candidate.append((actual_compared, 1))
-                                else:
-                                    suffix_candidate = actual_compared
-                                break
+                                    if fss > self.params['threshold']:
+                                        if method == 'complete':
+                                            cost_sfx_candidate += 1
+                                            suffix_candidate.append((actual_compared, 1))
+                                        else:
+                                            cost_sfx_candidate += 1
+                                            suffix_candidate = actual_compared
+                                        break
         # Ajout du suffixe dans le poll adéquat ou création du poll et maj des autres structures
         if method == 'complete':  # Si on a un nouveau matériau
             if not suffix_candidate:
+                cost_new_mat += 1
                 self.sfx[i] = 0  # Le suffixe est l'état initial
+                cost_sfx += 1
                 self.lrs[i] = 0  # Aucun suffixe répété
                 self.latent.append([i])  # il s'agit d'un nouveau matériau dont le premier indice est i
                 self.data.append(len(self.latent) - 1)  # Numéro du matériau correspondant (qui est un nv num ici)
@@ -713,24 +760,26 @@ class MO(FactorOracle):
 
             else:  # Si on a un matériau déjà existant
                 # trie avec le 2e élément de chaque couple par ordre décroissant
+                cost_update_mat += 1
                 sorted_suffix_candidates = sorted(suffix_candidate, key=lambda suffix: suffix[1], reverse=True)
 
-                if len(sorted_suffix_candidates) > 1 and sorted_suffix_candidates[0][1] == np.max(comp_rep) and \
-                        self.data[sorted_suffix_candidates[0][0]] == self.data[sorted_suffix_candidates[1][0]]:
-                    # if REPRESENTANTS == 1:
+                if k==None and len(sorted_suffix_candidates) > 1 and sorted_suffix_candidates[0][1] == np.max(comp_rep) \
+                        and self.data[sorted_suffix_candidates[0][0]] == self.data[sorted_suffix_candidates[1][0]]:
                     sorted_suffix_candidates.pop(0)
                 self.sfx[i] = sorted_suffix_candidates[0][0]
+                cost_sfx += 1
                 # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
-                # if REPRESENTANTS == 1:
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
                                                        self.rep[self.data[self.sfx[i]]][1] + new_data) /\
                                                       (self.rep[self.data[self.sfx[i]]][1] + 1)
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         else:
             if k is None:
+                cost_new_mat += 1
                 self.sfx[i] = 0
+                cost_sfx += 1
                 self.lrs[i] = 0
                 self.latent.append([i])
                 self.data.append(len(self.latent) - 1)
@@ -739,6 +788,7 @@ class MO(FactorOracle):
                     self.vec.append(comp_rep)
             else:
                 self.sfx[i] = suffix_candidate
+                cost_sfx += 1
                 # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
@@ -753,6 +803,7 @@ class MO(FactorOracle):
         if k is not None:
             self.lrs[i] += 1
             self.sfx[i] = k
+            cost_sfx += 1
 
         self.rsfx[self.sfx[i]].append(i)
 
@@ -763,6 +814,10 @@ class MO(FactorOracle):
 
         self.avg_lrs.append(self.avg_lrs[i - 1] * ((i - 1.0) / (self.n_states - 1.0)) +
                             self.lrs[i] * (1.0 / (self.n_states - 1.0)))
+        prm.total_cost = cost_ext_forward_link + cost_nb_comparison + cost_sfx_candidate + cost_sfx + cost_new_mat + \
+                                           cost_update_mat + cost_comp_rep + cost_parcours_wo_efl
+        if prm.verbose:
+            print("total cost ", i - 1,"=", prm.total_cost)
 
 
 class feature_array:
