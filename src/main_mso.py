@@ -5,6 +5,7 @@ import signal_mso as sig_mso
 import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave
+import cost_storage as cs
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -48,19 +49,6 @@ def main():
         print("history next : ", mso_oracle[1][i][2])
         print("matrix_next : ", mso_oracle[1][i][6])
 
-        if prm.COMPUTE_COSTS:
-            plt.figure(figsize=(32, 20))
-            plt.title("total cost, level" + str(i))
-            plt.xlabel("time")
-            plt.ylabel("total cost")
-            plt.plot(prm.total_cost_time[i], prm.total_cost_tab[i])
-
-            plt.figure(figsize=(32, 20))
-            plt.title("total cost sum, level" + str(i))
-            plt.xlabel("time")
-            plt.ylabel("total cost sum")
-            plt.plot(prm.total_cost_time[i], prm.total_cost_sum[i])
-
         if prm.verbose:
             for j in range(len(obj_s.objects[i])):
                 print("elmt id:",obj_s.objects[i][j]["id"],
@@ -82,51 +70,11 @@ def main():
             im.show()
 
     if prm.COMPUTE_COSTS:
-        print("lambda = ", prm.lambda_0)
-        print("gamma = ", prm.gamma)
-        print("alpha = ", prm.alpha)
-        print("delta = ", prm.delta)
-        print("beta = ", prm.beta)
-
-        print("lambda_tab = ", prm.lambda_tab)
-        print("lambda_time = ", prm.lambda_time)
-        print("gamma_tab = ", prm.gamma_tab)
-        print("gamma_time = ", prm.gamma_time)
-        print("alpha_tab = ", prm.alpha_tab)
-        print("alpha_time = ", prm.alpha_time)
-        print("delta_tab = ", prm.delta_tab)
-        print("delta_time = ", prm.delta_time)
-        print("beta_tab = ", prm.beta_tab)
-        print("beta_time = ", prm.beta_time)
-        print("total_cost_tab = ", prm.total_cost_tab)
-        print("total_cost_sum = ", prm.total_cost_sum)
-        print("total_cost_time = ", prm.total_cost_time)
-
-        plt.figure(figsize=(32, 20))
-        plt.title("lambda")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.lambda_time, prm.lambda_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("gamma")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.gamma_time, prm.gamma_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("alpha")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.alpha_time, prm.alpha_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("delta")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.delta_time, prm.delta_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("beta")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.beta_time, prm.beta_tab)
+        #cs.cost_oracle_print()
+        cs.cost_general_print()
+        cs.cost_oracle_diagram_all_levels()
+        cs.cost_general_diagram_all_levels()
+        cs.cost_general_diagram_allinone()
 
     plt.pause(3000)
 

@@ -13,11 +13,6 @@ PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
 PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
 
-global lambda_0, gamma, alpha, delta, beta
-global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab
-global lambda_time, gamma_time, alpha_time, delta_time, beta_time
-global total_cost, total_cost_tab, total_cost_sum, total_cost_time
-
 # This is the similarity threshold
 teta = 0.975
 if teta > 1:
@@ -258,7 +253,7 @@ INCERTITUDE = 3
 
 # Type of VMO we want to use. Ref to the
 # VMO documentation for more information
-SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
+SUFFIX_METHOD = 'inc'  # 'inc' ou 'complete'
 
 # If we want to resynthesis the obtained VMO
 # at level 0.
@@ -267,6 +262,81 @@ SYNTHESIS = 0
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
 COMPUTE_COSTS = 1
+
+global lambda_0, gamma, alpha, delta, beta
+global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
+global lambda_sum, gamma_sum, alpha_sum, delta_sum, beta_sum # sum per level
+global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab # total sum
+global lambda_time, gamma_time, alpha_time, delta_time, beta_time
+
+global cost_0_init, \
+    cost_1_nb_comparison, \
+    cost_2_ext_forward_link, \
+    cost_3_sfx_candidate, \
+    cost_3b_complete, \
+    cost_4_nb_comparison_rep, \
+    cost_5_sfx_candidate_rep, \
+    cost_6_nb_comparison_parcours, \
+    cost_7_sfx_candidate_parcours, \
+    cost_8_sfx, \
+    cost_9_new_mat, \
+    cost_10_update_mat, \
+    cost_11_nb_comparison_update, \
+    cost_12_cost_sfx_update, \
+    cost_13_last_update
+
+global cost_14_find_sfx, \
+    cost_15_rep, \
+    cost_16_parcours, \
+    cost_17_fix_sfx, \
+    cost_18_update
+
+global cost_19_comparisons, \
+    cost_20_sfx_candidates, \
+    cost_21_statics
+
+global cost_22_theoretical, \
+    cost_23_theoretical_and_mat
+
+global cost_24_total_wo_correct, \
+    cost_25_total_wo_correct_w_update, \
+    cost_total
+
+global cost_0_init_tab, \
+    cost_1_nb_comparison_tab, \
+    cost_2_ext_forward_link_tab, \
+    cost_3_sfx_candidate_tab, \
+    cost_3b_complete_tab, \
+    cost_4_nb_comparison_rep_tab, \
+    cost_5_sfx_candidate_rep_tab, \
+    cost_6_nb_comparison_parcours_tab, \
+    cost_7_sfx_candidate_parcours_tab, \
+    cost_8_sfx_tab, \
+    cost_9_new_mat_tab, \
+    cost_10_update_mat_tab, \
+    cost_11_nb_comparison_update_tab, \
+    cost_12_cost_sfx_update_tab, \
+    cost_13_last_update_tab
+
+global cost_14_find_sfx_tab, \
+    cost_15_rep_tab, \
+    cost_16_parcours_tab, \
+    cost_17_fix_sfx_tab, \
+    cost_18_update_tab
+
+global cost_19_comparisons_tab, \
+    cost_20_sfx_candidates_tab, \
+    cost_21_statics_tab
+
+global cost_22_theoretical_tab, \
+    cost_23_theoretical_and_mat_tab
+
+global cost_24_total_wo_correct_tab, \
+    cost_25_total_wo_correct_w_update_tab, \
+    cost_total_tab, \
+    cost_total_sum, \
+    cost_time
+
 cost_new_oracle = 1
 
 cost_numerisation = 1

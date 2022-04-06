@@ -4,6 +4,7 @@ import formal_diagram_mso as fd_mso
 import segmentation_rules_mso
 import similarity_rules
 import objects_storage as obj_s
+import cost_storage as cs
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -117,20 +118,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     #  Initialisation of the structures
     if level > oracles[0]:
         if prm.COMPUTE_COSTS and level == 0:
-            prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
-            prm.lambda_tab = [prm.lambda_0]
-            prm.lambda_time = [0]
-            prm.gamma_tab = [prm.gamma]
-            prm.gamma_time = [0]
-            prm.alpha_tab = [prm.alpha]
-            prm.alpha_time = [0]
-            prm.delta_tab = [prm.delta]
-            prm.delta_time = [0]
-            prm.beta_tab = [prm.beta]
-            prm.beta_time = [0]
-            prm.total_cost_tab = []
-            prm.total_cost_sum = []
-            prm.total_cost_time = []
+            cs.cost_general_init()
+            cs.cost_oracle_init()
+
         if prm.verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         flag = 'f'
@@ -157,12 +147,13 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 time = 0
             else:
                 time = obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"]
-            prm.lambda_0 += cost_level_up
+            cs.cost_general_add_level()
+            cs.cost_oracle_add_level()
+            lambda_t = cost_level_up
+            prm.lambda_0 += lambda_t
+            prm.lambda_levels[level].append(lambda_t)
             prm.lambda_tab.append(prm.lambda_0)
             prm.lambda_time.append(time)
-            prm.total_cost_tab.append([])
-            prm.total_cost_sum.append([])
-            prm.total_cost_time.append([])
 
     else:
         f_oracle = oracles[1][level][0]
@@ -222,16 +213,10 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
         time = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
-        alpha_t = delta_t = alpha_or_delta_t = 0
+        lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
         if prm.COMPUTE_COSTS == 1:
-            prm.total_cost_tab[level].append(prm.total_cost)
-            if len(prm.total_cost_sum[level]) == 0:
-                tc_sum = prm.total_cost
-            else:
-                tc_sum = prm.total_cost_sum[level][len(prm.total_cost_sum[level]) -1] + prm.total_cost
-            prm.total_cost_sum[level].append(tc_sum)
-            prm.total_cost_time[level].append(time)
-            alpha_or_delta_t = cost_oracle_acq_symb
+            cs.cost_oracle_add_element(level, time)
+            alpha_or_delta_t = prm.cost_total
             if new_mat:
                 alpha_t = cost_new_mat_creation
                 delta_t = 0
@@ -300,6 +285,28 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 prm.alpha += alpha_t
                 prm.alpha_tab.append(prm.alpha)
                 prm.alpha_time.append(time)
+
+            if actual_char_ind > 1:
+                prm.lambda_levels[level].append(lambda_t)
+            prm.beta_levels[level].append(beta_t)
+            prm.alpha_levels[level].append(alpha_t)
+            prm.delta_levels[level].append(delta_t)
+            prm.gamma_levels[level].append(gamma_t)
+            if len(prm.lambda_sum[level]) != actual_char_ind:
+                if len(prm.lambda_sum[level]) > 1:
+                    prm.lambda_sum[level].append(prm.lambda_sum[level][-1] + lambda_t)
+                else:
+                    prm.lambda_sum[level].append(lambda_t)
+            if len(prm.beta_sum[level]) > 1:
+                prm.gamma_sum[level].append(prm.gamma_sum[level][-1] + gamma_t)
+                prm.beta_sum[level].append(prm.beta_sum[level][-1] + beta_t)
+                prm.alpha_sum[level].append(prm.alpha_sum[level][-1] + alpha_t)
+                prm.delta_sum[level].append(prm.delta_sum[level][-1] + delta_t)
+            else:
+                prm.gamma_sum[level].append(gamma_t)
+                prm.beta_sum[level].append(beta_t)
+                prm.alpha_sum[level].append(alpha_t)
+                prm.delta_sum[level].append(delta_t)
 
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):

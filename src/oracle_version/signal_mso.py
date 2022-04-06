@@ -9,6 +9,7 @@ import synthesis_mso as s_mso
 import algo_segmentation_mso as as_mso
 import similarity_rules as sim_rules
 import objects_storage as obj_s
+import cost_storage as cs
 
 # import compute_dynamics as cd
 
@@ -257,21 +258,9 @@ def matrix_init(rate, data_size, data_length, nb_points):
 
 def algo_cog(audio_path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
-    prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
-    prm.lambda_tab = [prm.lambda_0]
-    prm.lambda_time = [0]
-    prm.gamma_tab = [prm.gamma]
-    prm.gamma_time = [0]
-    prm.alpha_tab = [prm.alpha]
-    prm.alpha_time = [0]
-    prm.delta_tab = [prm.delta]
-    prm.delta_time = [0]
-    prm.beta_tab = [prm.beta]
-    prm.beta_time = [0]
-    prm.total_cost_tab = []
-    prm.total_cost_sum = []
-    prm.total_cost_time = []
-    gamma_t = alpha_t = delta_t = beta_t = 0
+    cs.cost_general_init()
+    cs.cost_oracle_init()
+    lambda_t = gamma_t = alpha_t = delta_t = beta_t = 0
 
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     data, rate, data_size, data_length, nb_points = prep_data(audio_path)
@@ -299,12 +288,14 @@ def algo_cog(audio_path, oracles, end_mk=0):
     flag = 'a'
     volume_data, suffix_method, input_data, oracle_t = build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab)
     if prm.COMPUTE_COSTS == 1:
-        prm.lambda_0 += cost_new_oracle
+        cs.cost_general_add_level()
+        cs.cost_oracle_add_level()
+        lambda_t += cost_new_oracle
+        prm.lambda_0 += lambda_t
+        prm.lambda_levels[0].append(lambda_t)
+        prm.lambda_sum[0].append(lambda_t)
         prm.lambda_tab.append(prm.lambda_0)
         prm.lambda_time.append(0)
-        prm.total_cost_tab.append([])
-        prm.total_cost_sum.append([])
-        prm.total_cost_time.append([])
 
     # ------- INITIALISATION OF OTHER STRUCTURES -------
     level = 0
@@ -542,11 +533,6 @@ def algo_cog(audio_path, oracles, end_mk=0):
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
         fd_mso.print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, nb_hop)
 
-        '''g_oracle = oracle_mso.create_oracle('f')
-        for ind in range(i_hop + 1):
-            g_oracle.add_state(oracle_t.data[ind + 1] + 1)
-
-        f_oracle = g_oracle'''
         oracles[1][level][0] = oracle_t
         oracles[1][level][1] = link
         oracles[1][level][2] = history_next
@@ -567,16 +553,34 @@ def algo_cog(audio_path, oracles, end_mk=0):
             if prm.verbose:
                 print("gamma_", i_hop, " level ", level, ": ", gamma_t)
             prm.gamma += gamma_t
+            prm.gamma_levels[level].append(gamma_t)
+            if lambda_t == 0:
+                prm.lambda_levels[level].append(lambda_t)
+                if len(prm.lambda_sum[level]) > 1:
+                    prm.lambda_sum[level].append(prm.lambda_sum[level][-1] + lambda_t)
+                else:
+                    prm.lambda_sum[level].append(lambda_t)
+            if lambda_t != 0:
+                lambda_t = 0
+            prm.alpha_levels[level].append(alpha_t)
+            prm.beta_levels[level].append(beta_t)
+            prm.delta_levels[level].append(delta_t)
+
+            if len(prm.gamma_sum[level]) > 1:
+                prm.gamma_sum[level].append(prm.gamma_sum[level][-1] + gamma_t)
+                prm.alpha_sum[level].append(prm.alpha_sum[level][-1] + alpha_t)
+                prm.beta_sum[level].append(prm.beta_sum[level][-1] + beta_t)
+                prm.delta_sum[level].append(prm.delta_sum[level][-1] + delta_t)
+            else:
+                prm.gamma_sum[level].append(gamma_t)
+                prm.alpha_sum[level].append(alpha_t)
+                prm.beta_sum[level].append(beta_t)
+                prm.delta_sum[level].append(delta_t)
             prm.gamma_tab.append(prm.gamma)
             time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
             prm.gamma_time.append(time_t)
-            prm.total_cost_tab[level].append(prm.total_cost)
-            if len(prm.total_cost_sum[level]) == 0:
-                tc_sum = prm.total_cost
-            else:
-                tc_sum = prm.total_cost_sum[level][len(prm.total_cost_sum[level]) -1] + prm.total_cost
-            prm.total_cost_sum[level].append(tc_sum)
-            prm.total_cost_time[level].append(time_t)
+
+            cs.cost_oracle_add_element(level, time_t)
             gamma_t = cost_numerisation + cost_desc_computation
 
         if i_hop > 3:
@@ -586,6 +590,9 @@ def algo_cog(audio_path, oracles, end_mk=0):
             y_prev2 = obj_s.first_occ[level][mat_num_prev2]
             obj_s.objects_modify_prev_obj(level, mat_num_prev1, mat_num_prev2, y_prev1, y_prev2)
 
+    if prm.COMPUTE_COSTS == 1:
+        prm.lambda_tab.append(prm.lambda_0)
+        prm.lambda_time.append(time_t)
     if flag != 'f' and flag != 'v':
         oracle_t.f_array.finalize()
 

@@ -416,12 +416,14 @@ class FactorOracle(object):
         return min(self.lrs[p1], self.lrs[p2])
 
     def _find_better(self, i, symbol):
+        cost_nb_comparison_update = 0
         self.rsfx[self.sfx[i]].sort()
         for j in self.rsfx[self.sfx[i]]:
+            cost_nb_comparison_update += 1
             if (self.lrs[j] == self.lrs[i] and
                     self.data[j - self.lrs[i]] == symbol):
-                return j
-        return None
+                return j, cost_nb_comparison_update
+        return None, cost_nb_comparison_update
 
 
 class FO(FactorOracle):
@@ -444,11 +446,15 @@ class FO(FactorOracle):
         self.data.append(new_symbol)
 
         # Initialisation des coûts
+        cost_init = 0
         cost_ext_forward_link = 0
         cost_nb_comparison = 0
         cost_sfx = 0
         cost_new_mat = 0
         cost_update_mat = 0
+        cost_nb_comparison_update = 0
+        cost_sfx_update = 0
+        cost_last_update = 0
 
         self.n_states += 1
 
@@ -457,6 +463,7 @@ class FO(FactorOracle):
         self.trn[i - 1].append(i)
         k = self.sfx[i - 1]
         pi_1 = i - 1
+        cost_init += 1
 
         # Adding forward links
         while k is not None:
@@ -485,11 +492,11 @@ class FO(FactorOracle):
             self.sfx[i] = _state
             self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
 
-        k = self._find_better(i, self.data[i - self.lrs[i]])
+        k, cost_nb_comparison_update = self._find_better(i, self.data[i - self.lrs[i]])
         if k is not None:
             self.lrs[i] += 1
             self.sfx[i] = k
-            cost_sfx += 1
+            cost_sfx_update += 1
         self.rsfx[self.sfx[i]].append(i)
 
         if self.lrs[i] > self.max_lrs[i - 1]:
@@ -499,10 +506,42 @@ class FO(FactorOracle):
 
         self.avg_lrs.append(self.avg_lrs[i - 1] * ((i - 1.0) / (self.n_states - 1.0)) +
                             self.lrs[i] * (1.0 / (self.n_states - 1.0)))
+        cost_last_update += 1
 
-        prm.total_cost = cost_ext_forward_link + cost_nb_comparison + cost_sfx + cost_new_mat + cost_update_mat
-        if prm.verbose:
-            print("total cost ", i - 1,"=", prm.total_cost)
+        if prm.COMPUTE_COSTS:
+            prm.cost_0_init = cost_init
+            prm.cost_1_nb_comparison = cost_nb_comparison
+            prm.cost_2_ext_forward_link = cost_ext_forward_link
+            prm.cost_3_sfx_candidate = 0
+            prm.cost_3b_complete = 0
+            prm.cost_4_nb_comparison_rep = 0
+            prm.cost_5_sfx_candidate_rep = 0
+            prm.cost_6_nb_comparison_parcours = 0
+            prm.cost_7_sfx_candidate_parcours = 0
+            prm.cost_8_sfx = cost_sfx
+            prm.cost_9_new_mat = cost_new_mat
+            prm.cost_10_update_mat = cost_update_mat
+            prm.cost_11_nb_comparison_update = cost_nb_comparison_update
+            prm.cost_12_cost_sfx_update = cost_sfx_update
+            prm.cost_13_last_update = cost_last_update
+
+            prm.cost_14_find_sfx = cost_ext_forward_link + cost_nb_comparison
+            prm.cost_15_rep = 0
+            prm.cost_16_parcours = 0
+            prm.cost_17_fix_sfx = cost_sfx + cost_new_mat + cost_update_mat
+            prm.cost_18_update = cost_sfx_update + cost_nb_comparison_update
+
+            prm.cost_19_comparisons = cost_nb_comparison + cost_nb_comparison_update
+            prm.cost_20_sfx_candidates = 0
+            prm.cost_21_statics = cost_init + cost_last_update
+
+            prm.cost_22_theoretical = cost_ext_forward_link + cost_nb_comparison + cost_sfx
+            prm.cost_23_theoretical_and_mat = cost_ext_forward_link + cost_nb_comparison + cost_sfx + cost_new_mat + cost_update_mat
+            prm.cost_24_total_wo_correct = prm.cost_23_theoretical_and_mat
+            prm.cost_25_total_wo_correct_w_update = prm.cost_24_total_wo_correct + cost_sfx_update  + cost_nb_comparison_update + cost_last_update
+            prm.cost_total = prm.cost_25_total_wo_correct_w_update
+            if prm.verbose:
+                print("total cost ", i - 1,"=", prm.cost_total)
 
     def accept(self, context):
         """ Check if the context could be accepted by the oracle
@@ -566,16 +605,24 @@ class MO(FactorOracle):
         self.lrs.append(0)
 
         # Initialisation des coûts
+        cost_init = 0
         cost_ext_forward_link = 0
         cost_nb_comparison = 0
         cost_sfx_candidate = 0
         cost_sfx = 0
         cost_new_mat = 0
         cost_update_mat = 0
+        cost_nb_comparison_update = 0
+        cost_sfx_update = 0
+        cost_last_update = 0
         # representant
-        cost_comp_rep = 0
+        cost_nb_comparison_rep = 0
+        cost_sfx_candidate_rep = 0
+        #parcours
+        cost_nb_comparison_parcours = 0
+        cost_sfx_candidate_parcours = 0
         # uniquement pour le mode 'complete'
-        cost_parcours_wo_efl = 0
+        cost_complete = 0
 
         # Experiment with pointer-based
         self.f_array.add(new_data)
@@ -587,6 +634,7 @@ class MO(FactorOracle):
         self.trn[i - 1].append(i)  # lien en avant interne enttre i- 1 et i
         k = self.sfx[i - 1]
         pi_1 = i - 1  # pi_1 est l'état depuis lequel on regarde le suffixe (potentiel similaire)
+        cost_init += 1
 
         # iteratively backtrack suffixes from state i-1
         if method == 'inc':
@@ -652,17 +700,13 @@ class MO(FactorOracle):
                         suffix_candidate.append((self.trn[k][I[np.argmax(dvec_sc)]], np.max(dvec)))
                         cost_sfx_candidate += 1
 
-                        if len(suffix_candidate) > 1:
-                            k = self.sfx[k]
-                            cost_parcours_wo_efl += 1
-                            break
                     else:  # même comportement que pour 'inc'
                         cost_sfx_candidate += 1
                         suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
                         break
 
                 if method == 'complete':  # Pour la methode 'complete', on parcourt tous les suffixes jusque k = None
-                    cost_parcours_wo_efl += 1
+                    cost_complete += 1
                     k = self.sfx[k]
 
             if k is None or\
@@ -671,7 +715,7 @@ class MO(FactorOracle):
                 # meilleur que celui trouvé ou que rien du tout.
                 n = len(self.rep)
                 comp_rep = []
-                cost_comp_rep += n
+                cost_nb_comparison_rep += n
                 if n > 0:
                     compare_tab_rep = [self.rep[0][0]]
                     for j in range(1, n):
@@ -690,7 +734,7 @@ class MO(FactorOracle):
                         comp_rep_sc.append(comp_rep[J[j]])
                     if len(J) != 0 and v_tab[i-1] > audible_threshold:
                         if method == 'inc':
-                            cost_sfx_candidate += 1
+                            cost_sfx_candidate_rep += 1
                             # S'il y en a exactement une seule, alors le suffixe est celle-ci
                             if len([J[0]]) == 1:
                                 suffix_candidate = self.latent[J[0]][0]
@@ -700,10 +744,10 @@ class MO(FactorOracle):
                         elif method == 'complete':
                             # prend le lien en question et la valeur de sa distance avec l'état actuel
                             suffix_candidate.append((self.latent[J[np.argmax(comp_rep_sc)]][0], np.max(comp_rep)))
-                            cost_sfx_candidate += 1
+                            cost_sfx_candidate_rep += 1
                         else:  # même comportement que pour 'inc'
-                            cost_sfx_candidate += 1
-                            suffix_candidate = self.latent[J[np.argmax(comp_rep_sc)]][0]
+                            cost_sfx_candidate_rep += 1
+                            suffix_candidate_ = self.latent[J[np.argmax(comp_rep_sc)]][0]
 
                     if PARCOURS:
                         if method == 'complete':
@@ -734,15 +778,15 @@ class MO(FactorOracle):
                                (not suffix_candidate):
                                 for j in range(len(self.latent[mat_rep])):
                                     actual_compared = self.latent[mat_rep][j]
-                                    cost_nb_comparison += 1
+                                    cost_nb_comparison_parcours += 1
                                     fss = sf.frequency_static_similarity(s_tab, actual_compared - 1, i - 1)
 
                                     if fss > self.params['threshold']:
                                         if method == 'complete':
-                                            cost_sfx_candidate += 1
+                                            cost_sfx_candidate_parcours += 1
                                             suffix_candidate.append((actual_compared, 1))
                                         else:
-                                            cost_sfx_candidate += 1
+                                            cost_sfx_candidate_parcours += 1
                                             suffix_candidate = actual_compared
                                         break
         # Ajout du suffixe dans le poll adéquat ou création du poll et maj des autres structures
@@ -787,6 +831,7 @@ class MO(FactorOracle):
                 if len(self.rep) > 1:
                     self.vec.append(comp_rep)
             else:
+                cost_update_mat += 1
                 self.sfx[i] = suffix_candidate
                 cost_sfx += 1
                 # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
@@ -799,11 +844,11 @@ class MO(FactorOracle):
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         # Temporary adjustment
         # Nouveau suffixe si jamais on trouve une longueur de préfixe plus grande.
-        k = self._find_better(i, self.data[i - self.lrs[i]])
+        k, cost_nb_comparison_update = self._find_better(i, self.data[i - self.lrs[i]])
         if k is not None:
             self.lrs[i] += 1
             self.sfx[i] = k
-            cost_sfx += 1
+            cost_sfx_update += 1
 
         self.rsfx[self.sfx[i]].append(i)
 
@@ -814,10 +859,42 @@ class MO(FactorOracle):
 
         self.avg_lrs.append(self.avg_lrs[i - 1] * ((i - 1.0) / (self.n_states - 1.0)) +
                             self.lrs[i] * (1.0 / (self.n_states - 1.0)))
-        prm.total_cost = cost_ext_forward_link + cost_nb_comparison + cost_sfx_candidate + cost_sfx + cost_new_mat + \
-                                           cost_update_mat + cost_comp_rep + cost_parcours_wo_efl
-        if prm.verbose:
-            print("total cost ", i - 1,"=", prm.total_cost)
+        cost_last_update += 1
+
+        if prm.COMPUTE_COSTS:
+            prm.cost_0_init = cost_init
+            prm.cost_1_nb_comparison = cost_nb_comparison
+            prm.cost_2_ext_forward_link = cost_ext_forward_link
+            prm.cost_3_sfx_candidate = cost_sfx_update
+            prm.cost_3b_complete = cost_complete
+            prm.cost_4_nb_comparison_rep = cost_nb_comparison_rep
+            prm.cost_5_sfx_candidate_rep = cost_sfx_candidate_rep
+            prm.cost_6_nb_comparison_parcours = cost_nb_comparison_parcours
+            prm.cost_7_sfx_candidate_parcours = cost_sfx_candidate_parcours
+            prm.cost_8_sfx = cost_sfx
+            prm.cost_9_new_mat = cost_new_mat
+            prm.cost_10_update_mat = cost_update_mat
+            prm.cost_11_nb_comparison_update = cost_nb_comparison_update
+            prm.cost_12_cost_sfx_update = cost_sfx_update
+            prm.cost_13_last_update = cost_last_update
+
+            prm.cost_14_find_sfx = cost_ext_forward_link + cost_nb_comparison + cost_sfx_candidate + cost_complete
+            prm.cost_15_rep = cost_nb_comparison_rep + cost_sfx_candidate_rep
+            prm.cost_16_parcours = cost_nb_comparison_parcours + cost_sfx_candidate_parcours
+            prm.cost_17_fix_sfx = cost_sfx + cost_new_mat + cost_update_mat
+            prm.cost_18_update = cost_sfx_update + cost_nb_comparison_update
+
+            prm.cost_19_comparisons = cost_nb_comparison + cost_nb_comparison_rep + cost_nb_comparison_parcours + cost_nb_comparison_update
+            prm.cost_20_sfx_candidates = cost_sfx_candidate + cost_sfx_candidate_rep + cost_sfx_candidate_parcours
+            prm.cost_21_statics = cost_init + cost_last_update
+
+            prm.cost_22_theoretical = cost_ext_forward_link + cost_nb_comparison + cost_sfx
+            prm.cost_23_theoretical_and_mat = cost_ext_forward_link + cost_nb_comparison + cost_sfx + cost_new_mat + cost_update_mat
+            prm.cost_24_total_wo_correct = prm.cost_23_theoretical_and_mat + cost_sfx_candidate + cost_complete
+            prm.cost_25_total_wo_correct_w_update = prm.cost_24_total_wo_correct + cost_sfx_update  + cost_nb_comparison_update + cost_last_update
+            prm.cost_total = prm.cost_25_total_wo_correct_w_update + cost_nb_comparison_rep + cost_sfx_candidate_rep + cost_nb_comparison_parcours + cost_sfx_candidate_parcours
+            if prm.verbose:
+                print("total cost ", i - 1,"=", prm.cost_total)
 
 
 class feature_array:

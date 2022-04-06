@@ -2,6 +2,7 @@ from algo_segmentation_mso import *
 import matplotlib.pyplot as plt
 import plot
 import objects_storage as obj_s
+import cost_storage as cs
 
 # This is the main loop starting the algorithm from a string
 # Remarque: ce fichier est probablement voué à être supprimé
@@ -40,48 +41,7 @@ def main(char_ex):
             im.show()
 
     if prm.COMPUTE_COSTS:
-        print("lambda = ", prm.lambda_0)
-        print("gamma = ", prm.gamma)
-        print("alpha = ", prm.alpha)
-        print("delta = ", prm.delta)
-        print("beta = ", prm.beta)
-
-        print("lambda_tab = ", prm.lambda_tab)
-        print("lambda_time = ", prm.lambda_time)
-        print("gamma_tab = ", prm.gamma_tab)
-        print("gamma_time = ", prm.gamma_time)
-        print("alpha_tab = ", prm.alpha_tab)
-        print("alpha_time = ", prm.alpha_time)
-        print("delta_tab = ", prm.delta_tab)
-        print("delta_time = ", prm.delta_time)
-        print("beta_tab = ", prm.beta_tab)
-        print("beta_time = ", prm.beta_time)
-
-        plt.figure(figsize=(32, 20))
-        plt.title("lambda")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.lambda_time, prm.lambda_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("gamma")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.gamma_time, prm.gamma_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("alpha")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.alpha_time, prm.alpha_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("delta")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.delta_time, prm.delta_tab)
-        plt.figure(figsize=(32, 20))
-        plt.title("beta")
-        plt.xlabel("time")
-        plt.ylabel("cost")
-        plt.plot(prm.beta_time, prm.beta_tab)
+        cs.cost_general_print()
 
     plt.pause(3000)
 
