@@ -1,3 +1,31 @@
+# === PATH IMPORT ===
+
+# Add python_path to perform relative import
+# main_mso.py must stay on src
+
+import sys
+from pathlib import Path # if you haven't already done so
+file = Path(__file__).resolve()
+
+project_root = str(file.parents[1])
+
+src_root = project_root + '/src'
+sys.path.append(src_root)
+
+generic_root = src_root + '/generic'
+sys.path.append(generic_root)
+
+oracle_root = src_root + '/oracle_version'
+sys.path.append(oracle_root)
+
+plot_root = project_root + '/lib/vmo-master/vmo'
+sys.path.append(plot_root)
+
+misc_root = plot_root + '/VMO/utility'
+sys.path.append(misc_root)
+
+# === IMPORT === 
+
 import time
 import plot
 import matplotlib.pyplot as plt
@@ -20,7 +48,6 @@ HOP_LENGTH = prm.HOP_LENGTH
 NB_VALUES = prm.NB_VALUES
 TETA = prm.TETA
 INIT = prm.INIT
-
 
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
 def main():
