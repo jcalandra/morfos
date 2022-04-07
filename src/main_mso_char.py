@@ -44,7 +44,7 @@ def main(char_ex):
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         cs.cost_general_print()
 
-    if prm.TO_SHOW_PYP:
+    if prm.TO_SHOW_PYP  or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
 

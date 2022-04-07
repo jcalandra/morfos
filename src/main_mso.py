@@ -77,7 +77,7 @@ def main():
         cs.cost_general_diagram_all_levels()
         cs.cost_general_diagram_allinone()
 
-    if prm.TO_SHOW_PYP:
+    if prm.TO_SHOW_PYP or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
 main()
