@@ -1,4 +1,4 @@
-# === PATH IMPORT ===
+# ======== PATH IMPORT ========
 
 # Add python_path to perform relative import
 # main_mso.py must stay on src
@@ -9,22 +9,22 @@ file = Path(__file__).resolve()
 
 project_root = str(file.parents[1])
 
-src_root = project_root + '/src'
-sys.path.append(src_root)
+src_path = project_root + '/src'
+sys.path.append(src_path)
 
-generic_root = src_root + '/generic'
-sys.path.append(generic_root)
+generic_path = src_path + '/generic'
+sys.path.append(generic_path)
 
-oracle_root = src_root + '/oracle_version'
-sys.path.append(oracle_root)
+oracle_path = src_path + '/oracle_version'
+sys.path.append(oracle_path)
 
-plot_root = project_root + '/lib/vmo-master/vmo'
-sys.path.append(plot_root)
+plot_path = project_root + '/lib/vmo-master/vmo'
+sys.path.append(plot_path)
 
-misc_root = plot_root + '/VMO/utility'
-sys.path.append(misc_root)
+misc_path = plot_path + '/VMO/utility'
+sys.path.append(misc_path)
 
-# === IMPORT === 
+# ======== IMPORT ======== 
 
 import time
 import plot
@@ -89,7 +89,7 @@ def main():
                       "len sound:", len(obj_s.objects[i][j]["sound"]))
 
                 if prm.SYNTHESIS:
-                    name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
+                    name = PATH_RESULT + "/synthesis/" +\
                            path.split('/')[-1][:-4]+ "_level" + str(i) + "_obj" + str(j) + "_synthesis.wav"
                     wave.write(name, prm.SR, obj_s.objects[i][j]["sound"])
 

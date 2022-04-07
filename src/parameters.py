@@ -9,9 +9,14 @@
 NAME = "Geisslerlied"
 FORMAT = '.wav'
 
-PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
-PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
+import sys
+from pathlib import Path # if you haven't already done so
+file = Path(__file__).resolve()
+project_root = str(file.parents[1])
+
+PATH_OBJ_BASIS = project_root + '/data'
+PATH_OBJ = PATH_OBJ_BASIS + '/Geisslerlied/'
+PATH_RESULT = project_root + '/results'
 
 # This is the similarity threshold
 teta = 0.975
