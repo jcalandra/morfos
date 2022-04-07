@@ -221,7 +221,7 @@ SHOW_COMPUTE_COSTS = 0
 #print the computing time
 SHOW_TIME = 0
 
-# Display comments
+# Display info
 verbose = 0
 
 
