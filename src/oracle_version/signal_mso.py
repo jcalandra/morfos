@@ -10,6 +10,7 @@ import algo_segmentation_mso as as_mso
 import similarity_rules as sim_rules
 import objects_storage as obj_s
 import cost_storage as cs
+import sys
 
 # import compute_dynamics as cd
 
@@ -332,6 +333,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         checkpoint = i_hop / nb_hop * 100
         if prm.checkpoint == 1:
             print("CHECKPOINT : ", checkpoint, "%")
+            sys.stdout.flush()
         # END CHECKPOINT #
 
         if prm.verbose == 1:

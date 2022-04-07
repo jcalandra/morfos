@@ -1,3 +1,4 @@
+import sys
 import mso
 import parameters as prm
 import formal_diagram_mso as fd_mso
@@ -186,6 +187,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             checkpoint = (k + i)/(k + len(str_obj))*100
             if prm.checkpoint == 1:
                 print("CHECKPOINT : ", checkpoint, "%")
+                sys.stdout.flush()
         # END CHECKPOINT #
 
         f_oracle.add_state(input_data[i])
