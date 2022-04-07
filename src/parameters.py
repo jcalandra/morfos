@@ -229,6 +229,8 @@ SHOW_TIME = 0
 # Display comments
 verbose = 0
 
+# Checkpoint
+checkpoint = 1
 
 # ------------ DISPLAY ----------------
 # Only for level 0
