@@ -39,9 +39,6 @@ elif min_matrix < 0:
 # processing must be str 'symbols' or 'signal'
 processing = 'signal'
 
-# Display comments
-verbose = 0
-
 # === SIMILARITY AND SEGMENTATION RULES ===
 # -------- SIGNAL SIMILARITY RULES --------
 DIFF_CONCORDANCE = 1
@@ -223,6 +220,9 @@ SHOW_COMPUTE_COSTS = 0
 
 #print the computing time
 SHOW_TIME = 0
+
+# Display comments
+verbose = 0
 
 
 # ------------ DISPLAY ----------------
