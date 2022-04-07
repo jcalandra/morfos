@@ -36,10 +36,10 @@ CLEAN_SPECTRUM = prm.CLEAN_SPECTRUM
 def get_data(audio_path):
     """ Read the signal at path 'audio_path' and compute it's frame rate, the size
     of the signal, and it's duration"""
-    print(audio_path.split('.')[1])
     if audio_path.split('.')[-1] == 'mp3':  # mp3 files are converted into wave files.
         mp3 = pydub.AudioSegment.from_mp3(audio_path)
-        print("[INFO] Converting audio from mp3 to wav...")
+        if prm.verbose:
+            print("[INFO] Converting audio from mp3 to wav...")
         audio_path = audio_path.split('.')[-2] + ".wav"
         mp3.export(audio_path, format="wav")
     # rate, data = wave.read(audio_path)
@@ -48,7 +48,8 @@ def get_data(audio_path):
         data = librosa.core.to_mono(data)  # we force the signal to be mono
     data_size = data.size
     data_length = data_size / rate
-    print("[RESULT] frame rate = ", rate, ", data size =", data_size, ", duration =", data_length)
+    if prm.verbose:
+        print("[RESULT] frame rate = ", rate, ", data size =", data_size, ", duration =", data_length)
     return data, rate, data_size, data_length
 
 # ------------------------- FROM FFT -----------------------------
@@ -236,15 +237,17 @@ def get_fft_descriptors(data, rate, hop_length, nb_hop, init):
     start_time_vol = time.time()
     v_tab = get_rms_volumes(data, hop_length, nb_hop, init)
     vol_time = time.time() - start_time_vol
-    print("Temps de calcul v_tab : %s secondes ---" % vol_time)
+    if prm.SHOW_TIME:
+        print("Temps de calcul v_tab : %s secondes ---" % vol_time)
 
     start_time_freq = time.time()
     s_tab = get_n_frequencies(data, rate, hop_length, nb_hop, init)
 
     spec_time = time.time() - start_time_freq
     full_time = vol_time + spec_time
-    print("Temps de calcul s_tab : %s secondes ---" % spec_time)
-    print("Temps de calcul total : %s secondes ---" % full_time)
+    if prm.SHOW_TIME:
+        print("Temps de calcul s_tab : %s secondes ---" % spec_time)
+        print("Temps de calcul total : %s secondes ---" % full_time)
 
     if TIME_STATS:
         f_s = open("../../results/fft_spectrum.txt", "a")
@@ -296,11 +299,13 @@ def get_mfcc_descriptors(data, rate, hop_length, nb_mfcc, init):
             s_tab[i] = s_tab[i] / standard_deviation
 
     if TIME_STATS:
-        print("Temps de calcul v_tab : %s secondes ---" % vol_time)
+        if prm.SHOW_TIME:
+            print("Temps de calcul v_tab : %s secondes ---" % vol_time)
         spec_time = (time.time() - start_time_freq) + (start_time_vol - start_time)
         full_time = time.time() - start_time
-        print("Temps de calcul s_tab : %s secondes ---" % spec_time)
-        print("Temps de calcul total : %s secondes ---" % full_time)
+        if prm.SHOW_TIME:
+            print("Temps de calcul s_tab : %s secondes ---" % spec_time)
+            print("Temps de calcul total : %s secondes ---" % full_time)
         f_s = open("../../results/mfcc_spectrum.txt", "a")
         f_v = open("../../results/mfcc_volume.txt", "a")
         f_full = open("../../results/mfcc_full.txt", "a")
@@ -334,10 +339,12 @@ def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
 
     if TIME_STATS:
         spec_time = time.time() - start_time_freq
-        print("Temps de calcul v_tab : %s secondes ---" % vol_time)
+        if prm.SHOW_TIME:
+            print("Temps de calcul v_tab : %s secondes ---" % vol_time)
         full_time = vol_time + spec_time
-        print("Temps de calcul s_tab : %s secondes ---" % spec_time)
-        print("Temps de calcul total : %s secondes ---" % full_time)
+        if prm.SHOW_TIME:
+            print("Temps de calcul s_tab : %s secondes ---" % spec_time)
+            print("Temps de calcul total : %s secondes ---" % full_time)
         f_s = open("../../results/cqt_spectrum.txt", "a")
         f_v = open("../../results/cqt_volume.txt", "a")
         f_full = open("../../results/cqt_full.txt", "a")

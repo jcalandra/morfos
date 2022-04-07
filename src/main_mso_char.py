@@ -20,30 +20,32 @@ def main(char_ex):
     new_fd = []
 
     # printing the results in the shell
-    for i in range(len(oracles[1])):
-        new_fd.append([chr(tab_f_oracle[i][0].data[j]) for j in range(1, len(tab_f_oracle[i][0].data))])
-        print("new_fd_" + str(i) + ": ", new_fd[i])
-        print("link_" + str(i) + ": ", oracles[1][i][1])
-        print("history next : ", oracles[1][i][2])
+    if prm.SHOW_MSO_CONTENT:
+        for i in range(len(oracles[1])):
+            new_fd.append([chr(tab_f_oracle[i][0].data[j]) for j in range(1, len(tab_f_oracle[i][0].data))])
+            print("new_fd_" + str(i) + ": ", new_fd[i])
+            print("link_" + str(i) + ": ", oracles[1][i][1])
+            print("history next : ", oracles[1][i][2])
 
-        for j in range(len(obj_s.objects[i])):
-            print("elmt id:",obj_s.objects[i][j]["id"],
-                  "links:", obj_s.objects[i][j]["links"],
-                  "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
-                  " y=",obj_s.objects[i][j]["coordinates"]["y"],
-                  " z=", obj_s.objects[i][j]["coordinates"]["z"],
-                  "mat num:", obj_s.objects[i][j]["mat_num"],
-                  "level:", obj_s.objects[i][j]["level"],
-                  "sound:", obj_s.objects[i][j]["sound"])
+            for j in range(len(obj_s.objects[i])):
+                print("elmt id:",obj_s.objects[i][j]["id"],
+                      "links:", obj_s.objects[i][j]["links"],
+                      "coordinates: x=", obj_s.objects[i][j]["coordinates"]["x"],
+                      " y=",obj_s.objects[i][j]["coordinates"]["y"],
+                      " z=", obj_s.objects[i][j]["coordinates"]["z"],
+                      "mat num:", obj_s.objects[i][j]["mat_num"],
+                      "level:", obj_s.objects[i][j]["level"],
+                      "sound:", obj_s.objects[i][j]["sound"])
 
-        if prm.PLOT_ORACLE:
-            im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
-            im.show()
+            if prm.PLOT_ORACLE:
+                im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
+                im.show()
 
-    if prm.COMPUTE_COSTS:
+    if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         cs.cost_general_print()
 
-    plt.pause(3000)
+    if prm.TO_SHOW_PYP:
+        plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'

@@ -200,6 +200,30 @@ ALGO_VMO = 1
 ALGO_REP = 0
 ALGO_USUAL = 0
 
+# ----------- OUTPUT -----------------
+# parameters to save or to show in .bmp
+# or from pyplot
+TO_SAVE_BMP = 0
+TO_SHOW_BMP = 0
+TO_SAVE_PYP = 0
+TO_SHOW_PYP = 0
+
+# to show or not the oracles
+PLOT_ORACLE = 0
+# to show the evolution of the formal
+# diagrams
+EVOL_PRINT = 0
+
+#to show the mso content:
+SHOW_MSO_CONTENT = 0
+
+#to show the computed costs (work only if
+# costs are computed)
+SHOW_COMPUTE_COSTS = 0
+
+#print the computing time
+SHOW_TIME = 0
+
 
 # ------------ DISPLAY ----------------
 # Only for level 0
@@ -224,22 +248,6 @@ CLASS_ERROR = (60, 255, 150)  # dark green
 
 SILENT_FRAME = BACKGROUND
 
-
-
-# --------- INTERFACE ---------------
-# parameters to save or to show in .bmp
-# or from pyplot
-TO_SAVE_BMP = 0
-TO_SHOW_BMP = 0
-TO_SAVE_PYP = 0
-TO_SHOW_PYP = 1
-
-# to show or not the oracles
-PLOT_ORACLE = 0
-# to show the evolution of the formal
-# diagrams
-EVOL_PRINT = 0
-
 # ------------ VMO ---------------
 # Parameters that are specifics to the
 # VMO
@@ -253,7 +261,7 @@ INCERTITUDE = 3
 
 # Type of VMO we want to use. Ref to the
 # VMO documentation for more information
-SUFFIX_METHOD = 'inc'  # 'inc' ou 'complete'
+SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 
 # If we want to resynthesis the obtained VMO
 # at level 0.

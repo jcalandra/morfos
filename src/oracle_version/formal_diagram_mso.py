@@ -23,41 +23,47 @@ f_number = 0
 def print_formal_diagram_init(level):
     """ Print the formal diagram at level 'level' at its initialization."""
     # print("PRINT formal diagram init")
-    fig = plt.figure(figsize=(36, 24))
-    plt.title("Formal diagram of level " + str(level))
-    plt.xlabel("time in seconds (formal memory)")
-    plt.ylabel("material (material memory)")
-    plt.gray()
-    return fig.number
+    if prm.TO_SHOW_PYP:
+        fig = plt.figure(figsize=(36, 24))
+        plt.title("Formal diagram of level " + str(level))
+        plt.xlabel("time in seconds (formal memory)")
+        plt.ylabel("material (material memory)")
+        plt.gray()
+        return fig.number
+    else:
+        return 0
 
 
 def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
-    fig = plt.figure(fig_number)
-    plt.clf()
-    global f_number
-    f_number += 1
-    file_name_pyplot = "FD_level" + str(level)
-    plt.title("Formal diagram of level " + str(level))
-    if processing == 'symbols':
-        plt.xlabel("time in number of states (formal memory)")
-    elif processing == 'signal':
-        plt.xlabel("time in seconds (formal memory)")
-    plt.ylabel("material (material memory)")
-    string = ""
-    for i in range(len(formal_diagram)):
-        string += chr(i + letter_diff + 1)
-    # plt.yticks([i for i in range(len(string))], string)
-    plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
-    if TO_SAVE_PYP:
-        plt.savefig(path_results + file_name_pyplot)
-    if EVOL_PRINT == 1:
-        plt.pause(0.1)
-        name = "cognitive_algorithm_and_its_musical_applications/src/oracle_version/figures_TENOR/" + str(f_number) \
-               + ".png"
-        plt.savefig(name)
-    return fig.number
+    if prm.TO_SHOW_PYP:
+        fig = plt.figure(fig_number)
+        plt.clf()
+        global f_number
+        f_number += 1
+        file_name_pyplot = "FD_level" + str(level)
+        plt.title("Formal diagram of level " + str(level))
+        if processing == 'symbols':
+            plt.xlabel("time in number of states (formal memory)")
+        elif processing == 'signal':
+            plt.xlabel("time in seconds (formal memory)")
+        plt.ylabel("material (material memory)")
+        string = ""
+        for i in range(len(formal_diagram)):
+            string += chr(i + letter_diff + 1)
+        # plt.yticks([i for i in range(len(string))], string)
+        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
+        if TO_SAVE_PYP:
+            plt.savefig(path_results + file_name_pyplot)
+        if EVOL_PRINT == 1:
+            plt.pause(0.1)
+            name = "cognitive_algorithm_and_its_musical_applications/src/oracle_version/figures_TENOR/" + str(f_number) \
+                   + ".png"
+            plt.savefig(name)
+        return fig.number
+    else:
+        return 0
 
 
 def formal_diagram_init(formal_diagram, data_length, oracles, level):

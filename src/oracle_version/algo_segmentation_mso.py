@@ -216,7 +216,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
         if prm.COMPUTE_COSTS == 1:
             cs.cost_oracle_add_element(level, time)
-            alpha_or_delta_t = prm.cost_total
+            alpha_or_delta_t = prm.cost_total # prm.cost_total or cost_oracle_acq_symb
             if new_mat:
                 alpha_t = cost_new_mat_creation
                 delta_t = 0

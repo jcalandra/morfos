@@ -262,7 +262,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     cs.cost_oracle_init()
     lambda_t = gamma_t = alpha_t = delta_t = beta_t = 0
 
-    print("[INFO] Computing the cognitive algorithm of the audio extract...")
+    if prm.verbose:
+        print("[INFO] Computing the cognitive algorithm of the audio extract...")
     data, rate, data_size, data_length, nb_points = prep_data(audio_path)
     mtx, nb_hop, data_length = matrix_init(rate, data_size, data_length, nb_points)
     if prm.COMPUTE_COSTS == 1:
@@ -600,7 +601,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     distance = (seg_error + class_error) / nb_hop
 
     algocog_time = time.time() - start_time
-    print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
+    if prm.SHOW_TIME:
+        print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
 
     if WRITE_RESULTS:
         f_ac = open("../../results/algocog_computing.txt", "a")

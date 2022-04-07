@@ -36,20 +36,21 @@ def main():
     obj_s.first_occ_init()
 
     sig_mso.algo_cog(path, mso_oracle)
-    print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
+    if prm.SHOW_TIME:
+        print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
     new_fd = []
 
     # printing the results in the shell
-    for i in range(len(mso_oracle[1])):
-        new_fd.append([tab_f_oracle[i][0].data[j]
-                       for j in range(1, len(tab_f_oracle[i][0].data))])
-        print("new_fd_" + str(i) + ": ", new_fd[i])
-        print("link_" + str(i) + ": ", mso_oracle[1][i][1])
-        print("history next : ", mso_oracle[1][i][2])
-        print("matrix_next : ", mso_oracle[1][i][6])
+    if prm.SHOW_MSO_CONTENT:
+        for i in range(len(mso_oracle[1])):
+            new_fd.append([tab_f_oracle[i][0].data[j]
+                           for j in range(1, len(tab_f_oracle[i][0].data))])
+            print("new_fd_" + str(i) + ": ", new_fd[i])
+            print("link_" + str(i) + ": ", mso_oracle[1][i][1])
+            print("history next : ", mso_oracle[1][i][2])
+            print("matrix_next : ", mso_oracle[1][i][6])
 
-        if prm.verbose:
             for j in range(len(obj_s.objects[i])):
                 print("elmt id:",obj_s.objects[i][j]["id"],
                       "links:", obj_s.objects[i][j]["links"],
@@ -60,22 +61,23 @@ def main():
                       "level:", obj_s.objects[i][j]["level"],
                       "len sound:", len(obj_s.objects[i][j]["sound"]))
 
-            if prm.SYNTHESIS:
-                name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
-                       path.split('/')[-1][:-4]+ "_level" + str(i) + "_obj" + str(j) + "_synthesis.wav"
-                wave.write(name, prm.SR, obj_s.objects[i][j]["sound"])
+                if prm.SYNTHESIS:
+                    name = "cognitive_algorithm_and_its_musical_applications/results/synthesis/" +\
+                           path.split('/')[-1][:-4]+ "_level" + str(i) + "_obj" + str(j) + "_synthesis.wav"
+                    wave.write(name, prm.SR, obj_s.objects[i][j]["sound"])
 
-        if prm.PLOT_ORACLE:
-            im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
-            im.show()
+            if prm.PLOT_ORACLE:
+                im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
+                im.show()
 
-    if prm.COMPUTE_COSTS:
-        #cs.cost_oracle_print()
+    if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
+        cs.cost_oracle_print()
         cs.cost_general_print()
         cs.cost_oracle_diagram_all_levels()
         cs.cost_general_diagram_all_levels()
         cs.cost_general_diagram_allinone()
 
-    plt.pause(3000)
+    if prm.TO_SHOW_PYP:
+        plt.pause(3000)
 
 main()
