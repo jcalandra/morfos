@@ -26,6 +26,7 @@ sys.path.append(misc_path)
 
 # ======== IMPORT ======== 
 
+import json
 import time
 import plot
 import matplotlib.pyplot as plt
@@ -106,5 +107,9 @@ def main():
 
     if prm.TO_SHOW_PYP:
         plt.pause(3000)
+
+    if prm.checkpoint:
+        json_mat = json.dumps(obj_s.objects)
+        print(json_mat)
 
 main()

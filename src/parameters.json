@@ -1,0 +1,137 @@
+{
+   "NAME":"Geisslerlied",
+   "FORMAT":".wav",
+
+   "PATH_OBJ_BASIS":"cognitive_algorithm_and_its_musical_applications/data/",
+   "PATH_RESULT":"cognitive_algorithm_and_its_musical_applications/results/",
+
+   "teta":0.975,
+   "d_threshold":150,
+
+   "POLYPHONY":0,
+
+   "min_matrix":0.999,
+
+   "processing":"signal",
+
+   "DIFF_CONCORDANCE":1,
+   "EUCLID_DISTANCE":0,
+
+   "DIFF_FOURIER":1,
+   "DIFF_DYNAMIC":0,
+
+   "STRICT_EQUALITY":0,
+   "ALIGNMENT":1,
+
+   "RULE_1":1,
+   "RULE_2":1,
+   "RULE_3":1,
+   "RULE_4":0,
+   "RULE_5":1,
+
+   "ALIGNEMENT_rule3":0,
+   "ALIGNEMENT_rule4":0,
+   
+   "QUOTIENT":100,
+
+   "TRANSPOSITION":1,
+
+   "LETTER_DIFF":96,
+
+   "GAP_VALUE":-5,
+   "EXT_GAP_VALUE":-1,
+
+   "GAP":0,
+
+   "AUDIBLE_THRESHOLD":0.00001,
+
+   "GRAPH_COMPARISON":0,
+
+   "SR":22050,
+   "HOP_LENGTH":1024,
+
+   "PRECISION":4,
+   "NB_NOTES":48,
+   "NB_MFCC":50,
+   "INIT":0,
+
+   "MFCC_BIT":0,
+   "CQT_BIT":1,
+   "FFT_BIT":0,
+
+   "NOTES_PER_OCTAVE":12,
+   "NOTE_MIN":"C3",
+
+   "TONE_PRECISION":0.125,
+   "DIV":20,
+
+   "TIME_STATS":0,
+
+   "MFCC_NORMALISATION":0,
+   "CLEAN_SPECTRUM":0,
+
+   "TEMPO":120,
+
+   "CORRECTION_BIT":1,
+   "CORRECTION_BIT_COLOR":0,
+   "SEGMENTATION_BIT":0,
+   "WRITE_RESULTS":0,
+   "NB_SILENCE":16,
+
+   "ALGO_VMO":1,
+   "ALGO_REP":0,
+   "ALGO_USUAL":0,
+
+   "TO_SAVE_BMP":0,
+   "TO_SHOW_BMP":0,
+   "TO_SAVE_PYP":0,
+   "TO_SHOW_PYP":0,
+
+   "PLOT_ORACLE":0,
+
+   "EVOL_PRINT":0,
+
+   "SHOW_MSO_CONTENT":0,
+
+   "SHOW_COMPUTE_COSTS":0,
+
+   "SHOW_TIME":0,
+
+   "verbose":0,
+
+   "checkpoint":1,
+
+   "BASIC_FRAME":[0, 0, 0],
+   "BACKGROUND":[0, 0, 255],
+   "SEGMENTATION":[0, 255, 255],
+
+   "SEG_ERROR":[60, 255, 255],
+   "CLASS_ERROR":[60, 255, 150],
+
+   "PARCOURS":1,
+
+   "INCERTITUDE":3,
+
+   "SUFFIX_METHOD":"complete",
+
+   "SYNTHESIS":0,
+   
+   "COMPUTE_COSTS":1,
+
+   "cost_new_oracle":1,
+   "cost_numerisation":1,
+   "cost_desc_computation":1,
+   "cost_oracle_acq_signal":1,
+   "cost_seg_test_1":1,
+   "cost_new_mat_creation":1,
+   "cost_maj_historique":1,
+   "cost_maj_df":1,
+   "cost_oracle_acq_symb":1,
+   "cost_seg_test_2":1,
+   "cost_maj_concat_obj":1,
+   "cost_test_EOS":1,
+   "cost_comparaison_2":1,
+   "cost_labelisation":1,
+   "cost_maj_link":1,
+   "cost_level_up":1  
+}

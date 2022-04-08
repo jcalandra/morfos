@@ -3,85 +3,90 @@
 # Any variable tha can be modified by the users of the system are here.
 # In the interface, numbers might be changed by virtual potentiometers, colors...
 
-# ------------- MAIN -----------------
-# Main informations about the signal to process
+import json
 
-NAME = "Geisslerlied"
-FORMAT = '.wav'
+with open('src/parameters.json') as json_parameters:
+   data=json.load(json_parameters)
 
 import sys
 from pathlib import Path # if you haven't already done so
 file = Path(__file__).resolve()
 project_root = str(file.parents[1])
 
+# ------------- MAIN -----------------
+# Main informations about the signal to process
+
+NAME = data["NAME"]
+FORMAT = data["FORMAT"]
+
 PATH_OBJ_BASIS = project_root + '/data'
 PATH_OBJ = PATH_OBJ_BASIS + '/Geisslerlied/'
 PATH_RESULT = project_root + '/results'
 
 # This is the similarity threshold
-teta = 0.975
+teta = data["teta"]
 if teta > 1:
-    teta = 1
+   teta = 1
 elif teta < 0:
-    teta = 0
+   teta = 0
 
 # This is the segmentation threshold
-d_threshold = 150  # exemple of values: 0.1 for dynamic, 150 for fourier
+d_threshold = data["d_threshold"]  # exemple of values: 0.1 for dynamic, 150 for fourier
 if d_threshold < 0:
-    d_threshold = 0
+   d_threshold = 0
 
 # This is a boolean parameter to display or not a pseudo-polyphony. Work only with MSO implementation.
-POLYPHONY = 0
+POLYPHONY = data["POLYPHONY"]
 
 # A value that determine the color variation if pseudo-polyphony is displayed
-min_matrix = 0.999
+min_matrix = data["min_matrix"]
 if min_matrix >= 1:
-    min_matrix = 0.999
+   min_matrix = 0.999
 elif min_matrix < 0:
-    min_matrix = 0
+   min_matrix = 0
 
 # Choose here either to process the cognitive algorithm from signal or character string
 # processing must be str 'symbols' or 'signal'
-processing = 'signal'
+processing = data["processing"]
 
 # === SIMILARITY AND SEGMENTATION RULES ===
 # -------- SIGNAL SIMILARITY RULES --------
-DIFF_CONCORDANCE = 1
-EUCLID_DISTANCE = 0
+DIFF_CONCORDANCE = data["DIFF_CONCORDANCE"]
+EUCLID_DISTANCE = data["EUCLID_DISTANCE"]
 
 if DIFF_CONCORDANCE + EUCLID_DISTANCE != 1:
-    DIFF_CONCORDANCE = 1
-    EUCLID_DISTANCE = 0
+   DIFF_CONCORDANCE = 1
+   EUCLID_DISTANCE = 0
 
 # ------ SIGNAL SEGMENTATION RULES --------
-DIFF_FOURIER = 1
-DIFF_DYNAMIC = 0
+DIFF_FOURIER = data["DIFF_FOURIER"]
+DIFF_DYNAMIC = data["DIFF_DYNAMIC"]
 
 if DIFF_FOURIER + DIFF_DYNAMIC != 1:
-    DIFF_FOURIER = 1
-    DIFF_DYNAMIC = 0
+   DIFF_FOURIER = 1
+   DIFF_DYNAMIC = 0
 
 # ------- SYMBOLS SIMILARITY RULES --------
-STRICT_EQUALITY = 0
-ALIGNMENT = 1
+STRICT_EQUALITY = data["STRICT_EQUALITY"]
+ALIGNMENT = data["ALIGNMENT"]
 
 if STRICT_EQUALITY + ALIGNMENT != 1:
-    STRICT_EQUALITY = 0
-    ALIGNMENT = 1
+   STRICT_EQUALITY = 0
+   ALIGNMENT = 1
 
 # -------SYMBOLS SEGMENTATION RULES -------
 # Rules that are activated or not and their
 # parameters
 # Definitions in segmentation_rules_mso.py
 
-RULE_1 = 1
-RULE_2 = 1
-RULE_3 = 1
-RULE_4 = 0
-RULE_5 = 1
+RULE_1 = data["RULE_1"]
+RULE_2 = data["RULE_2"]
+RULE_3 = data["RULE_3"]
+RULE_4 = data["RULE_4"]
+RULE_5 = data["RULE_5"]
 
-ALIGNEMENT_rule3 = 0
-ALIGNEMENT_rule4 = 0
+ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
+ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
 
 # ============ SIMILARITY AND SEGMENTATION
 # SPECIFIC PARAMETRISATION ===============
@@ -89,21 +94,21 @@ ALIGNEMENT_rule4 = 0
 # Alignement parameters
 # quotient to divide then multiply the
 # alignment value for precision
-QUOTIENT = 100
+QUOTIENT = data["QUOTIENT"]
 #useless parameter for now
-TRANSPOSITION = 1
+TRANSPOSITION = data["TRANSPOSITION"]
 
 # letter to numbers difference
 # for symbols put letter_diff = 96
 # for signal put letter_diff = 0
-LETTER_DIFF = 96
+LETTER_DIFF = data["LETTER_DIFF"]
 
 # Reajust the similarity matrix values
-GAP_VALUE = -5
-EXT_GAP_VALUE = -1
+GAP_VALUE = data["GAP_VALUE"]
+EXT_GAP_VALUE = data["EXT_GAP_VALUE"]
 CORREC_VALUE = GAP_VALUE/2
 # chosen Gap character
-GAP = chr(0)
+GAP = chr(data["GAP"])
 
 # -------- SIGNAL SIM FUNCTIONS -----------
 # parameters for signal similarity computation
@@ -114,120 +119,120 @@ GAP = chr(0)
 TETA = teta
 
 # Value under with the signal is considered as silence
-AUDIBLE_THRESHOLD = 0.00001
+AUDIBLE_THRESHOLD = data["AUDIBLE_THRESHOLD"]
 
 # value exemples for segmentation threshold:
 # fft : 35; mfcc : 60 # cqt : 140
 D_THRESHOLD = d_threshold
 
 # Display similarity values and similarity threshold. outdated
-GRAPH_COMPARISON = 0
+GRAPH_COMPARISON = data["GRAPH_COMPARISON"]
 
 # ========== DATA PROCESSING ===========
 # parameters for data processing
 
-SR = 22050
-HOP_LENGTH = 1024
+SR = data["SR"]
+HOP_LENGTH = data["HOP_LENGTH"]
 if processing == 'symbols':
-    SR = 1
-    HOP_LENGTH = 1
+   SR = 1
+   HOP_LENGTH = 1
 
-PRECISION = 4
-NB_NOTES = 48*PRECISION
-NB_MFCC = 50
-INIT = 0
+PRECISION = data["PRECISION"]
+NB_NOTES = data["NB_NOTES"]*PRECISION
+NB_MFCC = data["NB_MFCC"]
+INIT = data["INIT"]
 
-MFCC_BIT = 0
-CQT_BIT = 1
-FFT_BIT = 0
+MFCC_BIT = data["MFCC_BIT"]
+CQT_BIT = data["CQT_BIT"]
+FFT_BIT = data["FFT_BIT"]
 
 if MFCC_BIT + CQT_BIT + FFT_BIT != 1:
-    MFCC_BIT = 0
-    CQT_BIT = 1
-    FFT_BIT = 0
+   MFCC_BIT = 0
+   CQT_BIT = 1
+   FFT_BIT = 0
 
 if CQT_BIT:
-    NB_VALUES = NB_NOTES
+   NB_VALUES = NB_NOTES
 elif MFCC_BIT:
-    NB_VALUES = NB_MFCC
+   NB_VALUES = NB_MFCC
 else:
-    NB_VALUES = 0
+   NB_VALUES = 0
 
 # cqt
-NOTES_PER_OCTAVE = 12*PRECISION
-NOTE_MIN = 'C3'
+NOTES_PER_OCTAVE = data["NOTES_PER_OCTAVE"]*PRECISION
+NOTE_MIN = data["NOTE_MIN"]
 
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
-TONE_PRECISION = 0.125
-DIV = 20
+TONE_PRECISION = data["TONE_PRECISION"]
+DIV = data["DIV"]
 
-TIME_STATS = 0
+TIME_STATS = data["TIME_STATS"]
 
-MFCC_NORMALISATION = 0
-CLEAN_SPECTRUM = 0
+MFCC_NORMALISATION = data["MFCC_NORMALISATION"]
+CLEAN_SPECTRUM = data["CLEAN_SPECTRUM"]
 
 # ------------- MIDI ------------------
 # parameters for obtention of formal
 # diagram from MIDI file
 
-TEMPO = 120
+TEMPO = data["TEMPO"]
 
 # ------------ ALGOCOG ----------------
 # At signal level only
 
 # Boolean to chose to reclassify or not
 # transitory frames
-CORRECTION_BIT = 1
+CORRECTION_BIT = data["CORRECTION_BIT"]
 # Boolean to chose to print in different
 # color or not transitory frames that
 # are moves
-CORRECTION_BIT_COLOR = 0
+CORRECTION_BIT_COLOR = data["CORRECTION_BIT_COLOR"]
 # Boolean to chose to print in different
 # color or not segmentation frames
-SEGMENTATION_BIT = 0
+SEGMENTATION_BIT = data["SEGMENTATION_BIT"]
 # Boolean to chose to write some statistics
 # in a text file
-WRITE_RESULTS = 0
+WRITE_RESULTS = data["WRITE_RESULTS"]
 
 # Number of frames corresponding to silence
 # that we want to add at the beggining of the
 # audio file
-NB_SILENCE = 1024*16
+NB_SILENCE = data["NB_SILENCE"]*1024
 
 # Type of algorithm we want to use. ALGO_REP
 # and ALGO_USUAL ar outdated.
-ALGO_VMO = 1
-ALGO_REP = 0
-ALGO_USUAL = 0
+ALGO_VMO = data["ALGO_VMO"]
+ALGO_REP = data["ALGO_REP"]
+ALGO_USUAL = data["ALGO_USUAL"]
 
 # ----------- OUTPUT -----------------
 # parameters to save or to show in .bmp
 # or from pyplot
-TO_SAVE_BMP = 0
-TO_SHOW_BMP = 0
-TO_SAVE_PYP = 0
-TO_SHOW_PYP = 0
+TO_SAVE_BMP = data["TO_SAVE_BMP"]
+TO_SHOW_BMP = data["TO_SHOW_BMP"]
+TO_SAVE_PYP = data["TO_SAVE_PYP"]
+TO_SHOW_PYP = data["TO_SHOW_PYP"]
 
 # to show or not the oracles
-PLOT_ORACLE = 0
+PLOT_ORACLE = data["PLOT_ORACLE"]
 # to show the evolution of the formal
 # diagrams
-EVOL_PRINT = 0
+EVOL_PRINT = data["EVOL_PRINT"]
 
 #to show the mso content:
-SHOW_MSO_CONTENT = 0
+SHOW_MSO_CONTENT = data["SHOW_MSO_CONTENT"]
 
 #to show the computed costs (work only if
 # costs are computed)
-SHOW_COMPUTE_COSTS = 0
+SHOW_COMPUTE_COSTS = data["SHOW_COMPUTE_COSTS"]
 
 #print the computing time
-SHOW_TIME = 0
+SHOW_TIME = data["SHOW_TIME"]
 
 # Display comments
-verbose = 0
+verbose = data["verbose"]
 
 # Checkpoint
 checkpoint = 1
@@ -243,15 +248,15 @@ checkpoint = 1
 # S between 0 and 255
 # V between 0 and 255
 
-BASIC_FRAME = (0, 0, 0)  # black
-BACKGROUND = (0, 0, 255)  # white
-SEGMENTATION = (0, 255, 255)  # red
+BASIC_FRAME = tuple(data["BASIC_FRAME"]) # black
+BACKGROUND = tuple(data["BACKGROUND"])  # white
+SEGMENTATION = tuple(data["SEGMENTATION"])  # red
 
 # when CORRECTION BIT is activated and a
 # frame is moved because of wrong segmentation
 # (SEG_ERROR) or similarity (CLASS ERROR)
-SEG_ERROR = (60, 255, 255)  # light green
-CLASS_ERROR = (60, 255, 150)  # dark green
+SEG_ERROR = tuple(data["SEG_ERROR"])  # light green
+CLASS_ERROR = tuple(data["CLASS_ERROR"])  # dark green
 
 SILENT_FRAME = BACKGROUND
 
@@ -261,22 +266,22 @@ SILENT_FRAME = BACKGROUND
 
 # activate for more flexibility in the
 # choice of the materials
-PARCOURS = 1
+PARCOURS = data["PARCOURS"]
 # If parcours is activate, choose how much
 # frames can be modified backward
-INCERTITUDE = 3
+INCERTITUDE = data["INCERTITUDE"]
 
 # Type of VMO we want to use. Ref to the
 # VMO documentation for more information
-SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
+SUFFIX_METHOD = data["SUFFIX_METHOD"] # 'inc' ou 'complete'
 
 # If we want to resynthesis the obtained VMO
 # at level 0.
-SYNTHESIS = 0
+SYNTHESIS = data["SYNTHESIS"]
 
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
-COMPUTE_COSTS = 1
+COMPUTE_COSTS = data["COMPUTE_COSTS"]
 
 global lambda_0, gamma, alpha, delta, beta
 global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
@@ -285,89 +290,86 @@ global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab # total sum
 global lambda_time, gamma_time, alpha_time, delta_time, beta_time
 
 global cost_0_init, \
-    cost_1_nb_comparison, \
-    cost_2_ext_forward_link, \
-    cost_3_sfx_candidate, \
-    cost_3b_complete, \
-    cost_4_nb_comparison_rep, \
-    cost_5_sfx_candidate_rep, \
-    cost_6_nb_comparison_parcours, \
-    cost_7_sfx_candidate_parcours, \
-    cost_8_sfx, \
-    cost_9_new_mat, \
-    cost_10_update_mat, \
-    cost_11_nb_comparison_update, \
-    cost_12_cost_sfx_update, \
-    cost_13_last_update
+   cost_1_nb_comparison, \
+   cost_2_ext_forward_link, \
+   cost_3_sfx_candidate, \
+   cost_3b_complete, \
+   cost_4_nb_comparison_rep, \
+   cost_5_sfx_candidate_rep, \
+   cost_6_nb_comparison_parcours, \
+   cost_7_sfx_candidate_parcours, \
+   cost_8_sfx, \
+   cost_9_new_mat, \
+   cost_10_update_mat, \
+   cost_11_nb_comparison_update, \
+   cost_12_cost_sfx_update, \
+   cost_13_last_update
 
 global cost_14_find_sfx, \
-    cost_15_rep, \
-    cost_16_parcours, \
-    cost_17_fix_sfx, \
-    cost_18_update
+   cost_15_rep, \
+   cost_16_parcours, \
+   cost_17_fix_sfx, \
+   cost_18_update
 
 global cost_19_comparisons, \
-    cost_20_sfx_candidates, \
-    cost_21_statics
+   cost_20_sfx_candidates, \
+   cost_21_statics
 
 global cost_22_theoretical, \
-    cost_23_theoretical_and_mat
+   cost_23_theoretical_and_mat
 
 global cost_24_total_wo_correct, \
-    cost_25_total_wo_correct_w_update, \
-    cost_total
+   cost_25_total_wo_correct_w_update, \
+   cost_total
 
 global cost_0_init_tab, \
-    cost_1_nb_comparison_tab, \
-    cost_2_ext_forward_link_tab, \
-    cost_3_sfx_candidate_tab, \
-    cost_3b_complete_tab, \
-    cost_4_nb_comparison_rep_tab, \
-    cost_5_sfx_candidate_rep_tab, \
-    cost_6_nb_comparison_parcours_tab, \
-    cost_7_sfx_candidate_parcours_tab, \
-    cost_8_sfx_tab, \
-    cost_9_new_mat_tab, \
-    cost_10_update_mat_tab, \
-    cost_11_nb_comparison_update_tab, \
-    cost_12_cost_sfx_update_tab, \
-    cost_13_last_update_tab
+   cost_1_nb_comparison_tab, \
+   cost_2_ext_forward_link_tab, \
+   cost_3_sfx_candidate_tab, \
+   cost_3b_complete_tab, \
+   cost_4_nb_comparison_rep_tab, \
+   cost_5_sfx_candidate_rep_tab, \
+   cost_6_nb_comparison_parcours_tab, \
+   cost_7_sfx_candidate_parcours_tab, \
+   cost_8_sfx_tab, \
+   cost_9_new_mat_tab, \
+   cost_10_update_mat_tab, \
+   cost_11_nb_comparison_update_tab, \
+   cost_12_cost_sfx_update_tab, \
+   cost_13_last_update_tab
 
 global cost_14_find_sfx_tab, \
-    cost_15_rep_tab, \
-    cost_16_parcours_tab, \
-    cost_17_fix_sfx_tab, \
-    cost_18_update_tab
+   cost_15_rep_tab, \
+   cost_16_parcours_tab, \
+   cost_17_fix_sfx_tab, \
+   cost_18_update_tab
 
 global cost_19_comparisons_tab, \
-    cost_20_sfx_candidates_tab, \
-    cost_21_statics_tab
+   cost_20_sfx_candidates_tab, \
+   cost_21_statics_tab
 
 global cost_22_theoretical_tab, \
-    cost_23_theoretical_and_mat_tab
+   cost_23_theoretical_and_mat_tab
 
 global cost_24_total_wo_correct_tab, \
-    cost_25_total_wo_correct_w_update_tab, \
-    cost_total_tab, \
-    cost_total_sum, \
-    cost_time
+   cost_25_total_wo_correct_w_update_tab, \
+   cost_total_tab, \
+   cost_total_sum, \
+   cost_time
 
-cost_new_oracle = 1
-
-cost_numerisation = 1
-cost_desc_computation = 1
-cost_oracle_acq_signal = 1
-cost_seg_test_1 = 1
-
-cost_new_mat_creation = 1
-cost_maj_historique = 1
-cost_maj_df = 1
-cost_oracle_acq_symb = 1
-cost_seg_test_2 = 1
-cost_maj_concat_obj = 1
-cost_test_EOS = 1
-
-cost_comparaison_2 = 1
-cost_labelisation = 1
-cost_maj_link = 1
-cost_level_up = 1
+cost_new_oracle = data["cost_new_oracle"]
+cost_numerisation = data["cost_numerisation"]
+cost_desc_computation = data["cost_desc_computation"]
+cost_oracle_acq_signal = data["cost_oracle_acq_signal"]
+cost_seg_test_1 = data["cost_seg_test_1"]
+cost_new_mat_creation = data["cost_new_mat_creation"]
+cost_maj_historique = data["cost_maj_historique"]
+cost_maj_df = data["cost_maj_df"]
+cost_oracle_acq_symb = data["cost_oracle_acq_symb"]
+cost_seg_test_2 = data["cost_seg_test_2"]
+cost_maj_concat_obj = data["cost_maj_concat_obj"]
+cost_test_EOS = data["cost_test_EOS"]
+cost_comparaison_2 = data["cost_comparaison_2"]
+cost_labelisation = data["cost_labelisation"]
+cost_maj_link = data["cost_maj_link"]
+cost_level_up = data["cost_level_up"]
