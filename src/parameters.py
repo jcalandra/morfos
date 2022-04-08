@@ -3,15 +3,14 @@
 # Any variable tha can be modified by the users of the system are here.
 # In the interface, numbers might be changed by virtual potentiometers, colors...
 
-import json
-
-with open('src/parameters.json') as json_parameters:
-   data=json.load(json_parameters)
-
 import sys
 from pathlib import Path # if you haven't already done so
 file = Path(__file__).resolve()
 project_root = str(file.parents[1])
+
+import json
+with open(project_root + '/src/parameters.json') as json_parameters:
+   data=json.load(json_parameters)
 
 # ------------- MAIN -----------------
 # Main informations about the signal to process
