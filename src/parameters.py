@@ -234,7 +234,10 @@ SHOW_TIME = data["SHOW_TIME"]
 verbose = data["verbose"]
 
 # Checkpoint
-checkpoint = 1
+checkpoint = data["checkpoint"]
+
+# Save materials as results
+SAVE_MATERIALS = 1
 
 # ------------ DISPLAY ----------------
 # Only for level 0

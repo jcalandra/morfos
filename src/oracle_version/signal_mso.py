@@ -332,7 +332,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         # certaines valeurs
         checkpoint = i_hop / nb_hop * 100
         if prm.checkpoint == 1:
-            print("CHECKPOINT : ", checkpoint, "%")
+            print("CHECKPOINT: ", checkpoint)
             sys.stdout.flush()
         # END CHECKPOINT #
 

@@ -186,7 +186,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level == 0 and processing == 'symbols':
             checkpoint = (k + i)/(k + len(str_obj))*100
             if prm.checkpoint == 1:
-                print("CHECKPOINT : ", checkpoint, "%")
+                print("CHECKPOINT: ", checkpoint)
                 sys.stdout.flush()
         # END CHECKPOINT #
 

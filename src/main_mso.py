@@ -108,8 +108,8 @@ def main():
     if prm.TO_SHOW_PYP:
         plt.pause(3000)
 
-    if prm.checkpoint:
-        json_mat = json.dumps(obj_s.objects)
-        print(json_mat)
+    if prm.SAVE_MATERIALS:
+        with open(prm.PATH_RESULT + '/materials.json', 'w') as myFile:
+            json.dump(obj_s.objects, myFile)
 
 main()

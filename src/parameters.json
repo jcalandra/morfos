@@ -101,6 +101,8 @@
 
    "checkpoint":1,
 
+   "SAVE_MATERIALS":1,
+
    "BASIC_FRAME":[0, 0, 0],
    "BACKGROUND":[0, 0, 255],
    "SEGMENTATION":[0, 255, 255],

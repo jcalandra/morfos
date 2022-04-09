@@ -14,17 +14,19 @@ def objects_init():
     return 0
 
 def objects_add_new_obj(id, links, x, y, z, mat_num, level, sound):
-    # id: identifier for the object at a specific level
-    # links: identifier of the children
-    # coordinates: x is the segmentation date of the object
-    #              y is the date of first apparition of the corresponding material of the object
-    #              z is the duration of the object
-    # mat_num: identification number of the objects's corresponding material
-    # level: level in with the object belongs (might be useful for the choice of the color in the representation)
-    # sound: digitised data corresponding to the sound associated to the object
+    # id (int): identifier for the object at a specific level
+    # links (int list): identifier of the children
+    # coordinates (float):  x is the segmentation date of the object
+    #                       y is the date of first apparition of the corresponding material of the object
+    #                       z is the duration of the object
+    # mat_num (int): identification number of the objects's corresponding material
+    # level (int): level in with the object belongs (might be useful for the choice of the color in the representation)
+    # sound (): digitised data corresponding to the sound associated to the object
     global objects
-    object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level,
-              "sound": sound}
+
+    # Temprairement, sound est remplacé par 0
+    object = {"id": id, "links": links, "coordinates": {"x":x, "y": y, "z":z}, "mat_num": mat_num ,"level":level,"sound": list(sound)}
+    
     objects[level].append(object)
     return 0
 
