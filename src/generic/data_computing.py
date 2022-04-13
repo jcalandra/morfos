@@ -43,7 +43,7 @@ def get_data(audio_path):
         audio_path = audio_path.split('.')[-2] + ".wav"
         mp3.export(audio_path, format="wav")
     # rate, data = wave.read(audio_path)
-    data, rate = librosa.load(audio_path, SR)
+    data, rate = librosa.load(audio_path, sr=SR)
     if type(data[0]) == np.ndarray:
         data = librosa.core.to_mono(data)  # we force the signal to be mono
     data_size = data.size
