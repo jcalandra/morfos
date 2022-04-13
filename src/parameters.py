@@ -224,7 +224,7 @@ SHOW_MSO_CONTENT = 0
 
 #to show the computed costs (work only if
 # costs are computed)
-SHOW_COMPUTE_COSTS = 1
+SHOW_COMPUTE_COSTS = 0
 
 #print the computing time
 SHOW_TIME = 0
