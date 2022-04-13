@@ -11,7 +11,7 @@ import class_cog_algo
 NAME = prm.NAME
 FORMAT = prm.FORMAT
 
-PATH_OBJ = prm.PATH_OBJ
+PATH_SOUND = prm.PATH_SOUND
 PATH_RESULT = prm.PATH_RESULT
 
 HOP_LENGTH = prm.HOP_LENGTH
@@ -23,7 +23,7 @@ INIT = prm.INIT
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
 def main():
     """ Main function of the cognitive algorithm."""
-    path = PATH_OBJ + NAME + FORMAT
+    path = PATH_SOUND + NAME + FORMAT
     start_time_full = time.time()
     mso = class_mso.MSO(NAME)
     mso.get_audio(path)

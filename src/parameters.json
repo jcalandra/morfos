@@ -2,8 +2,8 @@
    "NAME":"Geisslerlied",
    "FORMAT":".wav",
 
-   "PATH_OBJ_BASIS":"cognitive_algorithm_and_its_musical_applications/data/",
-   "PATH_RESULT":"cognitive_algorithm_and_its_musical_applications/results/",
+   "PATH_SOUND":"/data/Geisslerlied/",
+   "PATH_RESULT":"/results/",
 
    "teta":0.975,
    "d_threshold":150,

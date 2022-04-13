@@ -18,9 +18,8 @@ with open(project_root + '/src/parameters.json') as json_parameters:
 NAME = data["NAME"]
 FORMAT = data["FORMAT"]
 
-PATH_OBJ_BASIS = project_root + '/data'
-PATH_OBJ = PATH_OBJ_BASIS + '/Geisslerlied/'
-PATH_RESULT = project_root + '/results'
+PATH_SOUND = project_root + data["PATH_SOUND"]
+PATH_RESULT = project_root + data["PATH_RESULT"]
 
 # This is the similarity threshold
 teta = data["teta"]

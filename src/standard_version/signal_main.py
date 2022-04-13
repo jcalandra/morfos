@@ -9,7 +9,7 @@ import parameters as prm
 NAME = prm.NAME
 FORMAT = prm.FORMAT
 
-PATH_OBJ = prm.PATH_OBJ
+PATH_SOUND = prm.PATH_SOUND
 PATH_RESULT = prm.PATH_RESULT
 
 HOP_LENGTH = prm.HOP_LENGTH
@@ -28,7 +28,7 @@ ALGO_USUAL = prm.ALGO_USUAL
 # ==================================== MAIN FUNCTION FOR FIRST LEVEL DIAGRAM ===========================================
 def main():
     """Main loop to get the formal diagram at level 0 (signal scale)."""
-    path = PATH_OBJ + NAME + FORMAT
+    path = PATH_SOUND + NAME + FORMAT
     start_time_full = time.time()
     level_max = -1
     tab_f_oracle = []
