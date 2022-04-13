@@ -16,17 +16,16 @@ processing = prm.processing
 
 # COSTS
 
+
 cost_new_oracle = prm.cost_new_oracle
 
 cost_numerisation = prm.cost_numerisation
 cost_desc_computation = prm.cost_desc_computation
-cost_oracle_acq_signal = prm.cost_oracle_acq_signal
 cost_seg_test_1 = prm.cost_seg_test_1
 
 cost_new_mat_creation = prm.cost_new_mat_creation
 cost_maj_historique = prm.cost_maj_historique
 cost_maj_df = prm.cost_maj_df
-cost_oracle_acq_symb = prm.cost_oracle_acq_symb
 cost_seg_test_2 = prm.cost_seg_test_2
 cost_maj_concat_obj = prm.cost_maj_concat_obj
 cost_test_EOS = prm.cost_test_EOS
@@ -152,6 +151,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             lambda_t = cost_level_up
             prm.lambda_0 += lambda_t
             prm.lambda_levels[level].append(lambda_t)
+            prm.lambda_sum[level].append(lambda_t)
             prm.lambda_tab.append(prm.lambda_0)
             prm.lambda_time.append(time)
 
@@ -216,9 +216,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
         if prm.COMPUTE_COSTS == 1:
             cs.cost_oracle_add_element(level, time)
-            alpha_or_delta_t = prm.cost_total # prm.cost_total or cost_oracle_acq_symb
+            alpha_or_delta_t = prm.cost_total #prm.cost_total or prm.cost_oracle_acq
             if new_mat:
-                alpha_t = cost_new_mat_creation
+                alpha_t = cost_new_mat_creation + cost_maj_historique
                 delta_t = 0
             else:
                 alpha_t = 0
@@ -292,12 +292,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             prm.alpha_levels[level].append(alpha_t)
             prm.delta_levels[level].append(delta_t)
             prm.gamma_levels[level].append(gamma_t)
-            if len(prm.lambda_sum[level]) != actual_char_ind:
-                if len(prm.lambda_sum[level]) > 1:
-                    prm.lambda_sum[level].append(prm.lambda_sum[level][-1] + lambda_t)
-                else:
-                    prm.lambda_sum[level].append(lambda_t)
-            if len(prm.beta_sum[level]) > 1:
+            if actual_char_ind != 1:
+                prm.lambda_sum[level].append(prm.lambda_sum[level][-1] + lambda_t)
+            if len(prm.beta_sum[level]) >= 1:
                 prm.gamma_sum[level].append(prm.gamma_sum[level][-1] + gamma_t)
                 prm.beta_sum[level].append(prm.beta_sum[level][-1] + beta_t)
                 prm.alpha_sum[level].append(prm.alpha_sum[level][-1] + alpha_t)

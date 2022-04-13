@@ -29,6 +29,7 @@ CLEAN_SPECTRUM = prm.CLEAN_SPECTRUM
 # TODO : dans getdata() faire en sorte de passer les forrmat wav 16, 24 (et 32 déjà ok) bits
 # TODO : dans get_frequency, enregistrer les spectres et et fréquences correspondantes enregistrées pour ne pas avoir à
 #  les recalculer lorsque l'on modifie uniquement d'autres paramètres ultérieurs.
+#  les recalculer lorsque l'on modifie uniquement d'autres paramètres ultérieurs.
 
 
 # --------------- GET DATA : WAVEFORM (volume) AND SPECTRUM COMPUTING -------------------
@@ -172,9 +173,22 @@ def get_n_frequencies(data, rate, hop_length, nb_hop, init):
     """ Get the frequency spectrum for each windows of duration 'frame_length' in the data """
     f = init
     s_tab = []
-    for i in range(nb_hop):
-        s_tab.append(get_frequency_windows(data, rate, f, hop_length)[1])
-        f = f + hop_length
+    if prm.FREQ_WINDOWS:
+        for i in range(nb_hop):
+            s_tab.append(get_frequency_windows(data, rate, f, hop_length)[1])
+            f = f + hop_length
+    elif prm.FREQ_BANDS:
+        for i in range(nb_hop):
+            s_tab.append(get_frequency_bands(data, rate, f, hop_length)[1])
+            f = f + hop_length
+    elif prm.FREQ_BASIC:
+        for i in range(nb_hop):
+            s_tab.append(get_frequency_basic(data, rate, f, hop_length)[1])
+            f = f + hop_length
+    else:
+        for i in range(nb_hop):
+            s_tab.append(get_frequency_basic(data, rate, f, hop_length)[1])
+            f = f + hop_length
     return s_tab
 
 

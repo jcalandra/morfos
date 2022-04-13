@@ -155,6 +155,14 @@ NOTE_MIN = 'C3'
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
+FREQ_WINDOWS = 1
+FREQ_BANDS = 0
+FREQ_BASIC = 0
+if FREQ_WINDOWS + FREQ_BANDS + FREQ_BASIC != 1:
+    FREQ_WINDOWS = 1
+    FREQ_BANDS = 0
+    FREQ_BASIC = 0
+
 TONE_PRECISION = 0.125
 DIV = 20
 
@@ -216,7 +224,7 @@ SHOW_MSO_CONTENT = 0
 
 #to show the computed costs (work only if
 # costs are computed)
-SHOW_COMPUTE_COSTS = 0
+SHOW_COMPUTE_COSTS = 1
 
 #print the computing time
 SHOW_TIME = 0
@@ -349,13 +357,12 @@ cost_new_oracle = 1
 
 cost_numerisation = 1
 cost_desc_computation = 1
-cost_oracle_acq_signal = 1
+cost_oracle_acq = 1 #cost total or any other number
 cost_seg_test_1 = 1
 
 cost_new_mat_creation = 1
 cost_maj_historique = 1
 cost_maj_df = 1
-cost_oracle_acq_symb = 1
 cost_seg_test_2 = 1
 cost_maj_concat_obj = 1
 cost_test_EOS = 1
