@@ -317,7 +317,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     if prm.verbose == 1:
         print("[INFO] Computing formal diagram...")
 
-    start_time = time.time()
+    prm.start_time_t = time.time()
+    prm.max_time_t = 0
 
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
     for i_hop in range(nb_hop):  # while
@@ -554,7 +555,17 @@ def algo_cog(audio_path, oracles, end_mk=0):
         z = prm.HOP_LENGTH/prm.SR
         obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
         if prm.COMPUTE_COSTS == 1:
-            time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
+            if prm.REAL_TIME == 0:
+                time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
+            elif prm.REAL_TIME == 1:
+                prm.real_time_t = time.time() - prm.start_time_t
+                time_t = prm.real_time_t
+            elif prm.REAL_TIME == 2:
+                prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+                time_t = prm.max_time_t
+            else:
+                prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+                time_t = prm.max_time_t
             gamma_t += cost_seg_test_1
             if prm.verbose:
                 print("gamma_", i_hop, " level ", level, ": ", gamma_t)
@@ -626,7 +637,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
     mtx = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
     distance = (seg_error + class_error) / nb_hop
 
-    algocog_time = time.time() - start_time
+    algocog_time = time.time() - prm.start_time_t
     if prm.SHOW_TIME:
         print("Temps de calcul l'algorithme : %s secondes ---" % algocog_time)
 

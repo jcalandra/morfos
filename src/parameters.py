@@ -278,8 +278,14 @@ SYNTHESIS = 0
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
 COMPUTE_COSTS = 1
+# 0 for time related to state,
+# 1 for time related to actual computing time,
+# 2 for max time at every levels (pseudo cognitive time)
+REAL_TIME = 1
+if REAL_TIME < 0 or REAL_TIME > 2:
+    REAL_TIME = 1
 
-global lambda_0, gamma, alpha, delta, beta
+global lambda_0, gamma, alpha, delta, beta, start_time_t, real_time_t, max_time_t
 global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
 global lambda_sum, gamma_sum, alpha_sum, delta_sum, beta_sum # sum per level
 global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab # total sum
@@ -371,3 +377,8 @@ cost_comparaison_2 = 1
 cost_labelisation = 1
 cost_maj_link = 1
 cost_level_up = 1
+
+NSNA = 1
+NSA = 2
+SNA = 3
+SA = 4

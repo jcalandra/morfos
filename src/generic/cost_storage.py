@@ -272,7 +272,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_0_init_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_0_init_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -280,7 +280,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_1_nb_comparison_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_1_nb_comparison_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -288,7 +288,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_2_ext_forward_link_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_2_ext_forward_link_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -296,7 +296,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_3_sfx_candidate_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_3_sfx_candidate_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -304,7 +304,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_3b_complete_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_3b_complete_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -312,7 +312,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_4_nb_comparison_rep_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_4_nb_comparison_rep_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -320,7 +320,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_5_sfx_candidate_rep_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_5_sfx_candidate_rep_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -328,7 +328,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_6_nb_comparison_parcours_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_6_nb_comparison_parcours_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -336,7 +336,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_7_sfx_candidate_parcours_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_7_sfx_candidate_parcours_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -344,7 +344,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_8_sfx_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_8_sfx_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -352,7 +352,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_9_new_mat_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_9_new_mat_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -360,7 +360,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_10_update_mat_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_10_update_mat_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -368,7 +368,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_11_nb_comparison_update_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_11_nb_comparison_update_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -376,7 +376,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_12_cost_sfx_update_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_12_cost_sfx_update_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -384,7 +384,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_13_last_update_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_13_last_update_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -392,7 +392,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_14_find_sfx_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_14_find_sfx_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -400,7 +400,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_15_rep_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_15_rep_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -408,7 +408,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_16_parcours_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_16_parcours_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -416,7 +416,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_17_fix_sfx_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_17_fix_sfx_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -424,7 +424,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_18_update_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_18_update_tab[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -432,7 +432,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_19_comparisons_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_19_comparisons_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -440,7 +440,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_20_sfx_candidates_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_20_sfx_candidates_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -448,7 +448,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_21_statics_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_21_statics_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -456,7 +456,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_22_theoretical_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_22_theoretical_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -464,7 +464,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_23_theoretical_and_mat_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_23_theoretical_and_mat_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -472,7 +472,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_24_total_wo_correct_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_24_total_wo_correct_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -480,7 +480,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_25_total_wo_correct_w_update_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_25_total_wo_correct_w_update_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -488,7 +488,7 @@ def cost_oracle_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.cost_total_tab[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.cost_total_tab[level],":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
 
@@ -499,7 +499,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.alpha_levels[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.alpha_levels[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -507,7 +507,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.lambda_levels[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.lambda_levels[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
 
     plt.legend()
     plt.figure(figsize=(32, 20))
@@ -515,7 +515,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.delta_levels[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.delta_levels[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -523,7 +523,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.gamma_levels[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.gamma_levels[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -531,7 +531,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.beta_levels[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.beta_levels[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     #sum
@@ -540,7 +540,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.alpha_sum[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.alpha_sum[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -548,7 +548,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.lambda_sum[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.lambda_sum[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
 
     plt.legend()
     plt.figure(figsize=(32, 20))
@@ -556,7 +556,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.delta_sum[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.delta_sum[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -564,7 +564,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.gamma_sum[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.gamma_sum[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
     plt.figure(figsize=(32, 20))
@@ -572,7 +572,7 @@ def cost_general_diagram_all_levels():
     plt.xlabel("time")
     plt.ylabel("cost")
     for level in range(len(prm.cost_total_tab)):
-        plt.plot(prm.cost_time[level], prm.beta_sum[level], label="level " + str(level))
+        plt.plot(prm.cost_time[level], prm.beta_sum[level], ":o", linewidth=0.8, markersize=2, label="level " + str(level))
     plt.legend()
 
 def cost_general_diagram_all():
@@ -580,38 +580,38 @@ def cost_general_diagram_all():
     plt.title("beta levels")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.lambda_time, prm.lambda_tab)
+    plt.plot(prm.lambda_time, prm.lambda_tab, ":o", linewidth=0.8, markersize=2)
     plt.figure(figsize=(32, 20))
     plt.title("gamma")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.gamma_time, prm.gamma_tab)
+    plt.plot(prm.gamma_time, prm.gamma_tab, ":o", linewidth=0.8, markersize=2)
     plt.figure(figsize=(32, 20))
     plt.title("alpha")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.alpha_time, prm.alpha_tab)
+    plt.plot(prm.alpha_time, prm.alpha_tab, ":o", linewidth=0.8, markersize=2)
     plt.figure(figsize=(32, 20))
     plt.title("delta")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.delta_time, prm.delta_tab)
+    plt.plot(prm.delta_time, prm.delta_tab, ":o", linewidth=0.8, markersize=2)
     plt.figure(figsize=(32, 20))
     plt.title("beta")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.beta_time, prm.beta_tab)
+    plt.plot(prm.beta_time, prm.beta_tab, ":o",linewidth=0.8, markersize=2)
 
 def cost_general_diagram_allinone():
     plt.figure(figsize=(32, 20))
     plt.title("general costs")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.lambda_time, prm.lambda_tab, label="lambda")
+    plt.plot(prm.lambda_time, prm.lambda_tab, ":o", linewidth=0.8, markersize=2, label="lambda")
     # plt.plot(prm.gamma_time, prm.gamma_tab, label="gamma")
-    plt.plot(prm.alpha_time, prm.alpha_tab, label="alpha")
-    plt.plot(prm.delta_time, prm.delta_tab, label="delta")
-    plt.plot(prm.beta_time, prm.beta_tab, label="beta")
+    plt.plot(prm.alpha_time, prm.alpha_tab, ":o", linewidth=0.8, markersize=2, label="alpha")
+    plt.plot(prm.delta_time, prm.delta_tab, ":o", linewidth=0.8, markersize=2, label="delta")
+    plt.plot(prm.beta_time, prm.beta_tab, ":o", linewidth=0.8, markersize=2, label="beta")
     plt.legend()
 
 def cost_general_diagram_allinone_sum():
@@ -619,10 +619,10 @@ def cost_general_diagram_allinone_sum():
     plt.title("general costs sum")
     plt.xlabel("time")
     plt.ylabel("cost")
-    plt.plot(prm.lambda_time, prm.lambda_sum, label="lambda")
+    plt.plot(prm.lambda_time, prm.lambda_sum, "o", label="lambda")
     # plt.plot(prm.gamma_time, prm.gamma_tab, label="gamma")
-    plt.plot(prm.alpha_time, prm.alpha_sum, label="alpha")
-    plt.plot(prm.delta_time, prm.delta_sum, label="delta")
-    plt.plot(prm.beta_time, prm.beta_sum, label="beta")
+    plt.plot(prm.alpha_time, prm.alpha_sum, "o", label="alpha")
+    plt.plot(prm.delta_time, prm.delta_sum, "o", label="delta")
+    plt.plot(prm.beta_time, prm.beta_sum, "o", label="beta")
     plt.legend()
 

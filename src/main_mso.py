@@ -73,7 +73,7 @@ def main():
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         # cs.cost_oracle_print()
         cs.cost_general_print()
-        # cs.cost_oracle_diagram_all_levels()
+        cs.cost_oracle_diagram_all_levels()
         cs.cost_general_diagram_all_levels()
         cs.cost_general_diagram_allinone()
 

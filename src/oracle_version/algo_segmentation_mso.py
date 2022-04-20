@@ -1,3 +1,4 @@
+import time
 import mso
 import parameters as prm
 import formal_diagram_mso as fd_mso
@@ -143,9 +144,19 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         if prm.COMPUTE_COSTS:
             if level == 0:
-                time = 0
+                time_t = 0
             else:
-                time = obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"]
+                if prm.REAL_TIME == 0:
+                    time_t = obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"]
+                elif prm.REAL_TIME == 1:
+                    prm.real_time_t = time.time() - prm.start_time_t
+                    time_t = prm.real_time_t
+                elif prm.REAL_TIME == 2:
+                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"], prm.max_time_t)
+                    time_t = prm.max_time_t
+                else:
+                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"], prm.max_time_t)
+                    time_t = prm.max_time_t
             cs.cost_general_add_level()
             cs.cost_oracle_add_level()
             lambda_t = cost_level_up
@@ -153,7 +164,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             prm.lambda_levels[level].append(lambda_t)
             prm.lambda_sum[level].append(lambda_t)
             prm.lambda_tab.append(prm.lambda_0)
-            prm.lambda_time.append(time)
+            prm.lambda_time.append(time_t)
 
     else:
         f_oracle = oracles[1][level][0]
@@ -212,10 +223,20 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         else:
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
-        time = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
+        if prm.REAL_TIME == 0:
+            time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
+        elif prm.REAL_TIME == 1:
+            prm.real_time_t = time.time() - prm.start_time_t
+            time_t = prm.real_time_t
+        elif prm.REAL_TIME == 2:
+            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+            time_t = prm.max_time_t
+        else:
+            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+            time_t = prm.max_time_t
         lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
         if prm.COMPUTE_COSTS == 1:
-            cs.cost_oracle_add_element(level, time)
+            cs.cost_oracle_add_element(level, time_t)
             alpha_or_delta_t = prm.cost_total #prm.cost_total or prm.cost_oracle_acq
             if new_mat:
                 alpha_t = cost_new_mat_creation + cost_maj_historique
@@ -230,7 +251,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                     print("beta_", actual_char_ind - 1, " level ", level, ": ", beta_t)
                 prm.beta += beta_t
                 prm.beta_tab.append(prm.beta)
-                prm.beta_time.append(time)
+                prm.beta_time.append(time_t)
 
             alpha_or_delta_t += cost_maj_df
 
@@ -277,14 +298,14 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                     print("delta_", actual_char_ind - 1, " level ", level, ": ", delta_t)
                 prm.delta += delta_t
                 prm.delta_tab.append(prm.delta)
-                prm.delta_time.append(time)
+                prm.delta_time.append(time_t)
 
             if alpha_t > 0:
                 if prm.verbose:
                     print("alpha_", actual_char_ind - 1, " level ", level, ": ", alpha_t)
                 prm.alpha += alpha_t
                 prm.alpha_tab.append(prm.alpha)
-                prm.alpha_time.append(time)
+                prm.alpha_time.append(time_t)
 
             if actual_char_ind > 1:
                 prm.lambda_levels[level].append(lambda_t)
