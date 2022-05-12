@@ -1,8 +1,8 @@
 librosa
-Numba
+Numba>=0.55.1
 pydub
 opencv-python
 bio
 music21
-numpy
+numpy>=1.24.1
 matplotlib
