@@ -163,10 +163,9 @@ NOTE_MIN = data["NOTE_MIN"]
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
-#TODO
-FREQ_WINDOWS = 1
-FREQ_BANDS = 0
-FREQ_BASIC = 0
+FREQ_WINDOWS = data["FREQ_WINDOWS"]
+FREQ_BANDS = data["FREQ_BANDS"]
+FREQ_BASIC = data["FREQ_BASIC"]
 if FREQ_WINDOWS + FREQ_BANDS + FREQ_BASIC != 1:
     FREQ_WINDOWS = 1
     FREQ_BANDS = 0
@@ -296,10 +295,9 @@ COMPUTE_COSTS = data["COMPUTE_COSTS"]
 # 1 for time related to actual computing time,
 # 2 for max time at every levels (pseudo cognitive time)
 
-#TODO
-STATE_TIME = 0
-COMPUTING_TIME = 1
-MAX_TIME = 2
+STATE_TIME = data["STATE_TIME"]
+COMPUTING_TIME = data["COMPUTING_TIME"]
+MAX_TIME = data["MAX_TIME"]
 
 TIME_TYPE = MAX_TIME
 if TIME_TYPE < 0 or TIME_TYPE > 2:
@@ -396,14 +394,13 @@ cost_labelisation = data["cost_labelisation"]
 cost_maj_link = data["cost_maj_link"]
 cost_level_up = data["cost_level_up"]
 
-#TODO
 # HYPOTHESIS
-COMPUTE_HYPOTHESIS = 1
+COMPUTE_HYPOTHESIS = data["COMPUTE_HYPOTHESIS"]
 
-NSNC = 1 # no similarity, no completion
-NSC = 2 # no similarity, completion
-SNC = 3 # similarity, no completion
-SC = 4 # similarity, completion
+NSNC = data["NSNC"] # no similarity, no completion
+NSC = data["NSC"] # no similarity, completion
+SNC = data["SNC"] # similarity, no completion
+SC = data["SC"] # similarity, completion
 
 global hypo, hypo1, hypo2, hypo3, hypo4, hypo_time
-hypo_value = 1
+hypo_value = data["hypo_value"]
