@@ -41,10 +41,15 @@ def main(char_ex):
                 im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
                 im.show()
 
+    if prm.COMPUTE_HYPOTHESIS:
+        hs.hypothesis_print()
+
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         cs.cost_general_print()
+        # cs.cost_general_diagram_all_levels_whypothesis()
+        cs.cost_oracle_diagram_all_levels_whypothesis()
 
-    if prm.TO_SHOW_PYP:
+    if prm.TO_SHOW_PYP  or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
 
@@ -64,7 +69,7 @@ def example():
     Chouvel1 = 'aaabaacbabbaccaadabcabdacdadbadcacaddbbcbbdbccbcdbdcbddcccdcdddaa'
     Chouvel2_post = 'bcdabbccadcbabcaabdbcbdccbbbaadddcddbbdacacdcabacccdbddadbadaaacbc'
     Chouvel2 = 'abcdaabbdcbadabddacabacbbaaaddcccbccaacdbdbcbdadbbbcaccdcadcdddbab'
-    main(Geisslerlied)
+    main(Mozart)
 
 example()
 

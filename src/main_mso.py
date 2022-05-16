@@ -35,6 +35,7 @@ import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave
 import cost_storage as cs
+import hypothesis_storage as hs
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -98,14 +99,17 @@ def main():
                 im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
                 im.show()
 
+    if prm.COMPUTE_HYPOTHESIS:
+        hs.hypothesis_print()
+
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
-        cs.cost_oracle_print()
+        # cs.cost_oracle_print()
         cs.cost_general_print()
-        cs.cost_oracle_diagram_all_levels()
-        cs.cost_general_diagram_all_levels()
+        # cs.cost_oracle_diagram_all_levels()
+        cs.cost_general_diagram_all_levels_whypothesis()
         cs.cost_general_diagram_allinone()
 
-    if prm.TO_SHOW_PYP:
+    if prm.TO_SHOW_PYP or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
     if prm.SAVE_MATERIALS:

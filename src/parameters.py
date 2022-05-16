@@ -163,6 +163,15 @@ NOTE_MIN = data["NOTE_MIN"]
 # fft
 # 0.5 for quarter_tone, 1 for
 # half-tone, 2 for tone
+#TODO
+FREQ_WINDOWS = 1
+FREQ_BANDS = 0
+FREQ_BASIC = 0
+if FREQ_WINDOWS + FREQ_BANDS + FREQ_BASIC != 1:
+    FREQ_WINDOWS = 1
+    FREQ_BANDS = 0
+    FREQ_BASIC = 0
+
 TONE_PRECISION = data["TONE_PRECISION"]
 DIV = data["DIV"]
 
@@ -283,8 +292,20 @@ SYNTHESIS = data["SYNTHESIS"]
 # COSTS
 # TODO: le calcul des coûts n'est pas encore finalisé.
 COMPUTE_COSTS = data["COMPUTE_COSTS"]
+# 0 for time related to state,
+# 1 for time related to actual computing time,
+# 2 for max time at every levels (pseudo cognitive time)
 
-global lambda_0, gamma, alpha, delta, beta
+#TODO
+STATE_TIME = 0
+COMPUTING_TIME = 1
+MAX_TIME = 2
+
+TIME_TYPE = MAX_TIME
+if TIME_TYPE < 0 or TIME_TYPE > 2:
+    TIME_TYPE = COMPUTING_TIME
+
+global lambda_0, gamma, alpha, delta, beta, start_time_t, real_time_t, max_time_t
 global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
 global lambda_sum, gamma_sum, alpha_sum, delta_sum, beta_sum # sum per level
 global lambda_tab, gamma_tab, alpha_tab, delta_tab, beta_tab # total sum
@@ -374,3 +395,15 @@ cost_comparaison_2 = data["cost_comparaison_2"]
 cost_labelisation = data["cost_labelisation"]
 cost_maj_link = data["cost_maj_link"]
 cost_level_up = data["cost_level_up"]
+
+#TODO
+# HYPOTHESIS
+COMPUTE_HYPOTHESIS = 1
+
+NSNC = 1 # no similarity, no completion
+NSC = 2 # no similarity, completion
+SNC = 3 # similarity, no completion
+SC = 4 # similarity, completion
+
+global hypo, hypo1, hypo2, hypo3, hypo4, hypo_time
+hypo_value = 1
