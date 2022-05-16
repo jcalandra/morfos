@@ -8,6 +8,7 @@ from sklearn import preprocessing
 # In this file are implemented all functions that process the signal
 
 SR = prm.SR
+print("sr init", SR, prm.SR)
 DIV = prm.DIV
 TONE_PRECISION = prm.TONE_PRECISION
 NPO = prm.NOTES_PER_OCTAVE
@@ -44,7 +45,9 @@ def get_data(audio_path):
         audio_path = audio_path.split('.')[-2] + ".wav"
         mp3.export(audio_path, format="wav")
     # rate, data = wave.read(audio_path)
+    print("sr", SR)
     data, rate = librosa.load(audio_path, SR)
+    print("rate", rate)
     if type(data[0]) == np.ndarray:
         data = librosa.core.to_mono(data)  # we force the signal to be mono
     data_size = data.size

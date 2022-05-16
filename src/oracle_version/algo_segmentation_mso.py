@@ -6,6 +6,7 @@ import segmentation_rules_mso
 import similarity_rules
 import objects_storage as obj_s
 import cost_storage as cs
+import hypothesis_storage as hs
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -118,6 +119,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     #  Initialisation of the structures
     if level > oracles[0]:
         if prm.COMPUTE_COSTS and level == 0:
+            hs.hypothesis_init()
             cs.cost_general_init()
             cs.cost_oracle_init()
 
@@ -133,6 +135,8 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         level_max = level
 
         if level == 0 and processing == 'symbols':
+            prm.start_time_t = time.time()
+            prm.max_time_t = 0
             vec = [1]
             matrix = [chr(ord(str_obj[0])), [vec]]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph,
@@ -146,17 +150,20 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             if level == 0:
                 time_t = 0
             else:
-                if prm.REAL_TIME == 0:
+                if prm.TIME_TYPE == prm.STATE_TIME:
                     time_t = obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"]
-                elif prm.REAL_TIME == 1:
+                elif prm.TIME_TYPE == prm.COMPUTING_TIME:
                     prm.real_time_t = time.time() - prm.start_time_t
                     time_t = prm.real_time_t
-                elif prm.REAL_TIME == 2:
-                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"], prm.max_time_t)
+                elif prm.TIME_TYPE == prm.MAX_TIME:
+                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]
+                                         ["coordinates"]["x"], prm.max_time_t)
                     time_t = prm.max_time_t
                 else:
-                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]["coordinates"]["x"], prm.max_time_t)
+                    prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]
+                                         ["coordinates"]["x"], prm.max_time_t)
                     time_t = prm.max_time_t
+            hs.hypothesis_add_level()
             cs.cost_general_add_level()
             cs.cost_oracle_add_level()
             lambda_t = cost_level_up
@@ -203,10 +210,17 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1
         # if there is only one object in this class of material, it's a new material
-        if len(f_oracle.latent[input_data[i] - 1]) == 1:
+        diff = 0
+        if len(f_oracle.latent[f_oracle.data[k + i + 1] - 1]) == 1:
             new_mat = 1
         else:
             new_mat = 0
+        if i + k > 0 and (len(f_oracle.latent[f_oracle.data[k + i] - 1]) == 1
+                or (f_oracle.data[k + i] == f_oracle.data[k + i + 1]
+                    and len(f_oracle.latent[f_oracle.data[k + i] - 1]) == 2)):
+            prev_nmat = 1
+        else:
+            prev_nmat = 0
 
         if level == 0 and processing == 'symbols' and \
                 actual_char > max([ord(matrix[0][ind]) - letter_diff for ind in range(len(matrix[0]))]):
@@ -223,21 +237,24 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         else:
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
-        if prm.REAL_TIME == 0:
+        if prm.TIME_TYPE == prm.STATE_TIME:
             time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
-        elif prm.REAL_TIME == 1:
+        elif prm.TIME_TYPE == prm.COMPUTING_TIME:
             prm.real_time_t = time.time() - prm.start_time_t
             time_t = prm.real_time_t
-        elif prm.REAL_TIME == 2:
-            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+        elif prm.TIME_TYPE == prm.MAX_TIME:
+            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"],
+                                 prm.max_time_t)
             time_t = prm.max_time_t
         else:
-            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"], prm.max_time_t)
+            prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"],
+                                 prm.max_time_t)
             time_t = prm.max_time_t
         lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
+
         if prm.COMPUTE_COSTS == 1:
             cs.cost_oracle_add_element(level, time_t)
-            alpha_or_delta_t = prm.cost_total #prm.cost_total or prm.cost_oracle_acq
+            alpha_or_delta_t = prm.cost_total  # prm.cost_total or prm.cost_oracle_acq
             if new_mat:
                 alpha_t = cost_new_mat_creation + cost_maj_historique
                 delta_t = 0
@@ -273,6 +290,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_seg_test_2
         if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
+            diff = 1
             # or (end_mk == 1 and len(concat_obj) != 0):
             if prm.verbose == 1:
                 print("[INFO] structure in level " + str(level) + "...")
@@ -281,6 +299,11 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
+
+        if prm.COMPUTE_HYPOTHESIS:
+            if i + k > 0:
+                hs.hypothesis_add_element(level, prev_nmat, diff, time_t)
+
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_maj_concat_obj
         oracles[1][level][3] = concat_obj
@@ -331,8 +354,20 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             end_mk = 1
             wait = 0
             level_wait = -1
+            if prm.COMPUTE_HYPOTHESIS:
+                if i + k > 0:
+                    hs.hypothesis_pop_element(level)
+
         if end_mk == 1:
+            if diff == 0:
+                diff = 1
+            else:
+                diff = 0
             structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            if prm.COMPUTE_HYPOTHESIS:
+                # TODO: fix bug at level 0
+                if i + k > 0:
+                    hs.hypothesis_add_element(level, new_mat, diff, time_t)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''

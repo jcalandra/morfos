@@ -6,11 +6,11 @@
 # ------------- MAIN -----------------
 # Main informations about the signal to process
 
-NAME = "Geisslerlied"
-FORMAT = '.wav'
+NAME = "MozartK545_rondo_perf"
+FORMAT = '.mp3'
 
 PATH_OBJ_BASIS = 'cognitive_algorithm_and_its_musical_applications/data/'
-PATH_OBJ = PATH_OBJ_BASIS + "Geisslerlied/"
+PATH_OBJ = PATH_OBJ_BASIS + "Mozart/"
 PATH_RESULT = "cognitive_algorithm_and_its_musical_applications/results/"
 
 # This is the similarity threshold
@@ -211,7 +211,7 @@ ALGO_USUAL = 0
 TO_SAVE_BMP = 0
 TO_SHOW_BMP = 0
 TO_SAVE_PYP = 0
-TO_SHOW_PYP = 0
+TO_SHOW_PYP = 1
 
 # to show or not the oracles
 PLOT_ORACLE = 0
@@ -224,7 +224,7 @@ SHOW_MSO_CONTENT = 0
 
 #to show the computed costs (work only if
 # costs are computed)
-SHOW_COMPUTE_COSTS = 0
+SHOW_COMPUTE_COSTS = 1
 
 #print the computing time
 SHOW_TIME = 0
@@ -276,14 +276,18 @@ SUFFIX_METHOD = 'complete'  # 'inc' ou 'complete'
 SYNTHESIS = 0
 
 # COSTS
-# TODO: le calcul des coûts n'est pas encore finalisé.
 COMPUTE_COSTS = 1
 # 0 for time related to state,
 # 1 for time related to actual computing time,
 # 2 for max time at every levels (pseudo cognitive time)
-REAL_TIME = 1
-if REAL_TIME < 0 or REAL_TIME > 2:
-    REAL_TIME = 1
+
+STATE_TIME = 0
+COMPUTING_TIME = 1
+MAX_TIME = 2
+
+TIME_TYPE = MAX_TIME
+if TIME_TYPE < 0 or TIME_TYPE > 2:
+    TIME_TYPE = COMPUTING_TIME
 
 global lambda_0, gamma, alpha, delta, beta, start_time_t, real_time_t, max_time_t
 global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
@@ -378,7 +382,13 @@ cost_labelisation = 1
 cost_maj_link = 1
 cost_level_up = 1
 
-NSNA = 1
-NSA = 2
-SNA = 3
-SA = 4
+# HYPOTHESIS
+COMPUTE_HYPOTHESIS = 1
+
+NSNC = 1 # no similarity, no completion
+NSC = 2 # no similarity, completion
+SNC = 3 # similarity, no completion
+SC = 4 # similarity, completion
+
+global hypo, hypo1, hypo2, hypo3, hypo4, hypo_time
+hypo_value = 1
