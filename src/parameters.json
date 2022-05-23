@@ -12,7 +12,7 @@
 
    "min_matrix":0.999,
 
-   "processing":"signal",
+   "processing":"symbols",
 
    "DIFF_CONCORDANCE":1,
    "EUCLID_DISTANCE":0,
@@ -89,7 +89,7 @@
    "TO_SAVE_BMP":0,
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
-   "TO_SHOW_PYP":0,
+   "TO_SHOW_PYP":1,
 
    "PLOT_ORACLE":0,
 
@@ -97,7 +97,7 @@
 
    "SHOW_MSO_CONTENT":0,
 
-   "SHOW_COMPUTE_COSTS":0,
+   "SHOW_COMPUTE_COSTS":1,
 
    "SHOW_TIME":0,
 

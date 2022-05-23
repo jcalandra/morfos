@@ -98,7 +98,8 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     if processing == 'signal':
         sound = obj_s.data[0:n*prm.HOP_LENGTH]
     else:
-        sound = None
+        # No sound when character string analysis
+        sound = [0]
     id = 0
     mat_num = 0
     x = n*(1/prm.SR)*prm.HOP_LENGTH
@@ -155,7 +156,8 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
     if processing == 'signal':
         sound = obj_s.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
     else:
-        sound = None
+        # No sound when character string analysis
+        sound = [0]
     id = actual_char_ind - 1
     mat_num = actual_char - 1
     x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)

@@ -261,6 +261,8 @@ def algo_cog(audio_path, oracles, end_mk=0):
     hs.hypothesis_init()
     cs.cost_general_init()
     cs.cost_oracle_init()
+    prm.time_tab = []
+    prm.time_tab.append([])
     lambda_t = gamma_t = alpha_t = delta_t = beta_t = alpha_or_delta_t = new_mat = 0
 
     if prm.verbose:
@@ -577,12 +579,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 prm.max_time_t = max(obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"],
                                      prm.max_time_t)
                 time_t = prm.max_time_t
-
-        if prm.COMPUTE_HYPOTHESIS:
-            if i_hop > 0:
-                hs.hypothesis_add_element(level, prev_nmat, diff, time_t)
-            if i_hop == nb_hop - 1:
-                hs.hypothesis_add_element(level, new_mat, 1, time_t)
+            if len(prm.time_tab[level]) > 0:
+                prev_time_t =  prm.time_tab[level][len(prm.time_tab[level]) - 1]
+            else:
+                prev_time_t = None
+            prm.time_tab[level].append(time_t)
 
         if prm.COMPUTE_COSTS == 1:
             gamma_t += cost_seg_test_1
@@ -640,6 +641,20 @@ def algo_cog(audio_path, oracles, end_mk=0):
             gamma_t = cost_numerisation + cost_desc_computation
             prev_nmat = new_mat
             alpha_t = beta_t = delta_t = alpha_or_delta_t = new_mat = 0
+
+        if prm.COMPUTE_HYPOTHESIS:
+            if len(prm.alpha_levels[level]) > 1:
+                prev_cost = prm.alpha_levels[level][-2] + \
+                            prm.beta_levels[level][-2] + \
+                            prm.lambda_levels[level][-2] + \
+                            prm.delta_levels[level][-2]
+            else:
+                prev_cost = 0
+            cost = alpha_t + beta_t + lambda_t + delta_t
+            if i_hop > 0:
+                hs.hypothesis_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
+            if i_hop == nb_hop - 1:
+                hs.hypothesis_add_element(level, new_mat, 1, time_t, cost)
 
         if i_hop > 3:
             mat_num_prev1 = oracle_t.data[i_hop]

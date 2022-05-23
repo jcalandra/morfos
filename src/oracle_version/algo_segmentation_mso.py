@@ -138,11 +138,14 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if level == 0 and processing == 'symbols':
             prm.start_time_t = time.time()
             prm.max_time_t = 0
+            prm.time_tab = []
+            prm.time_tab.append([])
             vec = [1]
             matrix = [chr(ord(str_obj[0])), [vec]]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph,
                                matrix_next, matrix])
         elif level > 0:
+            prm.time_tab.append([])
             matrix = oracles[1][level - 1][6]
             oracles[1].append([f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph,
                                matrix_next])
@@ -253,6 +256,11 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                                  prm.max_time_t)
             time_t = prm.max_time_t
         lambda_t = gamma_t = beta_t = alpha_t = delta_t = alpha_or_delta_t = 0
+        if len(prm.time_tab[level]) > 0:
+            prev_time_t =  prm.time_tab[level][len(prm.time_tab[level]) - 1]
+        else:
+            prev_time_t = None
+        prm.time_tab[level].append(time_t)
 
         if prm.COMPUTE_COSTS == 1:
             cs.cost_oracle_add_element(level, time_t)
@@ -302,10 +310,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             concat_obj = ''
         concat_obj = concat_obj + chr(actual_char + letter_diff)
 
-        if prm.COMPUTE_HYPOTHESIS:
-            if i + k > 0:
-                hs.hypothesis_add_element(level, prev_nmat, diff, time_t)
-
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_maj_concat_obj
         oracles[1][level][3] = concat_obj
@@ -351,6 +355,20 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 prm.alpha_sum[level].append(alpha_t)
                 prm.delta_sum[level].append(delta_t)
 
+
+        if prm.COMPUTE_HYPOTHESIS:
+            if len(prm.alpha_levels[level]) > 1:
+                prev_cost = prm.alpha_levels[level][-2] + \
+                            prm.beta_levels[level][-2] + \
+                            prm.lambda_levels[level][-2] + \
+                            prm.delta_levels[level][-2]
+            else:
+                prev_cost = 0
+            cost = alpha_t + beta_t + lambda_t + delta_t
+            if i + k > 0:
+                hs.hypothesis_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
+                prev_cost = cost
+
         # Automatically structuring if this is the End Of String
         if (level == 0 and i == len(str_obj) - 1) or (wait == 1 and level == level_wait and i == len(str_obj) - 1):
             end_mk = 1
@@ -369,7 +387,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             if prm.COMPUTE_HYPOTHESIS:
                 # TODO: fix bug at level 0
                 if i + k > 0:
-                    hs.hypothesis_add_element(level, new_mat, diff, time_t)
+                    hs.hypothesis_add_element(level, new_mat, diff, time_t, cost)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''

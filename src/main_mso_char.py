@@ -43,11 +43,13 @@ def main(char_ex):
 
     if prm.COMPUTE_HYPOTHESIS:
         hs.hypothesis_print()
+        hs.hypothesis_cost_diagram_perphase()
+        hs.hypothesis_cost_diagram_perlevel()
 
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         cs.cost_general_print()
         # cs.cost_general_diagram_all_levels_whypothesis()
-        cs.cost_oracle_diagram_all_levels_whypothesis()
+        # cs.cost_oracle_diagram_all_levels_whypothesis()
 
     if prm.TO_SHOW_PYP  or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)

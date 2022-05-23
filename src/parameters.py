@@ -302,6 +302,7 @@ MAX_TIME = data["MAX_TIME"]
 TIME_TYPE = MAX_TIME
 if TIME_TYPE < 0 or TIME_TYPE > 2:
     TIME_TYPE = COMPUTING_TIME
+global time_tab
 
 global lambda_0, gamma, alpha, delta, beta, start_time_t, real_time_t, max_time_t
 global lambda_levels, gamma_levels, alpha_levels, delta_levels, beta_levels # per levels
@@ -403,4 +404,5 @@ SNC = data["SNC"] # similarity, no completion
 SC = data["SC"] # similarity, completion
 
 global hypo, hypo1, hypo2, hypo3, hypo4, hypo_time
+global hypo1_cost, hypo2_cost, hypo3_cost, hypo4_cost
 hypo_value = data["hypo_value"]
