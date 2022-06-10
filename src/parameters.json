@@ -5,7 +5,7 @@
    "PATH_SOUND":"/data/Geisslerlied/",
    "PATH_RESULT":"/results/",
 
-   "teta":0.975,
+   "teta":0.976,
    "d_threshold":150,
 
    "POLYPHONY":0,
@@ -23,14 +23,21 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
-   "RULE_1":1,
+   "RULE_1a":1,
+   "RULE_1b":0,
    "RULE_2":1,
    "RULE_3":1,
    "RULE_4":0,
-   "RULE_5":1,
+   "RULE_5a":0,
+   "RULE_5b":0,
+   "RULE_6":1,
+   "RULE_7":0,
+   "RULE_8":1,
 
    "ALIGNEMENT_rule3":0,
    "ALIGNEMENT_rule4":0,
+   "lower_bound_rule6":3,
+   "higher_bound_rule6":8,
    
    "QUOTIENT":100,
 
@@ -90,16 +97,17 @@
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":1,
+   "TO_SAVE_FINAL": 0,
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":0,
+   "EVOL_PRINT":1,
 
    "SHOW_MSO_CONTENT":0,
 
-   "SHOW_COMPUTE_COSTS":1,
+   "SHOW_COMPUTE_COSTS":0,
 
-   "SHOW_TIME":0,
+   "SHOW_TIME":1,
 
    "verbose":0,
 
@@ -122,7 +130,7 @@
 
    "SYNTHESIS":0,
    
-   "COMPUTE_COSTS":1,
+   "COMPUTE_COSTS":0,
 
    "STATE_TIME":0,
    "COMPUTING_TIME":1,
@@ -134,8 +142,11 @@
    "cost_oracle_acq_signal":1,
    "cost_seg_test_1":1,
    "cost_new_mat_creation":1,
+   "cost_maj_autosim":1,
    "cost_maj_historique":1,
    "cost_maj_df":1,
+   "cost_print_df":1,
+   "cost_polyphonie":1,
    "cost_oracle_acq_symb":1,
    "cost_seg_test_2":1,
    "cost_maj_concat_obj":1,
@@ -145,7 +156,7 @@
    "cost_maj_link":1,
    "cost_level_up":1,
    
-   "COMPUTE_HYPOTHESIS":1,
+   "COMPUTE_HYPOTHESIS":0,
    "NSNC":1,
    "NSC":2,
    "SNC":3,

@@ -77,14 +77,21 @@ if STRICT_EQUALITY + ALIGNMENT != 1:
 # parameters
 # Definitions in segmentation_rules_mso.py
 
-RULE_1 = data["RULE_1"]
+RULE_1a = data["RULE_1a"]
+RULE_1b = data["RULE_1b"]
 RULE_2 = data["RULE_2"]
 RULE_3 = data["RULE_3"]
 RULE_4 = data["RULE_4"]
-RULE_5 = data["RULE_5"]
+RULE_5a = data["RULE_5a"]
+RULE_5b = data["RULE_5b"]
+RULE_6 = data["RULE_6"]
+RULE_7 = data["RULE_7"]
+RULE_8 = data["RULE_8"]
 
 ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
 ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
+lower_bound_rule6 = data["lower_bound_rule6"]
+higher_bound_rule6 = data["higher_bound_rule6"]
 
 # ============ SIMILARITY AND SEGMENTATION
 # SPECIFIC PARAMETRISATION ===============
@@ -220,6 +227,7 @@ TO_SAVE_BMP = data["TO_SAVE_BMP"]
 TO_SHOW_BMP = data["TO_SHOW_BMP"]
 TO_SAVE_PYP = data["TO_SAVE_PYP"]
 TO_SHOW_PYP = data["TO_SHOW_PYP"]
+TO_SAVE_FINAL = data["TO_SAVE_FINAL"]
 
 # to show or not the oracles
 PLOT_ORACLE = data["PLOT_ORACLE"]
@@ -384,8 +392,11 @@ cost_desc_computation = data["cost_desc_computation"]
 cost_oracle_acq_signal = data["cost_oracle_acq_signal"]
 cost_seg_test_1 = data["cost_seg_test_1"]
 cost_new_mat_creation = data["cost_new_mat_creation"]
+cost_maj_autosim = data["cost_maj_autosim"]
 cost_maj_historique = data["cost_maj_historique"]
 cost_maj_df = data["cost_maj_df"]
+cost_print_df = data["cost_print_df"]
+cost_polyphonie = data["cost_polyphonie"]
 cost_oracle_acq_symb = data["cost_oracle_acq_symb"]
 cost_seg_test_2 = data["cost_seg_test_2"]
 cost_maj_concat_obj = data["cost_maj_concat_obj"]

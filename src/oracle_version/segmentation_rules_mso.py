@@ -15,29 +15,58 @@ from formal_diagram_mso import *
 # RULE_5 : A structured object of upper level which is alone is gathered with the next group.
 # On the external parameters, 1 means that the rule is applied and 0 means that the rule is not applied.
 
+# RULE_7 priores to RULE_6 and RULE_6 priores to RULE_5.
+# RULE_6 and RULE_7 priores to RULE_8
 
-RULE_1 = prm.RULE_1
+
+RULE_1a = prm.RULE_1a
+RULE_1b = prm.RULE_1b
 RULE_2 = prm.RULE_2
 RULE_3 = prm.RULE_3
 RULE_4 = prm.RULE_4
-RULE_5 = prm.RULE_5
+RULE_5a = prm.RULE_5a
+RULE_5b = prm.RULE_5b
+RULE_6 = prm.RULE_6
+RULE_7 = prm.RULE_7
+RULE_8 = prm.RULE_8
 ALIGNEMENT_rule3 = prm.ALIGNEMENT_rule3
 ALIGNEMENT_rule4 = prm.ALIGNEMENT_rule4
+
+lower_bound_rule6 = prm.lower_bound_rule6
+higher_bound_rule6 = prm.higher_bound_rule6
 
 letter_diff = prm.LETTER_DIFF
 
 
-# RULE 1:  (ab + a => (ab)(a
-def rule_1_similarity(f_oracle, actual_char_ind):
+# RULE 1a:  (ab + a => (ab)(a
+#          (ab + b => (ab)(b
+def rule_1a_similarity_mat(f_oracle, actual_char_ind):
     """ Look the suffix of actual char which is at 'actual_char_ind'. Return 1 if the actual_char has already been seen,
      meaning its suffix is not 0, otherwise the function returns 0, meaning it's a new material."""
     if f_oracle.sfx[actual_char_ind] != 0:
         return 1
     return 0
 
+# RULE 1b:  (ab + a => (ab)(a
+#          (ab + b => (abb
+def rule_1b_similarity_word(oracles, level, actual_char):
+    '''if level == 0:
+        matrix = oracles[1][level][7]
+    else:
+        matrix = oracles[1][level - 1][6]
+    if len(matrix[0]) > 1 and actual_char == 1:
+        return 1'''
+    concat_obj = oracles[1][level][3]
+    if len(concat_obj) > 1 and chr(actual_char + letter_diff) == concat_obj[0]:
+        return 1
+    for element in oracles[1][level][2]:
+        if chr(actual_char + letter_diff) == element[1][0]:
+            return 1
+    return 0
 
 # RULE 2: (ab)(a + b => (ab)(ab
 def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
+    # TODO: modifier de telle sorte à prendre en compte toutes les hypothèses et non pas seulement le +1 du sfx ?
     """ Compare the concatenated object concat_obj of unstructured char in the actual level plus the actual_char, with
     the already seen objects in the past that begins with the same concat_obj. If the strings are equals, hypothesis
      from the past are validated and there should be no structuration right now because this is middle of the creation
@@ -117,7 +146,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             return 0, str_obj
 
     # if the longest similar suffix has only one caracter before it and RULE 5 is activated
-    if RULE_5:
+    if RULE_5a:
         if link[f_oracle.sfx[actual_char_ind - nb_elements]] ==\
                 link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] \
                 and link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] !=\
@@ -126,7 +155,8 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
     # if the actual concat_obj is not the longest common string :
     if ALIGNEMENT_rule4:
-        if similarity_computation.compute_alignment(sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
+        if similarity_computation.compute_alignment(sub_suffix,
+                                                    concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff),
                                                     matrix)[0] == 1:
             return 0, str_obj
     else:
@@ -276,7 +306,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
                 print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
 
                 # str_obj
-                #str_obj = str_obj[ind_to_struct - len(concat_obj):]  # str_obj[(ind_init - ind_fo_init) - 1:]
+                # str_obj = str_obj[ind_to_struct - len(concat_obj):]  # str_obj[(ind_init - ind_fo_init) - 1:]
 
                 # history next
                 while len(oracles[1][level_up][2]) > max(oracles[1][level_up][1]):
@@ -334,11 +364,70 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
     return 1, str_obj
 
 
-# RULE 5: (a + a => (aa
-def rule_5_regathering(concat_obj):
+# RULE 5a: (ab)(a + a => (ab)(aa // is a "or"
+# RULEb: (ab)(a + a => (aba)(a
+def rule_5a_regathering_after(concat_obj):
     """ The function returns 1 if the length of the string corresponding to  the concatenated object that are not
     structured in the actual level is higher than one. It returns 0 if the length of the string is equal or less than
     one."""
     if len(concat_obj) > 1:
+        return 1
+    return 0
+
+
+def rule_5b_regathering_before():
+    # TODO: à implémenter
+    return 1
+
+
+# NEW RULES
+# RULE 6a (lower boundary) : |(a...b + a| < low_bound => (a...ba
+# RULE 6b (higher boundary) : |(a...b + c| > high_bound => (a...b)(c
+def rule_6a_low_bound(concat_obj, low_bound=lower_bound_rule6):
+    if len(concat_obj) < low_bound:
+        return 0
+    return 1
+
+
+def rule_6b_high_bound(concat_obj, high_bound=higher_bound_rule6):
+    if len(concat_obj) >= high_bound:
+        return 1
+    return 0
+
+
+# RULE 7 (mean word length) : with A the length of the first concatenated word
+# RULE 7a: |(a...b + a| < A/2 => (a...ba
+# RULE 7b: |(a...b + c| > A + A/2 => (a...b)(c
+def compute_length(f_oracle):
+    a = f_oracle
+    # TODO: à implémenter
+    return 2
+
+
+def rule_7a_mean_word_length_low(f_oracle, concat_obj):
+    length = compute_length(f_oracle)
+    if len(concat_obj) < length/2:
+        return 0
+    return 1
+
+
+def rule_7b_mean_word_length_high(f_oracle, concat_obj):
+    length = compute_length(f_oracle)
+    if len(concat_obj) > (3*length)/2:
+        return 1
+    return 0
+
+
+def rule_8a_repetition_paradigm_noseg(f_oracle, actual_char_ind, concat_obj):
+    if len(f_oracle.data) > 2 and len(concat_obj) > 0 and \
+            f_oracle.data[actual_char_ind - 1] == f_oracle.data[actual_char_ind]:
+        return 0
+    return 1
+
+
+def rule_8b_repetition_paradigm_seg(f_oracle, actual_char_ind, concat_obj):
+    if len(f_oracle.data) > 3 and len(concat_obj) > 1 and \
+            f_oracle.data[actual_char_ind - 2] == f_oracle.data[actual_char_ind - 1] and \
+            f_oracle.data[actual_char_ind - 1] != f_oracle.data[actual_char_ind]:
         return 1
     return 0

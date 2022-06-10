@@ -35,7 +35,7 @@ import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave
 import cost_storage as cs
-import hypothesis_storage as hs
+import phases_storage as hs
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -100,14 +100,18 @@ def main():
                 im.show()
 
     if prm.COMPUTE_HYPOTHESIS:
-        hs.hypothesis_print()
-        hs.hypothesis_cost_diagram_perphase()
-        hs.hypothesis_cost_diagram_perlevel()
+        hs.phases_print()
+        hs.phases_cost_diagram_perphase()
+        hs.phases_cost_diagram_perlevel()
+        secondary_phases_tab = hs.sphases_computing(prm.hypo)
+        #hs.sphases_cost_diagram(secondary_phases_tab)
+        sphase = hs.cost_per_sphase(secondary_phases_tab, prm.cost_total_tab)
+        hs.sphases_cost_diagram_perlevel(sphase)
 
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         # cs.cost_oracle_print()
         cs.cost_general_print()
-        # cs.cost_oracle_diagram_all_levels()
+        cs.cost_oracle_diagram_all_levels()
         # cs.cost_general_diagram_all_levels_whypothesis()
         # cs.cost_general_diagram_allinone()
 

@@ -1,15 +1,19 @@
 from algo_segmentation_mso import *
-import matplotlib.pyplot as plt
-import plot
 import objects_storage as obj_s
 import cost_storage as cs
+from rwcpop_parser import parser, Path
+from formal_diagram_mso import final_save_one4all, final_save_all4one
+import matplotlib.pyplot as plt
+import plot
+import os
+
 
 # This is the main loop starting the algorithm from a string
 # Remarque: ce fichier est probablement voué à être supprimé
 
 
 # =========================================== MAIN FUNCTION FROM STRING ================================================
-def main(char_ex):
+def main(char_ex, result_path=prm.PATH_RESULT):
     """ Main loop for the cognitive algorithm using the MSO and a string describing the audio."""
     # initialisation of the structures
     data_length = len(char_ex)
@@ -41,10 +45,18 @@ def main(char_ex):
                 im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
                 im.show()
 
+    if prm.TO_SAVE_FINAL:
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+    final_save_one4all(oracles, data_length, result_path)
+    final_save_all4one(oracles, data_length, result_path)
+
     if prm.COMPUTE_HYPOTHESIS:
-        hs.hypothesis_print()
-        hs.hypothesis_cost_diagram_perphase()
-        hs.hypothesis_cost_diagram_perlevel()
+        hs.phases_print()
+        hs.phases_cost_diagram_perphase()
+        hs.phases_cost_diagram_perlevel()
+        #secondary_phases_tab = hs.sphases_computing(prm.hypo)
+        #hs.sphases_cost_diagram(secondary_phases_tab)
 
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         cs.cost_general_print()
@@ -73,5 +85,13 @@ def example():
     Chouvel2 = 'abcdaabbdcbadabddacabacbbaaaddcccbccaacdbdbcbdadbbbcaccdcadcdddbab'
     main(Mozart)
 
-example()
+def rwcpop_tests():
+    file = Path(__file__).resolve()
+    project_root = str(file.parents[1])
+    test_path = project_root + '/data/rwcpop/Pop 71 (grid).csv'
+    pop01 = parser(test_path)
+    print(pop01)
+    main(pop01)
+
+rwcpop_tests()
 

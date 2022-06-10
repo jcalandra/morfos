@@ -618,7 +618,7 @@ class MO(FactorOracle):
         # representant
         cost_nb_comparison_rep = 0
         cost_sfx_candidate_rep = 0
-        #parcours
+        # parcours
         cost_nb_comparison_parcours = 0
         cost_sfx_candidate_parcours = 0
         # uniquement pour le mode 'complete'
@@ -812,7 +812,8 @@ class MO(FactorOracle):
                     sorted_suffix_candidates.pop(0)
                 self.sfx[i] = sorted_suffix_candidates[0][0]
                 cost_sfx += 1
-                # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
+                #might comment the lrs update
+                self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *

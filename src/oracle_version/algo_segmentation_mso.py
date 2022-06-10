@@ -7,7 +7,7 @@ import segmentation_rules_mso
 import similarity_rules
 import objects_storage as obj_s
 import cost_storage as cs
-import hypothesis_storage as hs
+import phases_storage as hs
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -27,8 +27,10 @@ cost_desc_computation = prm.cost_desc_computation
 cost_seg_test_1 = prm.cost_seg_test_1
 
 cost_new_mat_creation = prm.cost_new_mat_creation
+cost_maj_autosim = prm.cost_maj_autosim
 cost_maj_historique = prm.cost_maj_historique
 cost_maj_df = prm.cost_maj_df
+cost_print_df = prm.cost_print_df
 cost_seg_test_2 = prm.cost_seg_test_2
 cost_maj_concat_obj = prm.cost_maj_concat_obj
 cost_test_EOS = prm.cost_test_EOS
@@ -44,15 +46,16 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
                           concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
     """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
-    if segmentation_rules_mso.RULE_1:
-        test_1 = segmentation_rules_mso.rule_1_similarity(f_oracle, actual_char_ind)
+    if segmentation_rules_mso.RULE_1a:
+        # test_1 = segmentation_rules_mso.rule_1a_similarity_mat(f_oracle, actual_char_ind)
+        test_1 = segmentation_rules_mso.rule_1b_similarity_word(oracles, level, actual_char)
     else:
         test_1 = 1
     if segmentation_rules_mso.RULE_2:
         test_2 = segmentation_rules_mso.rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
     else:
         test_2 = 1
-    if not segmentation_rules_mso.RULE_1 and not segmentation_rules_mso.RULE_2:
+    if not segmentation_rules_mso.RULE_1a and not segmentation_rules_mso.RULE_2:
         test_1 = 0
         test_2 = 0
     if segmentation_rules_mso.RULE_4:
@@ -64,10 +67,41 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         test_3 = segmentation_rules_mso.rule_3_existing_object(history_next, concat_obj, actual_char, matrix)
     else:
         test_3 = 0
-    if segmentation_rules_mso.RULE_5:
-        test_5 = segmentation_rules_mso.rule_5_regathering(concat_obj)
+    if segmentation_rules_mso.RULE_5a:
+        test_5a = segmentation_rules_mso.rule_5a_regathering_after(concat_obj)
     else:
-        test_5 = 1
+        test_5a = 1
+    if segmentation_rules_mso.RULE_5b:
+        test_5a = 1
+        test_5b = segmentation_rules_mso.rule_5b_regathering_before()
+    else:
+        test_5b = 1
+    if segmentation_rules_mso.RULE_6:
+        test_5a = 1
+        test_5b = 1
+        test_6a = segmentation_rules_mso.rule_6a_low_bound(concat_obj)
+        test_6b = segmentation_rules_mso.rule_6b_high_bound(concat_obj)
+    else:
+        test_6a = 1
+        test_6b = 0
+    if segmentation_rules_mso.RULE_7:
+        test_5a = 1
+        test_5b = 1
+        test_6a = 1
+        test_6b = 0
+        test_7a = segmentation_rules_mso.rule_7a_mean_word_length_low(f_oracle, concat_obj)
+        test_7b = segmentation_rules_mso.rule_7b_mean_word_length_high(f_oracle, concat_obj)
+    else:
+        test_7a = 1
+        test_7b = 0
+    if segmentation_rules_mso.RULE_8:
+        test_8a = segmentation_rules_mso.rule_8a_repetition_paradigm_noseg(f_oracle, actual_char_ind, concat_obj)
+        test_8b = segmentation_rules_mso.rule_8b_repetition_paradigm_seg(f_oracle, actual_char_ind, concat_obj)
+        if test_6b or test_7b:
+            test_8a = 1
+    else:
+        test_8a = 1
+        test_8b = 0
 
     if test_4:
         f_oracle = oracles[1][level][0]
@@ -89,7 +123,8 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
             formal_diagram_graph, level, formal_diagram, data_length)
         formal_diagram_graph = oracles[1][level][5]
 
-    return test_1, test_2, test_3, test_4, test_5, i, k, actual_char, \
+    return test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b,\
+           i, k, actual_char, \
         f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data
 
 
@@ -120,7 +155,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
     #  Initialisation of the structures
     if level > oracles[0]:
         if prm.COMPUTE_COSTS and level == 0:
-            hs.hypothesis_init()
+            hs.phases_init()
             cs.cost_general_init()
             cs.cost_oracle_init()
 
@@ -167,10 +202,10 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                     prm.max_time_t = max(obj_s.objects[level - 1][len(obj_s.objects[level - 1]) - 1]
                                          ["coordinates"]["x"], prm.max_time_t)
                     time_t = prm.max_time_t
-            hs.hypothesis_add_level()
+            hs.phases_add_level()
             cs.cost_general_add_level()
             cs.cost_oracle_add_level()
-            lambda_t = cost_level_up
+            lambda_t = cost_new_oracle
             prm.lambda_0 += lambda_t
             prm.lambda_levels[level].append(lambda_t)
             prm.lambda_sum[level].append(lambda_t)
@@ -266,7 +301,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             cs.cost_oracle_add_element(level, time_t)
             alpha_or_delta_t = prm.cost_total  # prm.cost_total or prm.cost_oracle_acq
             if new_mat:
-                alpha_t = cost_new_mat_creation + cost_maj_historique
+                alpha_t = cost_maj_df + cost_maj_historique + cost_maj_autosim #TODO: à mettre dans alpha_or_delta_t et faire une variable qui dépend de nouveau mat ou non
                 delta_t = 0
             else:
                 alpha_t = 0
@@ -280,14 +315,15 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 prm.beta_tab.append(prm.beta)
                 prm.beta_time.append(time_t)
 
-            alpha_or_delta_t += cost_maj_df
+            alpha_or_delta_t += cost_print_df
 
         oracles[1][level][5] = fd_mso.print_formal_diagram_update(
             formal_diagram_graph, level, formal_diagram, data_length)
 
         # First is the parametrisation of the rules according to the external settings.
-        test_1, test_2, test_3, test_4, test_5, i, k, actual_char, f_oracle, link, history_next, concat_obj, \
-            formal_diagram, formal_diagram_graph, str_obj, input_data = rules_parametrization(
+        test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
+        i, k, actual_char, f_oracle, link, history_next, concat_obj, \
+        formal_diagram, formal_diagram_graph, str_obj, input_data = rules_parametrization(
                 f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next, concat_obj,
                 formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk)
 
@@ -299,7 +335,8 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # If the tests are positives, there is structuration.
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_seg_test_2
-        if ((test_1 and test_2) or (test_2 and test_3) or test_4) and test_5 and (end_mk == 0):
+        if ((test_1 and test_2) or (test_2 and test_3) or test_4 or test_6b or test_7b or test_8b) \
+                and (test_5a and test_5b and test_6a and test_7a and test_8a) and (end_mk == 0):
             diff = 1
             # or (end_mk == 1 and len(concat_obj) != 0):
             if prm.verbose == 1:
@@ -355,7 +392,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 prm.alpha_sum[level].append(alpha_t)
                 prm.delta_sum[level].append(delta_t)
 
-
         if prm.COMPUTE_HYPOTHESIS:
             if len(prm.alpha_levels[level]) > 1:
                 prev_cost = prm.alpha_levels[level][-2] + \
@@ -366,7 +402,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 prev_cost = 0
             cost = alpha_t + beta_t + lambda_t + delta_t
             if i + k > 0:
-                hs.hypothesis_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
+                hs.phases_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
                 prev_cost = cost
 
         # Automatically structuring if this is the End Of String
@@ -376,7 +412,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             level_wait = -1
             if prm.COMPUTE_HYPOTHESIS:
                 if i + k > 0:
-                    hs.hypothesis_pop_element(level)
+                    hs.phases_pop_element(level)
 
         if end_mk == 1:
             if diff == 0:
@@ -387,7 +423,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             if prm.COMPUTE_HYPOTHESIS:
                 # TODO: fix bug at level 0
                 if i + k > 0:
-                    hs.hypothesis_add_element(level, new_mat, diff, time_t, cost)
+                    hs.phases_add_element(level, new_mat, diff, time_t, cost)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
@@ -396,5 +432,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if prm.verbose == 1:
             print("state number ", i, " in level ", level)
             print("actual char", actual_char, "actual char ind", actual_char_ind)
+
 
     return 1

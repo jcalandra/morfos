@@ -1,7 +1,7 @@
 import parameters as prm
 import matplotlib.pyplot as plt
 
-def hypothesis_init():
+def phases_init():
     prm.lambda_0 = prm.gamma = prm.alpha = prm.delta = prm.beta = 0
 
     prm.hypo = []
@@ -18,7 +18,7 @@ def hypothesis_init():
     prm.hypo_time = []
 
 
-def hypothesis_add_level():
+def phases_add_level():
     #time is in cost_time
     prm.hypo.append([])
     prm.hypo1.append([])
@@ -34,7 +34,7 @@ def hypothesis_add_level():
     prm.hypo_time.append([])
 
 
-def hypothesis_add_element(level, new_mat, diff, time_t, cost):
+def phases_add_element(level, new_mat, diff, time_t, cost):
     if new_mat == 1 and diff == 0:
         prm.hypo[level].append(prm.NSNC)
         prm.hypo1[level].append(prm.hypo_value)
@@ -96,7 +96,7 @@ def hypothesis_add_element(level, new_mat, diff, time_t, cost):
     prm.hypo_time[level].append(time_t)
 
 
-def hypothesis_pop_element(level):
+def phases_pop_element(level):
     prm.hypo[level].pop()
     prm.hypo1[level].pop()
     prm.hypo2[level].pop()
@@ -111,7 +111,7 @@ def hypothesis_pop_element(level):
     prm.hypo_time[level].pop()
 
 
-def hypothesis_print():
+def phases_print():
     print("all hypothesis = ", prm.hypo)
     print("NSNC hypothesis = ", prm.hypo1)
     print("NSC hypothesis = ", prm.hypo2)
@@ -119,7 +119,7 @@ def hypothesis_print():
     print("SC hypothesis = ", prm.hypo4)
     print("hypothesis time = ", prm.hypo_time)
 
-def hypothesis_cost_diagram_perphase():
+def phases_cost_diagram_perphase():
     plt.figure(figsize=(32, 20))
     plt.title("phase 1")
     plt.xlabel("time")
@@ -155,7 +155,7 @@ def hypothesis_cost_diagram_perphase():
     plt.legend()
 
 
-def hypothesis_cost_diagram_perlevel():
+def phases_cost_diagram_perlevel():
     for level in range(len(prm.cost_total_tab)):
         plt.figure(figsize=(32, 20))
         plt.title("cognitive phases at level " + str(level))
@@ -169,4 +169,99 @@ def hypothesis_cost_diagram_perlevel():
                  label="cost for phase 3")
         plt.plot(prm.hypo_time[level], prm.hypo4_cost[level], ":o",  linewidth=0.8, markersize=2,
                  label="cost for phase 4")
+        plt.legend()
+
+
+# === SECONDARY PHASES
+
+
+def sphases_computing(hypo_tab):
+    secondary_phases = []
+    for level in range(len(hypo_tab)):
+        secondary_phases.append([])
+        secondary_phases[level].append(0)
+        for i in range(1, len(hypo_tab[level])):
+            if hypo_tab[level][i - 1] == 1 and hypo_tab[level][i] == 1:
+                secondary_phases[level].append(1)
+            if hypo_tab[level][i - 1] == 1 and hypo_tab[level][i] == 2:
+                secondary_phases[level].append(2)
+            if hypo_tab[level][i - 1] == 1 and hypo_tab[level][i] == 3:
+                secondary_phases[level].append(3)
+            if hypo_tab[level][i - 1] == 1 and hypo_tab[level][i] == 4:
+                secondary_phases[level].append(4)
+
+            if hypo_tab[level][i - 1] == 2 and hypo_tab[level][i] == 1:
+                secondary_phases[level].append(5)
+            if hypo_tab[level][i - 1] == 2 and hypo_tab[level][i] == 2:
+                secondary_phases[level].append(6)
+            if hypo_tab[level][i - 1] == 2 and hypo_tab[level][i] == 3:
+                secondary_phases[level].append(7)
+            if hypo_tab[level][i - 1] == 2 and hypo_tab[level][i] == 4:
+                secondary_phases[level].append(8)
+
+            if hypo_tab[level][i - 1] == 3 and hypo_tab[level][i] == 1:
+                secondary_phases[level].append(9)
+            if hypo_tab[level][i - 1] == 3 and hypo_tab[level][i] == 2:
+                secondary_phases[level].append(10)
+            if hypo_tab[level][i - 1] == 3 and hypo_tab[level][i] == 3:
+                secondary_phases[level].append(11)
+            if hypo_tab[level][i - 1] == 3 and hypo_tab[level][i] == 4:
+                secondary_phases[level].append(12)
+
+            if hypo_tab[level][i - 1] == 4 and hypo_tab[level][i] == 1:
+                secondary_phases[level].append(13)
+            if hypo_tab[level][i - 1] == 4 and hypo_tab[level][i] == 2:
+                secondary_phases[level].append(14)
+            if hypo_tab[level][i - 1] == 4 and hypo_tab[level][i] == 3:
+                secondary_phases[level].append(15)
+            if hypo_tab[level][i - 1] == 4 and hypo_tab[level][i] == 4:
+                secondary_phases[level].append(16)
+    return secondary_phases
+
+def cost_per_sphase(secondary_phases_tab, costs):
+    sphases = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+
+    for level in range(len(secondary_phases_tab)):
+        for phase_less1 in range(len(sphases)):
+            sphases[phase_less1].append([])
+        for ind in range(len(secondary_phases_tab[level])):
+            for phase_less1 in range(len(sphases)):
+                if secondary_phases_tab[level][ind] == phase_less1 + 1:
+                    sphases[phase_less1][level].append(costs[level][ind])
+                else:
+                    sphases[phase_less1][level].append(0)
+    return sphases
+
+def sphases_cost_diagram(secondary_phases_tab):
+    for level in range(len(secondary_phases_tab)):
+        plt.figure(figsize=(32, 20))
+        plt.title("secondary cognitive phases at level " + str(level))
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        plt.plot(prm.hypo_time[level], secondary_phases_tab[level], ":o",  linewidth=0.8, markersize=2,
+                 label="value corresponding to the adequate secondary phase")
+        plt.legend()
+
+
+def sphases_cost_diagram_perlevel(sphases):
+    for level in range(len(sphases[0])):
+        plt.figure(figsize=(32, 20))
+        plt.title("secondary cognitive phases at level " + str(level))
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        for phase in range(len(sphases)):
+            plt.plot(prm.hypo_time[level], sphases[phase][level], ":o",  linewidth=0.8, markersize=2,
+                     label="cost for secondary phase" + str(phase + 1))
+        plt.legend()
+
+
+def sphases_cost_diagram_perphase(sphases):
+    for phase in range(len(sphases)):
+        plt.figure(figsize=(32, 20))
+        plt.title("secondary phase " + str(phase + 1))
+        plt.xlabel("time")
+        plt.ylabel("cost")
+        for level in range(len(sphases[phase])):
+            plt.plot(prm.hypo_time[level], sphases[phase][level], ":o",  linewidth=0.8, markersize=2,
+                     label="cost for secondary phase" + str(phase + 1) + "at level " + str(level))
         plt.legend()

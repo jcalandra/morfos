@@ -11,7 +11,7 @@ import similarity_rules as sim_rules
 import objects_storage as obj_s
 import cost_storage as cs
 import sys
-import hypothesis_storage as hs
+import phases_storage as hs
 
 # import compute_dynamics as cd
 
@@ -53,8 +53,11 @@ cost_desc_computation = prm.cost_desc_computation
 cost_seg_test_1 = prm.cost_seg_test_1
 
 cost_new_mat_creation = prm.cost_new_mat_creation
+cost_maj_autosim = prm.cost_maj_autosim
 cost_maj_historique = prm.cost_maj_historique
 cost_maj_df = prm.cost_maj_df
+cost_print_df = prm.cost_print_df
+cost_update = prm.cost_maj_concat_obj + prm.cost_maj_historique + prm.cost_maj_df # + prm.cost_polyphonie
 cost_seg_test_2 = prm.cost_seg_test_2
 cost_maj_concat_obj = prm.cost_maj_concat_obj
 cost_test_EOS = prm.cost_test_EOS
@@ -258,7 +261,7 @@ def matrix_init(rate, data_size, data_length, nb_points):
 
 def algo_cog(audio_path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
-    hs.hypothesis_init()
+    hs.phases_init()
     cs.cost_general_init()
     cs.cost_oracle_init()
     prm.time_tab = []
@@ -292,7 +295,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
     flag = 'a'
     volume_data, suffix_method, input_data, oracle_t = build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab)
     if prm.COMPUTE_HYPOTHESIS:
-        hs.hypothesis_add_level()
+        hs.phases_add_level()
 
     if prm.COMPUTE_COSTS == 1:
         cs.cost_general_add_level()
@@ -455,7 +458,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
             temp_max = j_mat
             new_mat = 1
             if prm.COMPUTE_COSTS:
-                alpha_t += cost_maj_historique + cost_new_mat_creation
+                alpha_t += cost_maj_autosim + cost_maj_df
             vec = oracle_t.vec[len(matrix[0]) - 1].copy()
             vec.append(1)
             matrix[0] += (chr(len(matrix[0]) + fd_mso.letter_diff + 1))
@@ -547,7 +550,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         formal_diagram = cv2.cvtColor(mtx, cv2.COLOR_HSV2BGR)
         fd_mso.print_formal_diagram_update(formal_diagram_graph, level, formal_diagram, nb_hop)
         if prm.COMPUTE_COSTS:
-            alpha_or_delta_t += cost_maj_df
+            alpha_or_delta_t += cost_update + cost_print_df
 
         oracles[1][level][0] = oracle_t
         oracles[1][level][1] = link
@@ -586,7 +589,6 @@ def algo_cog(audio_path, oracles, end_mk=0):
             prm.time_tab[level].append(time_t)
 
         if prm.COMPUTE_COSTS == 1:
-            gamma_t += cost_seg_test_1
             if prm.verbose:
                 print("gamma_", i_hop, " level ", level, ": ", gamma_t)
             prm.gamma += gamma_t
@@ -642,7 +644,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
             prev_nmat = new_mat
             alpha_t = beta_t = delta_t = alpha_or_delta_t = new_mat = 0
 
-        if prm.COMPUTE_HYPOTHESIS:
+        if prm.COMPUTE_COSTS:
             if len(prm.alpha_levels[level]) > 1:
                 prev_cost = prm.alpha_levels[level][-2] + \
                             prm.beta_levels[level][-2] + \
@@ -651,10 +653,12 @@ def algo_cog(audio_path, oracles, end_mk=0):
             else:
                 prev_cost = 0
             cost = alpha_t + beta_t + lambda_t + delta_t
+
+        if prm.COMPUTE_HYPOTHESIS:
             if i_hop > 0:
-                hs.hypothesis_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
+                hs.phases_add_element(level, prev_nmat, diff, prev_time_t, prev_cost)
             if i_hop == nb_hop - 1:
-                hs.hypothesis_add_element(level, new_mat, 1, time_t, cost)
+                hs.phases_add_element(level, new_mat, 1, time_t, cost)
 
         if i_hop > 3:
             mat_num_prev1 = oracle_t.data[i_hop]
