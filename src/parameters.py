@@ -106,6 +106,7 @@ TRANSPOSITION = data["TRANSPOSITION"]
 # letter to numbers difference
 # for symbols put letter_diff = 96
 # for signal put letter_diff = 0
+# to avoid bugs with alignment method, put letter_diff = 127
 LETTER_DIFF = data["LETTER_DIFF"]
 
 # Reajust the similarity matrix values
@@ -129,6 +130,9 @@ AUDIBLE_THRESHOLD = data["AUDIBLE_THRESHOLD"]
 # value exemples for segmentation threshold:
 # fft : 35; mfcc : 60 # cqt : 140
 D_THRESHOLD = d_threshold
+
+# maximum number of material per level that are allowed:
+NB_MAX_MATERIALS = data["NB_MAX_MATERIALS"]
 
 # Display similarity values and similarity threshold. outdated
 GRAPH_COMPARISON = data["GRAPH_COMPARISON"]

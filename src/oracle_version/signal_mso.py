@@ -344,6 +344,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
             print("CHECKPOINT: ", checkpoint)
             sys.stdout.flush()
         # END CHECKPOINT #
+        if len(matrix) != 0 and len(matrix[0]) > prm.NB_MAX_MATERIALS:
+            sys.exit("You have reach more than " + str(prm.NB_MAX_MATERIALS) + " materials at level 0. Please lower your similarity threshold.")
+        for i in range(1, len(oracles[1])):
+            if len(oracles[1][i][2]) != 0 and len(oracles[1][i][2][0]) > prm.NB_MAX_MATERIALS:
+                sys.exit("You have reach more than " + str(prm.NB_MAX_MATERIALS) + " at level " + str(i) + ". Please lower your similarity threshold.")
 
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")

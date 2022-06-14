@@ -48,8 +48,8 @@ def main(char_ex, result_path=prm.PATH_RESULT):
     if prm.TO_SAVE_FINAL:
         if not os.path.exists(result_path):
             os.makedirs(result_path)
-    final_save_one4all(oracles, data_length, result_path)
-    final_save_all4one(oracles, data_length, result_path)
+        final_save_one4all(oracles, data_length, result_path)
+        final_save_all4one(oracles, data_length, result_path)
 
     if prm.COMPUTE_HYPOTHESIS:
         hs.phases_print()
@@ -88,10 +88,9 @@ def example():
 def rwcpop_tests():
     file = Path(__file__).resolve()
     project_root = str(file.parents[1])
-    test_path = project_root + '/data/rwcpop/Pop 71 (grid).csv'
+    test_path = project_root + '/data/rwcpop/Pop 21 (grid).csv'
     pop01 = parser(test_path)
     print(pop01)
     main(pop01)
 
 rwcpop_tests()
-

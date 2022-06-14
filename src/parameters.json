@@ -5,14 +5,14 @@
    "PATH_SOUND":"/data/Geisslerlied/",
    "PATH_RESULT":"/results/",
 
-   "teta":0.976,
+   "teta":0.975,
    "d_threshold":150,
 
    "POLYPHONY":0,
 
    "min_matrix":0.999,
 
-   "processing":"symbols",
+   "processing":"signal",
 
    "DIFF_CONCORDANCE":1,
    "EUCLID_DISTANCE":0,
@@ -51,6 +51,7 @@
    "GAP":0,
 
    "AUDIBLE_THRESHOLD":0.00001,
+   "NB_MAX_MATERIALS": 1000,
 
    "GRAPH_COMPARISON":0,
 
@@ -83,7 +84,7 @@
 
    "TEMPO":120,
 
-   "CORRECTION_BIT":1,
+   "CORRECTION_BIT":0,
    "CORRECTION_BIT_COLOR":0,
    "SEGMENTATION_BIT":0,
    "WRITE_RESULTS":0,
@@ -101,7 +102,7 @@
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":1,
+   "EVOL_PRINT":0,
 
    "SHOW_MSO_CONTENT":0,
 

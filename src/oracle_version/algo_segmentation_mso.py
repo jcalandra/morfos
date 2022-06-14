@@ -171,6 +171,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         level_max = level
 
         if level == 0 and processing == 'symbols':
+            for i in range(len(oracles[1])):
+                if len(oracles[1][i][2][0]) > prm.NB_MAX_MATERIALS:
+                    sys.exit("You have reach more than " + str(prm.NB_MAX_MATERIALS) + " materials at level " + str(i) + ". Please lower your similarity threshold.")
             prm.start_time_t = time.time()
             prm.max_time_t = 0
             prm.time_tab = []
@@ -245,7 +248,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 print("CHECKPOINT: ", checkpoint)
                 sys.stdout.flush()
         # END CHECKPOINT #
-
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]  # i_th parsed character
         actual_char_ind = k + i + 1

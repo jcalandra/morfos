@@ -4,6 +4,7 @@ from Bio.Align import substitution_matrices
 import similarity_functions as sim_f
 import parameters
 import librosa
+import needlemanwunsch as nw
 import data_computing
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
@@ -24,6 +25,37 @@ correc_value = parameters.CORREC_VALUE
 
 
 def compute_alignment(string_compared, actual_string, mat):
+    # initalisation
+    alignment = -pow(10, 10)
+    if len(actual_string) == 0:
+        return 0, 0
+    min_len = min(len(string_compared), len(actual_string))
+
+    # conversion of the string if necessary
+    sx = string_compared
+    for j in range(transpo):
+        sy = ''
+        for i in actual_string:
+            sy += chr(ord(i) - j)
+        autosim_mat = []
+        for i in range(len(mat[1])):
+            autosim_mat.append([])
+            for j in range(len(mat[1][i])):
+                autosim_mat[i].append(mat[1][i][j]*quotient)
+        new_mat = [mat[0], autosim_mat]
+        # Needleman-Wunsch alignment
+        nw_align = nw.nw(sx, sy, new_mat, gap_value = gap_value, gap = gap)
+        nw_alignment = nw_align[1]
+        if nw_alignment > alignment:
+            alignment = nw_alignment
+
+    similarity = (alignment - correc_value) / min_len
+    if similarity >= threshold * quotient:
+        return 1, similarity
+    return 0, similarity
+
+# depreciated alignment computing using biopython.pairwise2 library
+def compute_alignment_pairwize(string_compared, actual_string, mat):
     # initalisation
     alignment = -pow(10, 10)
     if len(actual_string) == 0:
