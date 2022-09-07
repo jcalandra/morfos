@@ -4,7 +4,9 @@
 # main_mso.py must stay on src
 
 import sys
+import os
 from pathlib import Path # if you haven't already done so
+from formal_diagram_mso import final_save_one4all, final_save_all4one
 file = Path(__file__).resolve()
 
 project_root = str(file.parents[1])
@@ -30,7 +32,7 @@ import json
 import time
 import plot
 import matplotlib.pyplot as plt
-import signal_mso as sig_mso
+import data_mso as sig_mso
 import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave
@@ -45,6 +47,7 @@ FORMAT = prm.FORMAT
 
 PATH_SOUND = prm.PATH_SOUND
 PATH_RESULT = prm.PATH_RESULT
+PATH = PATH_SOUND + NAME + FORMAT
 
 HOP_LENGTH = prm.HOP_LENGTH
 NB_VALUES = prm.NB_VALUES
@@ -52,9 +55,9 @@ TETA = prm.TETA
 INIT = prm.INIT
 
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
-def main():
+def main(path=PATH, result_path=prm.PATH_RESULT):
     """ Main function of the cognitive algorithm producing a hiérarchy of formal diagrams from signal using MSO."""
-    path = PATH_SOUND + NAME + FORMAT
+    #path = PATH_SOUND + NAME + FORMAT
     start_time_full = time.time()
 
     level_max = -1
@@ -68,6 +71,7 @@ def main():
     if prm.SHOW_TIME:
         print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
+    data_length = len(mso_oracle[1][0][1])
     new_fd = []
 
     # printing the results in the shell
@@ -99,20 +103,26 @@ def main():
                 im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
                 im.show()
 
+    if prm.TO_SAVE_FINAL:
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
+        final_save_one4all(mso_oracle, data_length, result_path)
+        final_save_all4one(mso_oracle, data_length, result_path)
+
     if prm.COMPUTE_HYPOTHESIS:
         hs.phases_print()
         hs.phases_cost_diagram_perphase()
         hs.phases_cost_diagram_perlevel()
         secondary_phases_tab = hs.sphases_computing(prm.hypo)
-        #hs.sphases_cost_diagram(secondary_phases_tab)
+        hs.sphases_cost_diagram(secondary_phases_tab)
         sphase = hs.cost_per_sphase(secondary_phases_tab, prm.cost_total_tab)
         hs.sphases_cost_diagram_perlevel(sphase)
 
     if prm.COMPUTE_COSTS and prm.SHOW_COMPUTE_COSTS:
         # cs.cost_oracle_print()
         cs.cost_general_print()
-        cs.cost_oracle_diagram_all_levels()
-        # cs.cost_general_diagram_all_levels_whypothesis()
+        # cs.cost_oracle_diagram_all_levels()
+        cs.cost_general_diagram_all_levels()
         # cs.cost_general_diagram_allinone()
 
     if prm.TO_SHOW_PYP or prm.SHOW_COMPUTE_COSTS:

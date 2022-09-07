@@ -44,8 +44,10 @@ elif min_matrix < 0:
    min_matrix = 0
 
 # Choose here either to process the cognitive algorithm from signal or character string
-# processing must be str 'symbols' or 'signal'
+# processing must be str 'symbols' or 'signal' or 'vectors'
 processing = data["processing"]
+to_transpose = data["to_transpose"]
+is_micro = data["is_micro"]
 
 # === SIMILARITY AND SEGMENTATION RULES ===
 # -------- SIGNAL SIMILARITY RULES --------
@@ -110,8 +112,8 @@ TRANSPOSITION = data["TRANSPOSITION"]
 LETTER_DIFF = data["LETTER_DIFF"]
 
 # Reajust the similarity matrix values
-GAP_VALUE = data["GAP_VALUE"]
-EXT_GAP_VALUE = data["EXT_GAP_VALUE"]
+GAP_VALUE = data["GAP_VALUE"] #-5
+EXT_GAP_VALUE = data["EXT_GAP_VALUE"] #-1
 CORREC_VALUE = GAP_VALUE/2
 # chosen Gap character
 GAP = chr(data["GAP"])
@@ -142,7 +144,7 @@ GRAPH_COMPARISON = data["GRAPH_COMPARISON"]
 
 SR = data["SR"]
 HOP_LENGTH = data["HOP_LENGTH"]
-if processing == 'symbols':
+if processing == 'symbols' or processing == 'vectors':
    SR = 1
    HOP_LENGTH = 1
 
@@ -158,6 +160,11 @@ FFT_BIT = data["FFT_BIT"]
 if MFCC_BIT + CQT_BIT + FFT_BIT != 1:
    MFCC_BIT = 0
    CQT_BIT = 1
+   FFT_BIT = 0
+
+if processing == 'vectors':
+   MFCC_BIT = 0
+   CQT_BIT = 0
    FFT_BIT = 0
 
 if CQT_BIT:

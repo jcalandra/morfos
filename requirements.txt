@@ -6,3 +6,4 @@ bio
 music21
 numpy>=1.24.1
 matplotlib
+mir_eval

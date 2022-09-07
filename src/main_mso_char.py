@@ -88,9 +88,7 @@ def example():
 def rwcpop_tests():
     file = Path(__file__).resolve()
     project_root = str(file.parents[1])
-    test_path = project_root + '/data/rwcpop/Pop 21 (grid).csv'
+    test_path = project_root + '/data/rwcpop/Pop 06 (grid).csv'
     pop01 = parser(test_path)
     print(pop01)
     main(pop01)
-
-rwcpop_tests()

@@ -5,9 +5,9 @@ import formal_diagram_mso as fd_mso
 
 
 # ============================================ MULTI-SCALED ORACLE =====================================================
-def structure_init(flag, level):
+def structure_init(flag, level, dim=1):
     """Initialize the Multi-Scale Oracle."""
-    f_oracle = oracle_mso.create_oracle(flag)
+    f_oracle = oracle_mso.create_oracle(flag, dim=dim)
     link = [0]
     history_next = []
     concat_obj = ''

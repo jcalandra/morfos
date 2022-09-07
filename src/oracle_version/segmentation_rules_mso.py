@@ -50,11 +50,9 @@ def rule_1a_similarity_mat(f_oracle, actual_char_ind):
 # RULE 1b:  (ab + a => (ab)(a
 #          (ab + b => (abb
 def rule_1b_similarity_word(oracles, level, actual_char):
-    '''if level == 0:
-        matrix = oracles[1][level][7]
-    else:
-        matrix = oracles[1][level - 1][6]
-    if len(matrix[0]) > 1 and actual_char == 1:
+    '''
+    if prm.processing == 'signal'and prm.NB_SILENCE > 0 and \
+            level == 0 and actual_char == 1:
         return 1'''
     concat_obj = oracles[1][level][3]
     if len(concat_obj) > 1 and chr(actual_char + letter_diff) == concat_obj[0]:

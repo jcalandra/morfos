@@ -65,7 +65,7 @@ def euclid_distance(s_tab, id_hop_a, id_hop_b):
     if e_distance == 0:
         fcc = 1
     else:
-        fcc = 1 / e_distance
+        fcc = 1 / (e_distance + 1)
     return fcc
 
 
@@ -226,10 +226,10 @@ def frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
 '''def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
     """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
     fss = fss2 = 0
-    if FFT_BIT:
+    if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
         fss = frequency_static_similarity(s_tab, i_hop_a, i_hop_b)
         fss2 = frequency_static_similarity(s_tab, i_hop_a, i_hop_c)
-    if MFCC_BIT or CQT_BIT:
+    if prm.processing=='signal' and MFCC_BIT or CQT_BIT:
         s_tab_trans = s_tab.transpose()
         fss = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_b)
         fss2 = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_c)
@@ -243,14 +243,14 @@ def frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, id_hop_a, id_hop_b):
 def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
     """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
     fss = fss2 = 0
-    if FFT_BIT:
+    if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
         fss = frequency_static_similarity_fft(s_tab, i_hop_a, i_hop_b)
         fss2 = frequency_static_similarity_fft(s_tab, i_hop_a, i_hop_c)
-    if MFCC_BIT:
+    if prm.processing=='signal' and MFCC_BIT:
         s_tab_trans = s_tab.transpose()
         fss = frequency_static_similarity_mfcc(s_tab_trans, i_hop_a, i_hop_b)
         fss2 = frequency_static_similarity_mfcc(s_tab_trans, i_hop_a, i_hop_c)
-    if CQT_BIT:
+    if prm.processing=='signal' and CQT_BIT:
         s_tab_trans = s_tab.transpose()
         fss = frequency_static_similarity_cqt(s_tab_trans, i_hop_a, i_hop_b)
         fss2 = frequency_static_similarity_cqt(s_tab_trans, i_hop_a, i_hop_c)
@@ -290,12 +290,12 @@ def comparison(i_hop, teta, s_tab, v_tab, mat, path):
         return 0  # return silence material
     else:
         for j_hop in range(i_hop):
-            if FFT_BIT:
+            if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
                 fss = frequency_static_similarity_fft(s_tab, i_hop, j_hop)
-            elif MFCC_BIT:
+            elif prm.processing=='signal' and MFCC_BIT:
                 s_tab_trans = s_tab.transpose()
                 fss = frequency_static_similarity_mfcc(s_tab_trans, j_hop, i_hop)
-            elif CQT_BIT:
+            elif prm.processing=='signal' and CQT_BIT:
                 s_tab_trans = s_tab.transpose()
                 fss = frequency_static_similarity_cqt(s_tab_trans, j_hop, i_hop)
             # vss = volume_static_similarity(v_tab, i_hop, j_hop)
@@ -313,14 +313,14 @@ def comparison(i_hop, teta, s_tab, v_tab, mat, path):
 def dissimilarity(i_hop, s_tab, v_tab):
     """ Compute the dissimilarity between the frequencies of i_hop and i_hop - 1."""
     sdd = 0
-    if FFT_BIT:
+    if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
         if DIFF_FOURIER:
             sdd = frequency_dynamic_dissimilarity_fft2(s_tab, i_hop, i_hop - 1)
         elif DIFF_DYNAMIC:
             sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
         else:
             sdd = get_diff_volumes(v_tab, i_hop, i_hop - 1)
-    elif MFCC_BIT or CQT_BIT:
+    elif prm.processing=='signal' and (MFCC_BIT or CQT_BIT):
         if DIFF_FOURIER:
             sdd = frequency_dynamic_dissimilarity_mfcc_cqt(s_tab, i_hop, i_hop - 1)
         elif DIFF_DYNAMIC:

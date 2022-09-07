@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.figure as fg
 import parameters as prm
 import numpy as np
 import objects_storage as obj_s
@@ -45,7 +46,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         f_number += 1
         file_name_pyplot = "FD_level" + str(level)
         plt.title("Formal diagram of level " + str(level))
-        if processing == 'symbols':
+        if processing == 'symbols' or processing == 'vectors':
             plt.xlabel("time in number of states (formal memory)")
         elif processing == 'signal':
             plt.xlabel("time in seconds (formal memory)")
@@ -193,7 +194,7 @@ def final_save_one4all(oracles, data_length, result_path):
         f_number += 1
         file_name_pyplot = "FD_level" + str(level)
         plt.title("Formal diagram of level " + str(level))
-        if processing == 'symbols':
+        if processing == 'symbols' or processing == 'vectors':
             plt.xlabel("time in number of states (formal memory)")
         elif processing == 'signal':
             plt.xlabel("time in seconds (formal memory)")
@@ -214,7 +215,7 @@ def final_save_all4one(oracles, data_length, result_path):
         plt.subplot(len(oracles[1]), 1, level + 1)
         formal_diagram = oracles[1][level][4]
         plt.title("Formal diagram of level " + str(level))
-        if processing == 'symbols':
+        if processing == 'symbols' or processing == 'vectors':
             plt.xlabel("time in number of states (formal memory)")
         elif processing == 'signal':
             plt.xlabel("time in seconds (formal memory)")

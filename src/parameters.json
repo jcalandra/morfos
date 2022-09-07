@@ -1,18 +1,20 @@
 {
-   "NAME":"Geisslerlied",
-   "FORMAT":".wav",
+   "NAME":"10_Brahms",
+   "FORMAT":".mp3",
 
-   "PATH_SOUND":"/data/Geisslerlied/",
-   "PATH_RESULT":"/results/",
+   "PATH_SOUND":"/data/Analyses_Elia/",
+   "PATH_RESULT":"/results/Analyses_Elia/10_Brahms/test2/",
 
-   "teta":0.975,
-   "d_threshold":150,
+   "teta":0.980,
+   "d_threshold":100,
 
    "POLYPHONY":0,
 
    "min_matrix":0.999,
 
    "processing":"signal",
+   "to_transpose":0,
+   "is_micro": 0,
 
    "DIFF_CONCORDANCE":1,
    "EUCLID_DISTANCE":0,
@@ -23,8 +25,8 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
-   "RULE_1a":1,
-   "RULE_1b":0,
+   "RULE_1a":0,
+   "RULE_1b":1,
    "RULE_2":1,
    "RULE_3":1,
    "RULE_4":0,
@@ -32,21 +34,21 @@
    "RULE_5b":0,
    "RULE_6":1,
    "RULE_7":0,
-   "RULE_8":1,
+   "RULE_8":0,
 
    "ALIGNEMENT_rule3":0,
    "ALIGNEMENT_rule4":0,
-   "lower_bound_rule6":3,
-   "higher_bound_rule6":8,
-   
+   "lower_bound_rule6":10,
+   "higher_bound_rule6":200,
+
    "QUOTIENT":100,
 
    "TRANSPOSITION":1,
 
    "LETTER_DIFF":96,
 
-   "GAP_VALUE":-5,
-   "EXT_GAP_VALUE":-1,
+   "GAP_VALUE":-1,
+   "EXT_GAP_VALUE":-0.5,
 
    "GAP":0,
 
@@ -88,7 +90,7 @@
    "CORRECTION_BIT_COLOR":0,
    "SEGMENTATION_BIT":0,
    "WRITE_RESULTS":0,
-   "NB_SILENCE":16,
+   "NB_SILENCE":0,
 
    "ALGO_VMO":1,
    "ALGO_REP":0,
@@ -97,8 +99,8 @@
    "TO_SAVE_BMP":0,
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
-   "TO_SHOW_PYP":1,
-   "TO_SAVE_FINAL": 0,
+   "TO_SHOW_PYP":0,
+   "TO_SAVE_FINAL":1,
 
    "PLOT_ORACLE":0,
 
@@ -130,7 +132,7 @@
    "SUFFIX_METHOD":"complete",
 
    "SYNTHESIS":0,
-   
+
    "COMPUTE_COSTS":0,
 
    "STATE_TIME":0,
@@ -156,7 +158,7 @@
    "cost_labelisation":1,
    "cost_maj_link":1,
    "cost_level_up":1,
-   
+
    "COMPUTE_HYPOTHESIS":0,
    "NSNC":1,
    "NSC":2,

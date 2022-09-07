@@ -237,21 +237,41 @@ def sphases_cost_diagram(secondary_phases_tab):
         plt.figure(figsize=(32, 20))
         plt.title("secondary cognitive phases at level " + str(level))
         plt.xlabel("time")
-        plt.ylabel("cost")
+        plt.ylabel("type of secondary phase")
         plt.plot(prm.hypo_time[level], secondary_phases_tab[level], ":o",  linewidth=0.8, markersize=2,
-                 label="value corresponding to the adequate secondary phase")
+                 label="sequence of secondary phase at level " + str(level))
         plt.legend()
 
 
 def sphases_cost_diagram_perlevel(sphases):
     for level in range(len(sphases[0])):
-        plt.figure(figsize=(32, 20))
+        fig = plt.figure(figsize=(32, 20))
+        ax = fig.add_subplot(111)
         plt.title("secondary cognitive phases at level " + str(level))
         plt.xlabel("time")
         plt.ylabel("cost")
+        cm = plt.get_cmap('tab20')
+        ax.set_prop_cycle(color=[cm(1.*i/16) for i in range(16)])
         for phase in range(len(sphases)):
+            if phase < 4:
+                string = '1'
+            elif phase >= 4 and phase < 8:
+                string = '2'
+            elif phase >= 8 and phase < 12:
+                string = '3'
+            else:
+                string = '4'
+            if phase%4 == 0:
+                string += '1'
+            elif phase%4 == 1:
+                string += '2'
+            elif phase%4 == 2:
+                string += '3'
+            else:
+                string += '4'
+
             plt.plot(prm.hypo_time[level], sphases[phase][level], ":o",  linewidth=0.8, markersize=2,
-                     label="cost for secondary phase" + str(phase + 1))
+                         label="cost for secondary phase" + string)
         plt.legend()
 
 

@@ -3,7 +3,6 @@ import time
 import mso
 import parameters as prm
 import formal_diagram_mso as fd_mso
-import segmentation_rules_mso
 import similarity_rules
 import objects_storage as obj_s
 import cost_storage as cs
@@ -42,92 +41,6 @@ cost_level_up = prm.cost_level_up
 
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
-def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next,
-                          concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
-    """ Structuring test function: if one test is validated, there is structuration."""
-    potential_obj = None
-    if segmentation_rules_mso.RULE_1a:
-        # test_1 = segmentation_rules_mso.rule_1a_similarity_mat(f_oracle, actual_char_ind)
-        test_1 = segmentation_rules_mso.rule_1b_similarity_word(oracles, level, actual_char)
-    else:
-        test_1 = 1
-    if segmentation_rules_mso.RULE_2:
-        test_2 = segmentation_rules_mso.rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
-    else:
-        test_2 = 1
-    if not segmentation_rules_mso.RULE_1a and not segmentation_rules_mso.RULE_2:
-        test_1 = 0
-        test_2 = 0
-    if segmentation_rules_mso.RULE_4:
-        test_4, potential_obj = segmentation_rules_mso.rule_4_recomputed_object(
-            oracles, matrix, level, actual_char_ind, str_obj, k, level_max, end_mk)
-    else:
-        test_4 = 0
-    if segmentation_rules_mso.RULE_3 and test_4 == 0:
-        test_3 = segmentation_rules_mso.rule_3_existing_object(history_next, concat_obj, actual_char, matrix)
-    else:
-        test_3 = 0
-    if segmentation_rules_mso.RULE_5a:
-        test_5a = segmentation_rules_mso.rule_5a_regathering_after(concat_obj)
-    else:
-        test_5a = 1
-    if segmentation_rules_mso.RULE_5b:
-        test_5a = 1
-        test_5b = segmentation_rules_mso.rule_5b_regathering_before()
-    else:
-        test_5b = 1
-    if segmentation_rules_mso.RULE_6:
-        test_5a = 1
-        test_5b = 1
-        test_6a = segmentation_rules_mso.rule_6a_low_bound(concat_obj)
-        test_6b = segmentation_rules_mso.rule_6b_high_bound(concat_obj)
-    else:
-        test_6a = 1
-        test_6b = 0
-    if segmentation_rules_mso.RULE_7:
-        test_5a = 1
-        test_5b = 1
-        test_6a = 1
-        test_6b = 0
-        test_7a = segmentation_rules_mso.rule_7a_mean_word_length_low(f_oracle, concat_obj)
-        test_7b = segmentation_rules_mso.rule_7b_mean_word_length_high(f_oracle, concat_obj)
-    else:
-        test_7a = 1
-        test_7b = 0
-    if segmentation_rules_mso.RULE_8:
-        test_8a = segmentation_rules_mso.rule_8a_repetition_paradigm_noseg(f_oracle, actual_char_ind, concat_obj)
-        test_8b = segmentation_rules_mso.rule_8b_repetition_paradigm_seg(f_oracle, actual_char_ind, concat_obj)
-        if test_6b or test_7b:
-            test_8a = 1
-    else:
-        test_8a = 1
-        test_8b = 0
-
-    if test_4:
-        f_oracle = oracles[1][level][0]
-        link = oracles[1][level][1]
-        history_next = oracles[1][level][2]
-        concat_obj = oracles[1][level][3]
-        formal_diagram = oracles[1][level][4]
-
-        str_obj = potential_obj
-        input_data = [ord(potential_obj[i]) - letter_diff for i in range(len(potential_obj))]
-
-        i = len(concat_obj)
-        k = len(f_oracle.data) - len(concat_obj) - 1
-        f_oracle.add_state(input_data[i])
-        actual_char = f_oracle.data[k + i + 1]
-        data_length = len(formal_diagram[0])
-        fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, k + i + 1, oracles, level)
-        oracles[1][level][5] = fd_mso.print_formal_diagram_update(
-            formal_diagram_graph, level, formal_diagram, data_length)
-        formal_diagram_graph = oracles[1][level][5]
-
-    return test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b,\
-           i, k, actual_char, \
-        f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data
-
-
 def structure(concat_obj, oracles, level, link, data_length, level_max, end_mk):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
@@ -325,7 +238,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         # First is the parametrisation of the rules according to the external settings.
         test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
         i, k, actual_char, f_oracle, link, history_next, concat_obj, \
-        formal_diagram, formal_diagram_graph, str_obj, input_data = rules_parametrization(
+        formal_diagram, formal_diagram_graph, str_obj, input_data = similarity_rules.rules_parametrization(
                 f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next, concat_obj,
                 formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk)
 

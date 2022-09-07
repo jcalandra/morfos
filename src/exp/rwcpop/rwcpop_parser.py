@@ -29,7 +29,11 @@ def rwcpop_list2timesection(list):
                     elif el[-1] == ")" and el[:-1] != '%':
                         section_temps[-1].append(el[:-1])
                     else:
-                        if el != '%':
+                        not_percent = 1
+                        for i in range(len(el)):
+                            if  el[i] == '%':
+                                not_percent = 0
+                        if not_percent:
                             section_temps[-1].append(el)
                             section_temps[-1].append(el)
                 if len(els) == 2 and el != '%':

@@ -984,6 +984,101 @@ def cost_oracle_diagram_all_levels_whypothesis():
     plt.legend()
 
 
+def cost_general_diagram_all_levels():
+    # levels
+    plt.figure(figsize=(32, 20))
+    plt.title("alpha levels")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.alpha_levels[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("lambda levels")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.lambda_levels[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("delta levels")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.delta_levels[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("gamma levels")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.gamma_levels[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("beta levels")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.beta_levels[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    # sum
+    plt.figure(figsize=(32, 20))
+    plt.title("alpha levels sum")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.alpha_sum[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("lambda levels sum")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.lambda_sum[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("delta levels sum")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.delta_sum[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("gamma levels sum")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.gamma_sum[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+    plt.figure(figsize=(32, 20))
+    plt.title("beta levels sum")
+    plt.xlabel("time")
+    plt.ylabel("cost")
+    for level in range(len(prm.cost_total_tab)):
+        plt.plot(prm.cost_time[level], prm.beta_sum[level], ":o", linewidth=0.8, markersize=2,
+                 label="level " + str(level))
+    plt.legend()
+
+
+
 def cost_general_diagram_all_levels_whypothesis():
     # levels
     plt.figure(figsize=(32, 20))

@@ -646,7 +646,7 @@ class MO(FactorOracle):
 
         # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
         # un silence
-        if k is not None and v_tab[i-1] < audible_threshold:
+        if k is not None and v_tab is not None and v_tab[i-1] < audible_threshold:
             if method == 'inc':
                 suffix_candidate = 1
             elif method == 'complete':
@@ -732,7 +732,7 @@ class MO(FactorOracle):
                     comp_rep_sc = []
                     for j in range(len(J)):
                         comp_rep_sc.append(comp_rep[J[j]])
-                    if len(J) != 0 and v_tab[i-1] > audible_threshold:
+                    if len(J) != 0 and (v_tab is None or v_tab[i-1] > audible_threshold):
                         if method == 'inc':
                             cost_sfx_candidate_rep += 1
                             # S'il y en a exactement une seule, alors le suffixe est celle-ci
