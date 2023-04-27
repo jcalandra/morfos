@@ -28,11 +28,10 @@ sys.path.append(misc_path)
 
 # ======== IMPORT ======== 
 
-import json
 import time
 import plot
 import matplotlib.pyplot as plt
-import data_mso_test as sig_mso
+import data_mso
 import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave
@@ -67,7 +66,7 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
     obj_s.objects_init()
     obj_s.first_occ_init()
 
-    sig_mso.algo_cog(path, mso_oracle)
+    data_mso.algo_cog(path, mso_oracle)
     if prm.SHOW_TIME:
         print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
