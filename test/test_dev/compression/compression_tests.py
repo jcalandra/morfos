@@ -1,5 +1,5 @@
 from algo_segmentation_mso import fun_segmentation
-from signal_mso import algo_cog
+from data_mso import algo_cog
 import compression
 import compression_synthesis as com_syn
 import time

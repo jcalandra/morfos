@@ -2,7 +2,7 @@ import numpy as np
 import parameters as prm
 import scipy.io.wavfile as wave
 import compression
-from signal_mso import algo_cog
+from data_mso import algo_cog
 import data_computing as dc
 
 hop_size = prm.HOP_LENGTH

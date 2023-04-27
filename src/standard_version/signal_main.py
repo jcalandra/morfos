@@ -1,7 +1,7 @@
 import time
 import signal_ac as sig
 import signal_rep as sig_r
-import signal_mso as sig_mso
+import data_mso as sig_mso
 import interface as ui
 import parameters as prm
 

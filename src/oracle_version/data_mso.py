@@ -181,10 +181,10 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
     volume_data = v_tab
     suffix_method = SUFFIX_METHOD
 
-    if prm.MFCC_BIT == 1:
+    if prm.processing == 'signal' and prm.MFCC_BIT == 1:
         dim = nb_values - 1
         input_data = s_tab.transpose()
-    elif prm.FFT_BIT == 1:
+    elif prm.processing == 'signal'and prm.FFT_BIT == 1 or prm.processing == 'vectors':
         dim = len(s_tab[0])
         input_data = np.array(s_tab)
     else:
@@ -239,16 +239,22 @@ def prep_data(audio_path):
     return data, rate, data_size, data_length, nb_points
 
 
-def matrix_init(rate, data_size, data_length, nb_points):
+def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
     """ Initialize the structure corresponding to the formal diagram of level 0."""
     # initialise matrix of each hop coordinates
-    nb_sil_frames = nb_points / hop_length
-    nb_hop = int(data_size / hop_length + nb_sil_frames) + 1
-    data_length = data_length + nb_points / rate
-    if data_size % hop_length < init:
-        nb_hop = int(data_size / hop_length)
-    if prm.verbose == 1:
-        print("[RESULT] audio length = ", nb_hop)
+
+    if prm.processing == 'signal':
+        nb_sil_frames = nb_points / hop_length
+        nb_hop = int(data_size / hop_length + nb_sil_frames) + 1
+        data_length = data_length + nb_points / rate
+        if data_size % hop_length < init:
+            nb_hop = int(data_size / hop_length)
+        if prm.verbose == 1:
+            print("[RESULT] audio length = ", nb_hop)
+
+    if prm.processing == 'vectors':
+        nb_sil_frames = nb_points #TODO: modify the value eventually
+        nb_hop = data_length + nb_sil_frames
 
     new_mat = np.ones((1, nb_hop, 3), np.uint8)
     for i in range(nb_hop):
@@ -259,8 +265,10 @@ def matrix_init(rate, data_size, data_length, nb_points):
     return mtx, nb_hop, data_length
 
 
-def algo_cog(audio_path, oracles, end_mk=0):
+def algo_cog(path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
+
+    # cost initialisations
     hs.phases_init()
     cs.cost_general_init()
     cs.cost_oracle_init()
@@ -268,18 +276,47 @@ def algo_cog(audio_path, oracles, end_mk=0):
     prm.time_tab.append([])
     lambda_t = gamma_t = alpha_t = delta_t = beta_t = alpha_or_delta_t = new_mat = 0
 
+    #
     if prm.verbose:
         print("[INFO] Computing the cognitive algorithm of the audio extract...")
-    data, rate, data_size, data_length, nb_points = prep_data(audio_path)
-    mtx, nb_hop, data_length = matrix_init(rate, data_size, data_length, nb_points)
-    if prm.COMPUTE_COSTS == 1:
-        gamma_t += cost_numerisation
+
+    if prm.processing == 'signal':
+        data, rate, data_size, data_length, nb_points = prep_data(path)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_numerisation
+    elif prm.processing == 'vectors':
+        #print(f"{path}")
+        data = np.load(f"{path}", allow_pickle=True)
+        if prm.to_transpose:
+            data = data.T
+        data_length = len(data)
+        nb_points = 0
+        rate = 1
+        data_size = 0
+    else:
+        data, rate, data_size, data_length, nb_points = prep_data(path)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_numerisation
+
+    mtx, nb_hop, data_length = matrix_init(data_length, nb_points, rate, data_size)
 
     if prm.verbose == 1:
         print("[INFO] Computing frequencies and volume...")
-    v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
-    if prm.COMPUTE_COSTS == 1:
-        gamma_t += cost_desc_computation
+    if prm.processing == 'signal':
+        nb_values = prm.NB_VALUES
+        v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_desc_computation
+    elif prm.processing == 'vectors':
+        v_tab, s_tab = [(i % 4 + 0.9)/4 for i in range(data_length)], data
+        nb_values = len(s_tab[0])
+    else:
+        nb_values = prm.NB_VALUES
+        v_tab, s_tab = dc.get_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin)
+        if prm.COMPUTE_COSTS == 1:
+            gamma_t += cost_desc_computation
+
+
 
     value = 255 - v_tab[0] * 255
     color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
@@ -309,12 +346,12 @@ def algo_cog(audio_path, oracles, end_mk=0):
 
     # ------- INITIALISATION OF OTHER STRUCTURES -------
     level = 0
-    f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
-        structure_init(flag, level)
+    oracle_f, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next = \
+        structure_init(flag, level, dim=nb_values)
     vec = [1]
     matrix = [chr(fd_mso.letter_diff + 1), [vec]]
     oracles[1].append(
-        [f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
+        [oracle_t, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, matrix_next, matrix])
     oracles[0] = level
     oracles[2] = data
     obj_s.objects_add_level()
@@ -330,7 +367,6 @@ def algo_cog(audio_path, oracles, end_mk=0):
 
     prm.start_time_t = time.time()
     prm.max_time_t = 0
-
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
     for i_hop in range(nb_hop):  # while
         # CHECKPOINT #
@@ -352,6 +388,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
 
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
+
         obs = input_data[i_hop]
         oracle_t.add_state(obs, input_data, volume_data, suffix_method)
         if prm.COMPUTE_COSTS == 1:
@@ -364,9 +401,11 @@ def algo_cog(audio_path, oracles, end_mk=0):
         color2 = color
         color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
 
-        if i_hop > 2:
+        if i_hop > 0:
             prev_mat = oracle_t.data[i_hop]
+        if i_hop > 1:
             prev2_mat = oracle_t.data[i_hop - 1]
+        if i_hop > 2:
             prev3_mat = oracle_t.data[i_hop - 2]
 
         if i_hop == nb_hop - 1 and j_mat != prev_mat:
@@ -374,8 +413,29 @@ def algo_cog(audio_path, oracles, end_mk=0):
             j_mat = prev_mat
         if prm.COMPUTE_COSTS:
             alpha_or_delta_t += cost_seg_test_1
-        diff = sf.dissimilarity(i_hop, s_tab, v_tab)
-        if diff and len(concat_obj) > 3:
+
+        if prm.processing == 'signal':
+            diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+        elif prm.processing == 'vectors':
+            diff = 0
+            actual_char = j_mat + 1
+            actual_char_ind = i_hop + 1
+            k = 0
+            level_max = oracles[0]
+            str_obj = None
+            test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
+            i_hop, k, actual_char, oracle_t, link, history_next, concat_obj, \
+            formal_diagram, formal_diagram_graph, str_obj, input_data = sim_rules.rules_parametrization(
+                oracle_t, matrix, actual_char, actual_char_ind, link, oracles, level, i_hop, k, history_next, concat_obj,
+                formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk)
+            if ((test_1 and test_2) or (test_2 and test_3) or test_4 or test_6b or test_7b or test_8b) \
+                    and (test_5a and test_5b and test_6a and test_7a and test_8a):
+                j_mat = actual_char - 1
+                diff = 1
+        else:
+            diff = sf.dissimilarity(i_hop, s_tab, v_tab)
+
+        if diff and ((prm.processing == 'signal' and len(concat_obj) > 3) or prm.processing == 'vectors'):
             if diff_mk != 1:
                 if SEGMENTATION_BIT:
                     color = SEGMENTATION
@@ -501,24 +561,30 @@ def algo_cog(audio_path, oracles, end_mk=0):
                 digit, matrix, actual_max, temp_max, mtx = \
                     modify_matrix(mtx, prev2_mat, matrix, actual_max, temp_max, i_hop - 2)
 
-        if i_hop > 3:
-            for j in range(len(oracle_t.data) - 3, len(oracle_t.data)):
-                for k in range(len(mtx)):
-                    mtx[k][j - 1] = BACKGROUND
-            mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
-            mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
+        if i_hop > 0:
+            for k in range(len(mtx)):
+                mtx[k][len(oracle_t.data) - 2] = BACKGROUND
             mtx[oracle_t.data[i_hop + 1]][i_hop] = color
+            if i_hop > 1:
+                for k in range(len(mtx)):
+                    mtx[k][len(oracle_t.data) - 3] = BACKGROUND
+                mtx[oracle_t.data[i_hop]][i_hop - 1] = color2
+            if i_hop > 2:
+                for k in range(len(mtx)):
+                    mtx[k][len(oracle_t.data) - 4] = BACKGROUND
+                mtx[oracle_t.data[i_hop - 1]][i_hop - 2] = color3
             if prm.POLYPHONY:
-                for mat in range(1, oracle_t.data[i_hop - 1]):
-                    value = min((1 - matrix[1][oracle_t.data[i_hop - 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
-                    mtx[mat][i_hop - 2] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
-                for mat in range(1, oracle_t.data[i_hop]):
-                    value = min((1 - matrix[1][oracle_t.data[i_hop]][mat]) / (1 - prm.min_matrix) * 255, 255)
-                    mtx[mat][i_hop - 1] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
-        if prm.POLYPHONY:
-            for mat in range(1, oracle_t.data[i_hop + 1]):
-                value = min((1 - matrix[1][oracle_t.data[i_hop + 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
-                mtx[mat][i_hop] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
+                if i_hop > 1:
+                    for mat in range(1, oracle_t.data[i_hop - 1]):
+                        value = min((1 - matrix[1][oracle_t.data[i_hop - 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
+                        mtx[mat][i_hop - 2] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
+                if i_hop > 0:
+                    for mat in range(1, oracle_t.data[i_hop]):
+                        value = min((1 - matrix[1][oracle_t.data[i_hop]][mat]) / (1 - prm.min_matrix) * 255, 255)
+                        mtx[mat][i_hop - 1] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
+                for mat in range(1, oracle_t.data[i_hop + 1]):
+                    value = min((1 - matrix[1][oracle_t.data[i_hop + 1]][mat]) / (1 - prm.min_matrix) * 255, 255)
+                    mtx[mat][i_hop] = (BASIC_FRAME[0], BASIC_FRAME[1], value)
 
         if len(concat_obj) == 1:
             if len(history_next) > 0:
@@ -565,7 +631,12 @@ def algo_cog(audio_path, oracles, end_mk=0):
         oracles[1][level][5] = formal_diagram_graph
 
         links = []
-        sound = obj_s.data[i_hop*prm.HOP_LENGTH:(i_hop + 1)*prm.HOP_LENGTH]
+        if prm.processing == 'signal':
+            sound = obj_s.data[i_hop*prm.HOP_LENGTH:(i_hop + 1)*prm.HOP_LENGTH]
+        elif prm.processing == 'vectors':
+            sound = [0]
+        else:
+            sound = obj_s.data[i_hop*prm.HOP_LENGTH:(i_hop + 1)*prm.HOP_LENGTH]
         id = i_hop
         mat_num = oracle_t.data[i_hop + 1]
         x = (prm.HOP_LENGTH/prm.SR)*(i_hop + 1)
@@ -689,7 +760,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         f_ac = open("../../results/algocog_computing.txt", "a")
         f_ac.write(str(algocog_time) + "\n")
         f_ac.close()
-        name = audio_path.split('/')[-1]
+        name = path.split('/')[-1]
         file = open("../results/error.txt", "a")
         file.write("\nERROR file " + name + ", " + str(hop_length) + ", " + str(nb_values) + ", " + str(teta) +
                    ", " + str(init) + "\nseg_error = " + str(seg_error) + "\nclass_error = " + str(class_error) +
@@ -697,7 +768,7 @@ def algo_cog(audio_path, oracles, end_mk=0):
         file.close()
 
     if SYNTHESIS == 1:
-        name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
+        name = path.split('/')[-1][:-4] + '_synthesis.wav'
         print("name : ", name)
         s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
 

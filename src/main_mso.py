@@ -32,7 +32,7 @@ import json
 import time
 import plot
 import matplotlib.pyplot as plt
-import data_mso as sig_mso
+import data_mso_test as sig_mso
 import parameters as prm
 import objects_storage as obj_s
 import scipy.io.wavfile as wave

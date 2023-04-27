@@ -1,5 +1,5 @@
 import time
-import signal_mso as sig
+import data_mso as sig
 import interface as ui
 import matplotlib.pyplot as plt
 # --- HOP LENGTH ---
