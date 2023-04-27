@@ -1,5 +1,5 @@
 from numpy import load
-from qmatrix import qmatrix as qm
+import qmatrix as qm
 import parameters
 import main_mso_char
 
@@ -22,8 +22,10 @@ def qmat_protocol1(qmat):
 
 
 def main():
-    path = "/data/qmatrix"
-    for song in range(71,101):
+    path = "C:/Users/jmoca/OneDrive/Documents/Travail/These/Programmation" \
+           "/cognitive_algorithm_and_its_musical_applications/data/qmatrix/"
+    # Path leading to the folder containing the matrices
+    for song in range(1,10):
         if song < 10:
             number = '0' + str(song)
         else:

@@ -128,8 +128,8 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
     if prm.TO_SHOW_PYP or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
-    if prm.SAVE_MATERIALS:
+    '''if prm.SAVE_MATERIALS:
         with open(prm.PATH_RESULT + '/materials.json', 'w') as myFile:
-            json.dump(obj_s.objects, myFile)
+            json.dump(obj_s.objects, myFile)'''
 
 main()

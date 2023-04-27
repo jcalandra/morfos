@@ -372,6 +372,20 @@ def get_cqt_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
     return v_tab, s_tab
 
 
+# ------------------------ FROM SPECTRAL CENTROID ----------------
+
+def get_central_spectroid(data, rate, hop_length, nb_notes, init, fmin):
+    cspect = librosa.feature.spectral_centroid(data[init:], sr=rate, S=None, n_fft=2048, hop_length=hop_length,
+                                      freq=None, win_length=None, window='hann', center=True, pad_mode='constant')
+    return cspect
+
+def get_central_spectroid_descriptors(data, rate, hop_length, nb_hop, nb_values, init, fmin):
+    v_tab = get_rms_volumes(data, hop_length, nb_hop, init)
+    s_tab = get_cqt(data, rate, hop_length, nb_values, init, fmin)
+    return v_tab, s_tab
+
+
+
 # ------------------------- FACTORISATION ------------------------
 
 

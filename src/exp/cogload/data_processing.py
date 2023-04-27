@@ -3,13 +3,12 @@ import csv
 
 blue_value = 0
 
-def process_data(exp_1):
+def process_data(exp_1, path_data):
     data_1 = []
     for ind in exp_1:
-        path = 'C:/Users/jmoca/OneDrive/Documents/Travail/These/Etude_Cognitive/exp1-cognitive-load/' \
-               'resultats_exp1/csv_finaux/resultats_exp1_1_' + str(ind) + '.csv'
+        path = path_data + str(ind) + '.csv'
         with open(path, newline='') as csvfile:
-            popreader = csv.reader(csvfile, delimiter='\t', quotechar='"')
+            popreader = csv.reader(csvfile, delimiter=',', quotechar='"')
             datalist = list(popreader)
 
         i = 0
@@ -20,7 +19,9 @@ def process_data(exp_1):
                 datalist[i].pop(n - j)
                 j += 1
             if j == n and datalist[i][0] == '':
-                datalist.pop(i)
+                # datalist.pop(i)
+                datalist[i][0] = '0'
+                #datalist[i].append('1')
             else:
                 i += 1
 
@@ -61,7 +62,7 @@ def preprocess_segs():
     path = 'C:/Users/jmoca/OneDrive/Documents/Travail/These/Etude_Cognitive/exp1-cognitive-load/' \
            'resultats_exp1/csv_finaux/segmentations_1.csv'
     with open(path, newline='') as csvfile:
-        popreader = csv.reader(csvfile, delimiter='\t', quotechar='"')
+        popreader = csv.reader(csvfile, delimiter=',', quotechar='"')
         segslist = list(popreader)
 
     # removing blank cells

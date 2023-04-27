@@ -92,3 +92,5 @@ def rwcpop_tests():
     pop01 = parser(test_path)
     print(pop01)
     main(pop01)
+
+example()

@@ -1,12 +1,12 @@
 {
-   "NAME":"10_Brahms",
-   "FORMAT":".mp3",
+   "NAME":"track_4",
+   "FORMAT":".wav",
 
-   "PATH_SOUND":"/data/Analyses_Elia/",
-   "PATH_RESULT":"/results/Analyses_Elia/10_Brahms/test2/",
+   "PATH_SOUND":"/data/exp_cog/",
+   "PATH_RESULT":"/results/ExpCog/4/test2/",
 
-   "teta":0.980,
-   "d_threshold":100,
+   "teta":0.978,
+   "d_threshold":140,
 
    "POLYPHONY":0,
 
@@ -25,8 +25,8 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
-   "RULE_1a":0,
-   "RULE_1b":1,
+   "RULE_1a":1,
+   "RULE_1b":0,
    "RULE_2":1,
    "RULE_3":1,
    "RULE_4":0,
@@ -38,8 +38,8 @@
 
    "ALIGNEMENT_rule3":0,
    "ALIGNEMENT_rule4":0,
-   "lower_bound_rule6":10,
-   "higher_bound_rule6":200,
+   "lower_bound_rule6":3,
+   "higher_bound_rule6":16,
 
    "QUOTIENT":100,
 
@@ -47,8 +47,8 @@
 
    "LETTER_DIFF":96,
 
-   "GAP_VALUE":-1,
-   "EXT_GAP_VALUE":-0.5,
+   "GAP_VALUE":-3,
+   "EXT_GAP_VALUE":-3,
 
    "GAP":0,
 
@@ -99,7 +99,7 @@
    "TO_SAVE_BMP":0,
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
-   "TO_SHOW_PYP":0,
+   "TO_SHOW_PYP":1,
    "TO_SAVE_FINAL":1,
 
    "PLOT_ORACLE":0,
@@ -116,7 +116,7 @@
 
    "checkpoint":1,
 
-   "SAVE_MATERIALS":1,
+   "SAVE_MATERIALS":0,
 
    "BASIC_FRAME":[0, 0, 0],
    "BACKGROUND":[0, 0, 255],
@@ -133,7 +133,7 @@
 
    "SYNTHESIS":0,
 
-   "COMPUTE_COSTS":0,
+   "COMPUTE_COSTS":1,
 
    "STATE_TIME":0,
    "COMPUTING_TIME":1,
@@ -159,7 +159,7 @@
    "cost_maj_link":1,
    "cost_level_up":1,
 
-   "COMPUTE_HYPOTHESIS":0,
+   "COMPUTE_HYPOTHESIS":1,
    "NSNC":1,
    "NSC":2,
    "SNC":3,

@@ -105,6 +105,11 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
+    if processing == 'signal' and level==0:
+        factor = 1
+    else:
+        factor = global_factor
+
     # allocation of structures of actual level
     f_oracle = oracles[1][level][0]
     link = oracles[1][level][1].copy()
@@ -187,7 +192,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    data_length = len(oracles[1][level][4][0])
+    data_length = int(len(oracles[1][level][4][0])/factor)
     to_struct = 0
     to_struct_obj = ''
 
@@ -238,7 +243,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
         # formal diagram update
         for j in range(len(oracles[1][level_up][4])):
-            for fd_ind in range(k_init, data_length):
+            for fd_ind in range(k_init*factor, data_length*factor):
                 oracles[1][level_up][4][j][fd_ind] = 1
         print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
 
@@ -299,7 +304,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
                     frame_level -= 1
 
                 for j in range(len(oracles[1][level_up][4])):
-                    for fd_ind in range(k_init, former_k_init):
+                    for fd_ind in range(k_init*factor, former_k_init*factor):
                         oracles[1][level_up][4][j][fd_ind] = 1
                 print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
 

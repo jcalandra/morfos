@@ -4,6 +4,6 @@ pydub
 opencv-python
 bio
 music21
-numpy>=1.24.1
+numpy>=1.21.6
 matplotlib
 mir_eval

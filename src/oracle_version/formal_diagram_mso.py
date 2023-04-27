@@ -18,6 +18,7 @@ processing = prm.processing
 
 f_number = 0
 figsize= [30, 5]
+global_factor = 20
 
 
 # ============================================ FORMAL DIAGRAM 2D =======================================================
@@ -71,7 +72,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         return 0
 
 
-def formal_diagram_init(formal_diagram, data_length, oracles, level):
+def formal_diagram_init_nobound(formal_diagram, data_length, oracles, level):
     """Initialize the formal diagram 'formal_diagram' at level 'level'."""
     # print("formal diagram init")
     new_mat = [1 for i in range(data_length)]
@@ -115,7 +116,7 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     return 1
 
 
-def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
+def formal_diagram_update_nobound(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
     """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
     'actual_char'."""
     # print("formal diagram update")
@@ -200,7 +201,7 @@ def final_save_one4all(oracles, data_length, result_path):
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.yticks(np.arange(0, len(formal_diagram), 5))
-        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 20))
+        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 5))
         plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
         plt.savefig(result_path + file_name_pyplot, transparent=True, dpi=1000)
         print("file saved as " + result_path + file_name_pyplot)
@@ -210,7 +211,7 @@ def final_save_one4all(oracles, data_length, result_path):
 def final_save_all4one(oracles, data_length, result_path):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
-    f = plt.figure(figsize=[30,20])
+    f = plt.figure(figsize=[12,30])
     for level in range(len(oracles[1])):
         plt.subplot(len(oracles[1]), 1, level + 1)
         formal_diagram = oracles[1][level][4]
@@ -221,7 +222,7 @@ def final_save_all4one(oracles, data_length, result_path):
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.yticks(np.arange(0, len(formal_diagram), 5))
-        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 20))
+        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 5))
         plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
 
     file_name_pyplot = 'FD_all.png'
@@ -230,6 +231,116 @@ def final_save_all4one(oracles, data_length, result_path):
     plt.close()
     return 1
 
+
+def formal_diagram_init(formal_diagram, data_length, oracles, level):
+    """Initialize the formal diagram 'formal_diagram' at level 'level'."""
+    # print("formal diagram init")
+    if processing == 'signal' and level==0:
+        factor = 1
+    else:
+        factor = global_factor
+    new_mat = [1 for i in range(data_length*factor)]
+    formal_diagram.append(new_mat)
+    if level == 0:
+        n = k_end_link = 1
+        obj_s.objects_init()
+        obj_s.first_occ_init()
+    else:
+        k_end = k_end_link = 1
+        lv = level - 1
+        while lv >= 0:
+            link = oracles[1][lv][1]
+            link_r = link.copy()
+            link_r.reverse()
+            k_end = len(link_r) - link_r.index(k_end) - 1
+            if lv == level - 1:
+                k_end_link = k_end
+            lv = lv - 1
+        n = k_end
+    formal_diagram[0][0] = 0
+    for i in range(1, n*factor):
+        formal_diagram[0][i] = 0.7
+
+    obj_s.objects_add_level()
+    obj_s.first_occ_add_level()
+    links = []
+    for i in range(k_end_link):
+        links.append(i)
+    if processing == 'signal':
+        sound = obj_s.data[0:n*prm.HOP_LENGTH]
+    else:
+        # No sound when character string analysis
+        sound = [0]
+    id = 0
+    mat_num = 0
+    x = n*(1/prm.SR)*prm.HOP_LENGTH
+    y = 0
+    z = n*(1/prm.SR)*prm.HOP_LENGTH
+    obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
+    obj_s.first_occ_add_obj(level, y)
+    return 1
+
+
+def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
+    """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
+    'actual_char'."""
+    # print("formal diagram update")
+    if processing == 'signal' and level==0:
+        factor = 1
+    else:
+        factor = global_factor
+    k_init = actual_char_ind
+    if processing == 'symbols':
+        actual_char = actual_char - oracles[1][level][0].data[1] + 1
+    if level == 0:
+        n = k_init_link = k_end_link = 1
+    else:
+        k_end = k_init
+        k_init_link = k_init
+        k_end_link = k_init
+        lv = level - 1
+        while lv >= 0:
+            link = oracles[1][lv][1]
+            link_r = link.copy()
+            link_r.reverse()
+            k_init = link.index(k_init)
+            true_len = len(link) - link_r.index(len(oracles[1][lv + 1][0].data) - 1)
+            sub_link_r = link.copy()
+            sub_link_r = sub_link_r[:true_len]
+            sub_link_r.reverse()
+            k_end = true_len - sub_link_r.index(k_end) - 1
+            if lv == level - 1:
+                k_init_link = k_init
+                k_end_link = k_end
+            lv = lv - 1
+        n = k_end - k_init + 1
+    color = 0.7
+    if actual_char > len(formal_diagram):
+        new_mat = [1 for i in range(data_length*factor)]
+        formal_diagram.append(new_mat)
+        first_occ_mat = (k_init - 1)*(prm.HOP_LENGTH/prm.SR)
+        obj_s.first_occ_add_obj(level, first_occ_mat)
+    if prm.POLYPHONY and prm.processing == 'signal':
+        side_materials(oracles, level, formal_diagram, actual_char, n*factor, k_init*factor)
+    formal_diagram[actual_char - 1][k_init*factor- 1*factor] = 0
+    for i in range(1, n*factor):
+        formal_diagram[actual_char - 1][factor*k_init+ i - 1*factor] = color
+
+    links = []
+    for i in range(k_init_link - 1, k_end_link):
+        links.append(i)
+    if processing == 'signal':
+        sound = obj_s.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
+    else:
+        # No sound when character string analysis
+        sound = [0]
+    id = actual_char_ind - 1
+    mat_num = actual_char - 1
+    x = (k_init + n - 1)*(prm.HOP_LENGTH/prm.SR)
+    y = obj_s.first_occ[level][mat_num]
+    z = n*(1/prm.SR)*prm.HOP_LENGTH
+    obj_s.objects_add_new_obj(id, links, x, y, z, mat_num, level, sound)
+    return 0
 
 
 # ======================================== FORMAL DIAGRAM 3D (TESTS) ===================================================

@@ -28,6 +28,16 @@ def qmat_plot_transpose(qmatrix):
 
 def qmat_binary_filter(qmatrix):
     """ Apply a filter to obtain 1 while upper value and 0 otherwise """
+    n = 1
+    blank = 1
+    while blank == 1:
+        for i in range(len(qmatrix[0])):
+            if qmatrix[-n][i] != 0:
+                blank = 0
+        if blank == 1:
+            n += 1
+
+    qmatrix = qmatrix[:-n]
     qmat_inter = np.array(qmatrix)
     k = 0
     for i in qmatrix:
@@ -73,7 +83,6 @@ def qmat_reorder_materials(qmatrix_inter):
     for i in range(n):
         if qmatrix_inter2[i].max() == 0:
             qmatrix_inter2[i][max_mat] = 1
-
     return qmatrix_inter2
 
 

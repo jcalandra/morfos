@@ -1,5 +1,5 @@
 from numpy import array, load
-from qmatrix import qmatrix as qm
+import qmatrix as qm
 import parameters
 import main_mso_char
 
@@ -46,4 +46,4 @@ def main():
         qmat_symbols, qmatrix_inter2, qmatrix_inter, qmatrix_diff = qmat_protocol2(q_matrix)
         main_mso_char.main(qmat_symbols, result_path)
 
-main()
+# main()

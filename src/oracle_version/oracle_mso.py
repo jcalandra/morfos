@@ -668,7 +668,7 @@ class MO(FactorOracle):
                 for j in range(len(self.trn[k])):
                     fss = sf.frequency_static_similarity(s_tab, self.trn[k][j] - 1, i - 1)
                     dvec.append(fss)
-                    if dvec[j] > self.params['threshold'] and self.data[self.trn[k][j]] != 0:
+                    if dvec[j] > self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
                         I.append(j)
 
                 # S'il n'y a pas de transition en avant du suffixe similaire à l'état actuel

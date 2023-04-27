@@ -2,11 +2,11 @@ import mir_eval
 from data_processing import list2intervals
 
 
-def segs_per_song(data):
+'''def segs_per_song(data):
     segmentations = [[] for i in range(len(data[0][0]))]
     for sujet in data:
         for s in range(len(sujet[0])):
-            segmentations[s].append(sujet[0][s])
+            segmentations[s].append(sujet[0][s])'''
 
 
 def compute_segs_accuracy(segs, data):
