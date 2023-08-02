@@ -1,4 +1,4 @@
-import class_object as co
+from object_model import class_object as co
 
 
 class Transition:

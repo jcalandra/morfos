@@ -1,5 +1,5 @@
 import class_similarity_computation
-import class_object
+from object_model import class_object
 from parameters import LETTER_DIFF, STRICT_EQUALITY, ALIGNMENT
 letter_diff = LETTER_DIFF
 

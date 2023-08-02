@@ -246,7 +246,7 @@ PLOT_ORACLE = data["PLOT_ORACLE"]
 # diagrams
 EVOL_PRINT = data["EVOL_PRINT"]
 
-#to show the mso content:
+#to show the mso_structs content:
 SHOW_MSO_CONTENT = data["SHOW_MSO_CONTENT"]
 
 #to show the computed costs (work only if

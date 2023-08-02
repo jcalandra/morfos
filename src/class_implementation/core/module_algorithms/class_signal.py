@@ -7,10 +7,10 @@ import time
 import plot
 
 import class_mso
-import class_object
-import class_s_mso
+from object_model import class_object
+from others.synthesis import class_synthesis_mso
 import class_cog_algo
-import class_similarity_rules
+from criterias.module_classification import class_similarity_rules
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -572,7 +572,7 @@ def algo_cog(audio_path, ms_oracle):
     if SYNTHESIS == 1:
         name = audio_path.split('/')[-1][:-4] + '_synthesis.wav'
         print("name : ", name)
-        class_s_mso.synthesis(ms_oracle, level, nb_hop, hop_length)
+        class_synthesis_mso.synthesis(ms_oracle, level, nb_hop, hop_length)
 
     if PLOT_ORACLE == 1:
         im = plot.start_draw(ms_oracle.levels[level].oracle, size=(900 * 4, 400 * 4))

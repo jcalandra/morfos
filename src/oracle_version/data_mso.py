@@ -268,7 +268,7 @@ def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
 def algo_cog(path, oracles, end_mk=0):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
 
-    # cost initialisations
+    # COST INITIALISATION
     hs.phases_init()
     cs.cost_general_init()
     cs.cost_oracle_init()
@@ -276,10 +276,11 @@ def algo_cog(path, oracles, end_mk=0):
     prm.time_tab.append([])
     lambda_t = gamma_t = alpha_t = delta_t = beta_t = alpha_or_delta_t = new_mat = 0
 
-    #
+    # PREPARATION OF THE DATA
     if prm.verbose:
         print("[INFO] Computing the cognitive algorithm of the audio extract...")
 
+    # numerisation
     if prm.processing == 'signal':
         data, rate, data_size, data_length, nb_points = prep_data(path)
         if prm.COMPUTE_COSTS == 1:
@@ -300,6 +301,7 @@ def algo_cog(path, oracles, end_mk=0):
 
     mtx, nb_hop, data_length = matrix_init(data_length, nb_points, rate, data_size)
 
+    # descriptors
     if prm.verbose == 1:
         print("[INFO] Computing frequencies and volume...")
     if prm.processing == 'signal':
@@ -317,7 +319,7 @@ def algo_cog(path, oracles, end_mk=0):
             gamma_t += cost_desc_computation
 
 
-
+    # DF initialisation
     value = 255 - v_tab[0] * 255
     color = (BASIC_FRAME[0], BASIC_FRAME[1], value)
     mtx[0][0] = color

@@ -1,9 +1,9 @@
 from parameters import LETTER_DIFF, processing, verbose
-import class_segmentation_rules
-import class_similarity_rules
+from criterias.module_segmentation import class_segmentation_rules
+from criterias.module_classification import class_similarity_rules
 
 import class_mso
-import class_object
+from object_model import class_object
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function

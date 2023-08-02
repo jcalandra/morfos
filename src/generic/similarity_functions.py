@@ -136,7 +136,7 @@ def volume_dynamic_dissimilarities(v_tab, id_hop_a, id_hop_b):
         vdd = diff_a
     else:
         diff_b = get_diff_volumes(v_tab, id_hop_a - 1, id_hop_b - 1)
-        vdd = diff_a - diff_b
+        vdd = abs(diff_a - diff_b)
     return vdd
 
 

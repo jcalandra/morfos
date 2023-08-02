@@ -1,7 +1,7 @@
 import oracle_mso
-import class_materials
-import class_formal_diagrams
-import class_object
+from mso import class_materialsMemory
+from core.module_visualization import class_fd2DVisu
+from object_model import class_object
 from parameters import SR, HOP_LENGTH
 
 from data_computing import get_data
@@ -24,7 +24,7 @@ class MSO:
         self.nb_hop = 0
         self.end_mk = 0
 
-        self.matrix = class_materials.SimMatrix()
+        self.matrix = class_materialsMemory.SimMatrix()
 
     def set_name(self, name):
         self.name = name
@@ -58,10 +58,10 @@ class MSOLevel:
     def __init__(self, mso):
         self.objects = [class_object.Object()]
         self.oracle = None
-        self.formal_diagram = class_formal_diagrams.FormalDiagram()
-        self.formal_diagram_graph = class_formal_diagrams.FormalDiagramGraph(0, mso.name)
+        self.formal_diagram = class_fd2DVisu.FormalDiagram()
+        self.formal_diagram_graph = class_fd2DVisu.FormalDiagramGraph(0, mso.name)
         self.link = [0]
-        self.materials = class_materials.Materials()
+        self.materials = class_materialsMemory.Materials()
         self.concat_obj = class_object.ConcatObj()
 
         self.str_obj = ""

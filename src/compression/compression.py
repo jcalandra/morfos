@@ -14,7 +14,7 @@ global formal_diagrams
 
 
 def convert(fd_str, lvl, mso, t_start, t_end):
-    """ Takes as entry the multi-scale oracle data structure 'classes_mso' and a level 'lvl' and time boundaries 't_start' and
+    """ Takes as entry the multi-scale oracle data structure 'module_mso' and a level 'lvl' and time boundaries 't_start' and
     't_end'. Returns a character string corresponding to the adequate sub formal diagram. """
     oracle = mso[lvl][0]
     for i in range(t_start, t_end):

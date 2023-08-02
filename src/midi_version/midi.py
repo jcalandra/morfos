@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import parameters as prm
 import numpy as np
 import cv2
+import os
 
 # This file contains an implementation of formal diagram computation from a MIDI file (non-hierarchical implementation)
 
@@ -162,7 +163,12 @@ def interface(midi_path, tempo):
 # ================================================= EXAMPLE ============================================================
 def example_Geisslerlied():
     """ Main function with Geisslerlied as an example."""
-    name = "Geisslerlied"
+    name = "reflets_dans_leau"
     tempo = TEMPO
-    midi_path = '../../data/midi/' + name + '.mid'
+    path = os. getcwd()
+    print("Le répertoire courant est : " + path)
+    midi_path = 'cognitive_algorithm_and_its_musical_applications/data/MIDI/' + name + '.mid'
     interface(midi_path, tempo)
+
+
+example_Geisslerlied()
