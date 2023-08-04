@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import time
 import plot
+import sys
 
 import class_mso
 from object_model import class_object
@@ -288,6 +289,18 @@ def algo_cog(audio_path, ms_oracle):
 
     # vsd, vdd, vkl, fsd, fdd = cd.compute_dynamics()
     for i_hop in range(nb_hop):  # while
+        # CHECKPOINT #
+        # Si le format fourni en entrée du logiciel est un fichier audio.
+        # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
+        # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
+        # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
+        # certaines valeurs
+        checkpoint = i_hop / nb_hop * 100
+        if prm.checkpoint == 1:
+            print("CHECKPOINT: ", checkpoint)
+            sys.stdout.flush()
+        # END CHECKPOINT #
+
         if prm.verbose == 1:
             print("[INFO] Process in level 0...")
         obs = input_data[i_hop]

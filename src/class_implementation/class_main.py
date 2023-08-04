@@ -58,13 +58,6 @@ def main_char(char_ex):
         obj_tab.append(new_obj)
 
     class_cog_algo.fun_segmentation(mso, obj_tab)
-
-    # printing the results in the shell
-    for i in range(len(mso.levels)):
-        print("new_fd_" + str(i) + ": ", mso.levels[i].formal_diagram)
-        print("link_" + str(i) + ": ", mso.levels[i].link)
-        print("history next : ", mso.levels[i].materials.history)
-        print("matrix_next : ",  mso.levels[i].materials.sim_matrix)
     plt.pause(3000)
 
 

@@ -41,8 +41,6 @@ def similarity(ms_oracle, level):
         matrix = ms_oracle.levels[level - 1].materials.sim_matrix
     else:
         matrix = ms_oracle.matrix
-    print(matrix.labels)
-
     sim_tab_label = []
 
     window = ms_oracle.levels[level].concat_obj.concat_signal

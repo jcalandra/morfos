@@ -2,8 +2,8 @@
    "NAME":"track_4",
    "FORMAT":".wav",
 
-   "PATH_SOUND":"/data/exp_cog/",
-   "PATH_RESULT":"/results/ExpCog/4/test2/",
+   "PATH_SOUND":"/../data/exp_cog/",
+   "PATH_RESULT":"/../results/ExpCog/4/test2/",
 
    "teta":0.978,
    "d_threshold":140,

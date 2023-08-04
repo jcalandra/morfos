@@ -1,8 +1,10 @@
-from module_parameters.parameters import LETTER_DIFF, processing, verbose
+from module_parameters.parameters import LETTER_DIFF, processing, verbose, checkpoint
 import class_similarity_rules
 import tests_administrator as ta
 import class_mso
 from object_model import class_object
+import sys
+import time
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -76,17 +78,27 @@ def fun_segmentation(ms_oracle, objects, level=0):
     if verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
     while ms_oracle.levels[level].iterator < len(objects):
+        # CHECKPOINT #
+        # Si le format fournit en entrée du logiciel est une chaîne de caractères.
+        # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
+        # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
+        # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
+        # certaines valeurs
+        if level == 0 and processing == 'symbols':
+            cp = (ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator)/(ms_oracle.levels[level].shift + len(objects))*100
+            if checkpoint == 1:
+                print("CHECKPOINT: ", cp)
+                sys.stdout.flush()
+        # END CHECKPOINT #
+
 
         i = ms_oracle.levels[level].iterator
         ms_oracle.levels[level].update_oracle(label_data[i])
         ms_oracle.levels[level].actual_object = objects[i]
 
-        print("ord actual obj", ord(ms_oracle.levels[level].actual_object.label))
-        print("mat", max([ord(ms_oracle.matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.labels))]))
         if level == 0 and processing == 'symbols' and \
                 ord(ms_oracle.levels[level].actual_object.label)> \
                 max([ord(ms_oracle.matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.labels))]):
-            print("oui")
             vec = [0 for ind_vec in range(len(ms_oracle.matrix.values))]
             vec.append(1)
             ms_oracle.matrix.labels += chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)

@@ -22,8 +22,6 @@ correc_value = parameters.CORREC_VALUE
 
 
 def compute_alignment(string_compared, actual_string, mat, level=0):
-    print(mat.labels)
-    print(string_compared, actual_string)
     # initalisation
     alignment = -pow(10, 10)
     if len(actual_string) == 0:
