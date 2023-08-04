@@ -5,8 +5,7 @@ import midi as md
 import signal_ac as sig
 import interface as ui
 import discovery_front as dfront
-import parameters as prm
-
+from raw_implementation import parameters as prm
 
 HOP_LENGTH = prm.HOP_LENGTH
 NB_VALUES = prm.NB_VALUES

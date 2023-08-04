@@ -2,7 +2,7 @@ import librosa
 import pydub
 from matplotlib.pyplot import *
 import math
-from module_parameters import parameters as prm
+from raw_implementation import parameters as prm
 
 # In this file are implemented all functions that process the signal
 

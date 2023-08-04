@@ -1,6 +1,6 @@
 {
-   "NAME":"abacabacdeab",
-   "FORMAT":".txt",
+   "NAME":"track_4",
+   "FORMAT":".wav",
 
    "PATH_SOUND":"/data/exp_cog/",
    "PATH_RESULT":"/results/ExpCog/4/test2/",
@@ -12,7 +12,7 @@
 
    "min_matrix":0.999,
 
-   "processing":"symbols",
+   "processing":"signal",
    "to_transpose":0,
    "is_micro": 0,
 
@@ -25,13 +25,14 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
-   "RULE_1":1,
+   "RULE_1a":1,
+   "RULE_1b":0,
    "RULE_2":1,
    "RULE_3":1,
    "RULE_4":1,
-   "RULE_5":1,
+   "RULE_5a":0,
    "RULE_5b":0,
-   "RULE_6":0,
+   "RULE_6":1,
    "RULE_7":0,
    "RULE_8":0,
 

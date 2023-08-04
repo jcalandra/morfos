@@ -2,9 +2,7 @@ import numpy as np
 from Bio import pairwise2
 from Bio.Align import substitution_matrices
 import similarity_functions as sim_f
-import parameters
-import librosa
-import data_computing
+from module_parameters import parameters
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
 
@@ -24,6 +22,8 @@ correc_value = parameters.CORREC_VALUE
 
 
 def compute_alignment(string_compared, actual_string, mat, level=0):
+    print(mat.labels)
+    print(string_compared, actual_string)
     # initalisation
     alignment = -pow(10, 10)
     if len(actual_string) == 0:

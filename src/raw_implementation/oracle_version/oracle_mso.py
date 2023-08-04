@@ -2,12 +2,12 @@
 oracle.py
 Variable Markov Oracle in python
 
-@copyright:
+@copyright: 
 Copyright (C) 9.2014 Cheng-i Wang
 
 This file is part of vmo.
 
-@license:
+@license: 
 vmo is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import misc as utl
 import similarity_functions as sf
-import module_parameters.parameters as prm
+from raw_implementation import parameters as prm
 
 PARCOURS = prm.PARCOURS
 INCERTITUDE = prm.INCERTITUDE
@@ -69,36 +69,36 @@ class data(object):
 
 class FactorOracle(object):
     """ The base class for the FO(factor oracle) and MO(variable markov oracle)
-
+    
     Attributes:
         sfx: a list containing the suffix link of each state.
         trn: a list containing the forward links of each state as a list.
-        rsfx: a list containing the reverse suffix links of each state
+        rsfx: a list containing the reverse suffix links of each state 
             as a list.
         lrs: the value of longest repeated suffix of each state.
-        data: the symobols associated with the direct link
+        data: the symobols associated with the direct link 
             connected to each state.
         compror: a list of tuples (i, i-j), i is the current coded position,
             i-j is the length of the corresponding coded words.
-        code: a list of tuples (len, pos), len is the length of the
+        code: a list of tuples (len, pos), len is the length of the 
             corresponding coded words, pos is the position where the coded
             words starts.
 0        seg: same as code but non-overlapping.
         f_array: (For kind 'a' and 'v'): a list containing the feature array
         latent: (For kind 'a' and 'v'): a list of lists with each sub-list
             containing the indexes for each symbol.
-        kind:
+        kind: 
             'a': Variable Markov oracle
             'f': repeat oracle
             'v': Centroid-based oracle (under test)
-        n_states: number of total states, also is length of the input
+        n_states: number of total states, also is length of the input 
             sequence plus 1.
         max_lrs: the longest lrs so far.
         avg_lrs: the average lrs so far.
         name: the name of the oracle.
         params: a python dictionary for different feature and distance settings.
             keys:
-                'thresholds': the minimum value for separating two values as
+                'thresholds': the minimum value for separating two values as 
                     different symbols.
                 'weights': a dictionary containing different weights for features
                     used.
@@ -545,10 +545,10 @@ class FO(FactorOracle):
 
     def accept(self, context):
         """ Check if the context could be accepted by the oracle
-
+        
         Args:
             context: s sequence same type as the oracle data
-
+        
         Returns:
             bAccepted: whether the sequence is accepted or not
             _next: the state where the sequence is accepted
@@ -709,7 +709,7 @@ class MO(FactorOracle):
                     cost_complete += 1
                     k = self.sfx[k]
 
-            if k is None or \
+            if k is None or\
                     (PARCOURS and method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE):
                 # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
                 # meilleur que celui trouvé ou que rien du tout.
@@ -762,7 +762,7 @@ class MO(FactorOracle):
                             mat_rep = np.argmax(comp_rep[1:]) + 1
 
                             if len(comp_rep) > 2 and ((method == 'complete' and len(sorted_suffix_candidates) > 0 and
-                                                       mat_rep == self.data[sorted_suffix_candidates[0][0]])
+                                                      mat_rep == self.data[sorted_suffix_candidates[0][0]])
                                                       or (method == 'inc' and mat_rep == self.data[suffix_candidate])):
                                 new_comp_rep = comp_rep.copy()
                                 new_comp_rep.pop(mat_rep)
@@ -774,8 +774,8 @@ class MO(FactorOracle):
                                     mat_rep = sec_mat_rep
                             if (method == 'complete' and len(sorted_suffix_candidates) > 0 and
                                 mat_rep != self.data[sorted_suffix_candidates[0][0]]) or \
-                                    (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
-                                    (not suffix_candidate):
+                               (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
+                               (not suffix_candidate):
                                 for j in range(len(self.latent[mat_rep])):
                                     actual_compared = self.latent[mat_rep][j]
                                     cost_nb_comparison_parcours += 1
@@ -817,7 +817,7 @@ class MO(FactorOracle):
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
-                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
+                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) /\
                                                       (self.rep[self.data[self.sfx[i]]][1] + 1)
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         else:
@@ -840,8 +840,8 @@ class MO(FactorOracle):
                 self.data.append(self.data[self.sfx[i]])
                 # if REPRESENTANTS == 1:
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
-                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
-                                                      (self.rep[self.data[self.sfx[i]]][1] + 1)
+                                                           self.rep[self.data[self.sfx[i]]][1] + new_data) / \
+                                                          (self.rep[self.data[self.sfx[i]]][1] + 1)
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         # Temporary adjustment
         # Nouveau suffixe si jamais on trouve une longueur de préfixe plus grande.

@@ -1,6 +1,6 @@
-import data_computing as dc
-import similarity_functions as sf
-import parameters as prm
+import module_precomputing.data_computing as dc
+import module_classification.class_similarity_functions as sf
+from module_parameters import parameters as prm
 import numpy as np
 import cv2
 import time
@@ -10,7 +10,7 @@ import class_mso
 from object_model import class_object
 from others.synthesis import class_synthesis_mso
 import class_cog_algo
-from criterias.module_classification import class_similarity_rules
+import class_similarity_rules
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from parameters import processing, EVOL_PRINT, LETTER_DIFF
+from module_parameters.parameters import processing, EVOL_PRINT, LETTER_DIFF
 f_number = 0
 
 

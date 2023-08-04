@@ -1,10 +1,11 @@
 import time
 import matplotlib.pyplot as plt
 
-import parameters as prm
+import module_parameters.parameters as prm
 import class_mso
 import class_signal
 import class_cog_algo
+import class_object
 
 # This is the main loop for the whole cognitive algorithm
 
@@ -45,7 +46,18 @@ def main_char(char_ex):
     nb_hop = len(char_ex)
     mso = class_mso.MSO(NAME)
     mso.get_symbol(char_ex, nb_hop)
-    class_cog_algo.fun_segmentation(mso, [], char_ex)
+    obj_tab = []
+    for i in range(nb_hop):
+        new_rep = class_object.ObjRep()
+        new_rep.init([], char_ex[i], class_object.Descriptors())
+        new_signal = []
+        new_descriptors = class_object.Descriptors()
+
+        new_obj = class_object.Object()
+        new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+        obj_tab.append(new_obj)
+
+    class_cog_algo.fun_segmentation(mso, obj_tab)
 
     # printing the results in the shell
     for i in range(len(mso.levels)):
@@ -66,7 +78,6 @@ def example():
     Debussy4 = ''
     for i in range(len(Debussy3)):
         Debussy4 += chr(Debussy3[i] + 96)
-    print(Debussy4)
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
     Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'

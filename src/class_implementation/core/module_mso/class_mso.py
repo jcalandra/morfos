@@ -1,10 +1,10 @@
-import oracle_mso
-from mso import class_materialsMemory
+import module_mso.mso_structs.class_oracle as class_oracle
+from module_mso.mso_structs import class_materialsMemory
 from core.module_visualization import class_fd2DVisu
 from object_model import class_object
-from parameters import SR, HOP_LENGTH
+from module_parameters.parameters import SR, HOP_LENGTH
 
-from data_computing import get_data
+from module_precomputing.data_computing import get_data
 
 
 class MSO:
@@ -64,7 +64,7 @@ class MSOLevel:
         self.materials = class_materialsMemory.Materials()
         self.concat_obj = class_object.ConcatObj()
 
-        self.str_obj = ""
+        self.actual_objects = [class_object.Object()]
         self.actual_char = ""
         self.actual_char_ind = 0
         self.actual_obj = class_object.Object()
@@ -74,7 +74,7 @@ class MSOLevel:
         mso.add_level(self)
 
     def init_oracle(self, flag, teta=0, dim=1):
-        self.oracle = oracle_mso.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
+        self.oracle = class_oracle.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
 
     def update_objects(self, obj):
         self.objects.append(obj)

@@ -149,6 +149,12 @@ class ConcatObj:
         self._pop_object()
         self.size = self.size - 1
 
+    def copy(self, concatObj):
+        self.objects = concatObj.objects
+        self.concat_signal = concatObj.concat_signal
+        self.descriptors = concatObj.descriptors
+        self.concat_labels = concatObj.concat_labels
+        self.size = concatObj.size
 
 # TODO: @jcalandra 09/09/2021 trajectoire moyenne
 #  Définir la "trajectoire audio" moyenne à partir de la DTW
@@ -219,7 +225,7 @@ class ObjRep:
 
 class Descriptors:
     def __init__(self):
-        self.nb_descriptors = 1
+        self.nb_descriptors = 0
         self.concat_descriptors = []
         self.mean_descriptors = []
 
