@@ -45,13 +45,12 @@ elif min_matrix < 0:
 
 # Choose here either to process the cognitive algorithm from signal or character string
 # processing must be str 'symbols' or 'signal' or 'vectors'
-"""if FORMAT == ".wav" or FORMAT == ".mp3":
-   processing = "audio"
+if FORMAT == ".wav" or FORMAT == ".mp3":
+   processing = "signal"
 elif FORMAT == ".npy":
    processing = "vectors"
 else:
-   processing = "symbols"""""
-processing = data["processing"]
+   processing = "symbols"
 to_transpose = data["to_transpose"]
 is_micro = data["is_micro"]
 
@@ -102,6 +101,8 @@ ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
 ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
 lower_bound_rule6 = data["lower_bound_rule6"]
 higher_bound_rule6 = data["higher_bound_rule6"]
+
+compute_level0 = data["compute_level0"]
 
 # ============ SIMILARITY AND SEGMENTATION
 # SPECIFIC PARAMETRISATION ===============
@@ -254,7 +255,7 @@ PLOT_ORACLE = data["PLOT_ORACLE"]
 # diagrams
 EVOL_PRINT = data["EVOL_PRINT"]
 
-#to show the mso_structs content:
+#to show the mso content:
 SHOW_MSO_CONTENT = data["SHOW_MSO_CONTENT"]
 
 #to show the computed costs (work only if

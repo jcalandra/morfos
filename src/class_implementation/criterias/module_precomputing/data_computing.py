@@ -7,7 +7,6 @@ from module_parameters import parameters as prm
 # In this file are implemented all functions that process the signal
 
 SR = prm.SR
-print("sr init", SR, prm.SR)
 DIV = prm.DIV
 TONE_PRECISION = prm.TONE_PRECISION
 NPO = prm.NOTES_PER_OCTAVE

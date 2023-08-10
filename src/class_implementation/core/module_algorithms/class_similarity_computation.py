@@ -1,18 +1,15 @@
 import numpy as np
 from Bio import pairwise2
 from Bio.Align import substitution_matrices
-import similarity_functions as sim_f
+import class_similarity_functions as sim_f
 from module_parameters import parameters
+import class_object
 
 # In this file are computed the alignment between strings to compute similarity at a symbolic scale
 
 transpo = parameters.TRANSPOSITION
 quotient = parameters.QUOTIENT
 threshold = parameters.TETA
-
-letter_diff = parameters.LETTER_DIFF
-
-
 # ================================================= ALIGNMENT ==========================================================
 # penalty values
 gap_value = parameters.GAP_VALUE
@@ -80,7 +77,50 @@ def compute_signal_similarity(concat_tab, mean_tab, compared_object_ind):
     if similarity >= threshold:
         return 1, similarity'''
     similarity = sim_f.frequency_static_similarity(mean_tab, compared_object_ind, len(mean_tab) - 1)
-    if similarity >= 0.944:
-        print("material", len(mean_tab))
+    if similarity >= parameters.teta:
         return 1, similarity
     return 0, similarity
+
+def compute_signal_similarity_sim(ms_oracle, level, obj_compared, actual_obj):
+    # freq_static_sim_fft is ok because s_tab is in the according shape
+    s_tab_all = ms_oracle.levels[level + 1].compute_stab()
+    s_tab = s_tab_all[1][0]
+    similarity = sim_f.frequency_static_similarity(s_tab, obj_compared, actual_obj)
+    return similarity
+
+
+def compute_symbol_similarity_sim(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+    if level-1 > 0:
+        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+    else:
+        matrix = ms_oracle.matrix
+    sim_tab_label = []
+    if level == 0:
+        obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].label
+        actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].label
+    else:
+        label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
+        obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].concat_labels
+        actual_obj = ms_oracle.levels[level - 1].concat_obj.concat_labels
+    if parameters.STRICT_EQUALITY:
+        #concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+
+        sim_digit_label = 0
+        if len(actual_obj) == len(obj_compared):
+            j = 0
+            while obj_compared[j] == actual_obj[j]:
+                j = j + 1
+                if j == len(obj_compared):
+                    sim_digit_label = 1
+                    break
+        sim_value = sim_digit_label * quotient
+    elif parameters.ALIGNMENT:
+        sim_digit_label, sim_value = compute_alignment(
+            obj_compared.label,
+            ms_oracle.levels[level].concat_obj.concat_labels, matrix, level)
+    else:
+        sim_digit_label, sim_value = compute_alignment(
+            obj_compared.concat_labels,
+            ms_oracle.levels[level].concat_obj.label, matrix, level)
+    sim_tab_label.append(sim_value / quotient)
+    return sim_value

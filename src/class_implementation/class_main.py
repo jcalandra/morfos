@@ -22,15 +22,7 @@ INIT = prm.INIT
 
 
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
-def main():
-    """ Main function of the cognitive algorithm."""
-    path = PATH_SOUND + NAME + FORMAT
-    start_time_full = time.time()
-    mso = class_mso.MSO(NAME)
-    mso.get_audio(path)
-    class_signal.algo_cog(path, mso)
-    print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
-
+def main_print(mso):
     # printing the results in the shell
     for i in range(len(mso.levels)):
         print("new_fd_" + str(i) + ": ", mso.levels[i].formal_diagram)
@@ -40,24 +32,41 @@ def main():
     plt.pause(3000)
 
 
-def main_char(char_ex):
+def main():
     """ Main loop for the cognitive algorithm starting from a string describing the audio."""
     # initialisation of the structures
-    nb_hop = len(char_ex)
-    mso = class_mso.MSO(NAME)
-    mso.get_symbol(char_ex, nb_hop)
-    obj_tab = []
-    for i in range(nb_hop):
-        new_rep = class_object.ObjRep()
-        new_rep.init([], char_ex[i], class_object.Descriptors())
-        new_signal = []
-        new_descriptors = class_object.Descriptors()
+    start_time = time.time()
+    path = PATH_SOUND + NAME + FORMAT
+    print(FORMAT)
+    if FORMAT == ".txt":
+        nb_hop = len(NAME)
+        obj_tab = []
+        for i in range(nb_hop):
+            new_rep = class_object.ObjRep()
+            new_rep.init([], NAME[i], class_object.Descriptors())
+            new_signal = []
+            new_descriptors = class_object.Descriptors()
+            #new_descriptors.init([["a"],["b"]],[["a"],["b"]])
+            new_descriptors.init([[[1]],[[2,2],[2,2]]],[[[1]],[[2,2],[2,2]]])
 
-        new_obj = class_object.Object()
-        new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
-        obj_tab.append(new_obj)
 
-    class_cog_algo.fun_segmentation(mso, obj_tab)
+            new_obj = class_object.Object()
+            new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+            obj_tab.append(new_obj)
+
+        mso = class_mso.MSO(NAME)
+        mso.get_symbol(NAME, nb_hop)
+        class_cog_algo.fun_segmentation(mso, obj_tab)
+
+    elif format == ".npy":
+        pass
+    else:
+        mso = class_mso.MSO(NAME)
+        mso.get_audio(path)
+        class_signal.algo_cog(path, mso)
+
+    end_time = time.time()
+    print("Temps d execution de l'algorithme : %s secondes ---" % (end_time - start_time))
     plt.pause(3000)
 
 
@@ -73,9 +82,8 @@ def example():
         Debussy4 += chr(Debussy3[i] + 96)
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
-    Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
-    main_char(Mozart)
+    Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu',".txt"
 
 
-example()
+main()
 

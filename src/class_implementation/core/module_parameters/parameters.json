@@ -1,11 +1,11 @@
 {
-   "NAME":"abacabacdeab",
+   "NAME":"abacabacdeabfg",
    "FORMAT":".txt",
 
-   "PATH_SOUND":"/data/exp_cog/",
-   "PATH_RESULT":"/results/ExpCog/4/test2/",
+   "PATH_SOUND":"/../../../data/Geisslerlied/",
+   "PATH_RESULT":"/../../../results/Geisslerlied/",
 
-   "teta":0.978,
+   "teta":0.96,
    "d_threshold":140,
 
    "POLYPHONY":0,
@@ -22,14 +22,14 @@
    "DIFF_FOURIER":1,
    "DIFF_DYNAMIC":0,
 
-   "STRICT_EQUALITY":0,
-   "ALIGNMENT":1,
+   "STRICT_EQUALITY":1,
+   "ALIGNMENT":0,
 
    "RULE_1":1,
-   "RULE_2":1,
-   "RULE_3":1,
-   "RULE_4":1,
-   "RULE_5":1,
+   "RULE_2":0,
+   "RULE_3":0,
+   "RULE_4":0,
+   "RULE_5":0,
    "RULE_5b":0,
    "RULE_6":0,
    "RULE_7":0,
@@ -39,15 +39,16 @@
    "ALIGNEMENT_rule4":0,
    "lower_bound_rule6":3,
    "higher_bound_rule6":16,
+   "compute_level0": 1,
 
    "QUOTIENT":100,
 
    "TRANSPOSITION":1,
 
-   "LETTER_DIFF":96,
+   "LETTER_DIFF":97,
 
-   "GAP_VALUE":-3,
-   "EXT_GAP_VALUE":-3,
+   "GAP_VALUE":-2,
+   "EXT_GAP_VALUE":-1,
 
    "GAP":0,
 

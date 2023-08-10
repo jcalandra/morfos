@@ -1,7 +1,9 @@
-import module_mso.mso_structs.class_oracle as class_oracle
-from module_mso.mso_structs import class_materialsMemory
+import module_mso.mso.class_oracle as class_oracle
+from module_mso.mso import class_materialsMemory
 from core.module_visualization import class_fd2DVisu
 from object_model import class_object
+import class_concatObj
+
 from module_parameters.parameters import SR, HOP_LENGTH
 
 from module_precomputing.data_computing import get_data
@@ -62,7 +64,7 @@ class MSOLevel:
         self.formal_diagram_graph = class_fd2DVisu.FormalDiagramGraph(0, mso.name)
         self.link = [0]
         self.materials = class_materialsMemory.Materials()
-        self.concat_obj = class_object.ConcatObj()
+        self.concat_obj = class_concatObj.ConcatObj()
 
         self.actual_objects = [class_object.Object()]
         self.actual_char = ""
@@ -79,10 +81,11 @@ class MSOLevel:
     def update_objects(self, obj):
         self.objects.append(obj)
 
-    def update_oracle(self, data):
-        self.oracle.add_state(data)
+    def update_oracle(self, ms_oracle, level):
+        self.oracle.add_state(ms_oracle, level)
         self.actual_char = self.oracle.data[self.shift + self.iterator + 1]
         self.actual_char_ind = self.shift + self.iterator + 1
+
 
     def update_link(self, node):
         self.objects.append(node)
@@ -96,5 +99,14 @@ class MSOLevel:
 
     def update_segmentation(self, obj, sim_tab, node):
         self.materials.update(obj.rep, self.concat_obj, sim_tab)
-        for i in range(len(self.concat_obj)):
+        for i in range(self.concat_obj.size):
             self.update_link(node)
+
+    def compute_stab(self):
+        stab = [[],[],[]]
+        for obj in self.objects:
+            stab[0].append(obj.descriptors.concat_descriptors)
+            stab[1].append(obj.descriptors.mean_descriptors)
+            stab[2].append(obj.label)
+        return stab
+

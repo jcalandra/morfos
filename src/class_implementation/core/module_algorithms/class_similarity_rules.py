@@ -1,8 +1,8 @@
 import class_similarity_computation
 from object_model import class_object
+import class_concatObj
 from module_parameters.parameters import LETTER_DIFF, STRICT_EQUALITY, ALIGNMENT, processing
 letter_diff = LETTER_DIFF
-
 
 # ================================================ SIMILARITY ==========================================================
 def similarity_strict(ms_oracle, level):
@@ -36,7 +36,7 @@ def similarity_alignment(ms_oracle, level):
     return None, None, sim_tab, 0
 
 
-def similarity(ms_oracle, level):
+def similarity_old(ms_oracle, level):
     if level > 0:
         matrix = ms_oracle.levels[level - 1].materials.sim_matrix
     else:
@@ -82,8 +82,6 @@ def similarity(ms_oracle, level):
                 s_tab_mean.append(ms_oracle.levels[level].materials.history[i][0].descriptors.mean_descriptors[j])
             sim_digit_descriptors, sim_tab_descriptor = class_similarity_computation.compute_signal_similarity(
                 s_tab_concat, s_tab_mean, 0)
-            print("s_tab_mean", s_tab_mean)
-            print("descriptors", sim_tab_descriptor)
 
             if sim_digit_descriptors and level == 0 and i == 0:
                 sim_digit_descriptors = 0
@@ -104,18 +102,15 @@ def similarity(ms_oracle, level):
     new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
     return new_rep, sim_tab_label, 0
 
-
-def char_next_level_similarity(ms_oracle, level):
+def char_next_level_similarity_old(ms_oracle, level):
     """ The function compare the actual new structured string with structured strings already seen before. For now,
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""
-
-    new_rep, sim_tab, sim_digit = similarity(ms_oracle, level)
+    new_rep, sim_tab, sim_digit = similarity_old(ms_oracle, level)
 
     # new_obj update
     new_signal = ms_oracle.levels[level].concat_obj.concat_signal
-    new_descriptors = class_object.Descriptors()
-    new_descriptors.copy(ms_oracle.levels[level].concat_obj.descriptors)
+    new_descriptors = ms_oracle.levels[level].concat_obj.descriptors
 
     new_obj = class_object.Object()
     new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
@@ -133,11 +128,64 @@ def char_next_level_similarity(ms_oracle, level):
                 ms_oracle.levels[level].materials.sim_matrix.values) - 1][i])
 
     # material.history update
-    concat_rep = class_object.ConcatObj()
+    '''concat_rep = class_concatObj.ConcatObj()
     concat_rep.init(ms_oracle.levels[level].concat_obj.objects[0].obj_rep)
     for i in range(1, ms_oracle.levels[level].concat_obj.size):
-        concat_rep.update(ms_oracle.levels[level].concat_obj.objects[i].obj_rep)
+        concat_rep.update(ms_oracle.levels[level].concat_obj.objects[i].obj_rep)'''
+    concat_rep = ms_oracle.levels[level].concat_obj
     ms_oracle.levels[level].materials.history.append((new_rep, concat_rep))
     return [new_obj]
 
 
+def similarity(ms_oracle, level):
+
+    actual_object_descriptor = class_object.Descriptors()
+    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+    len_av = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
+    ms_oracle.levels[level].update_oracle(ms_oracle, level)
+
+    len_ap = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
+    if len_av == 0 or len_ap > len_av:
+        digit = 0
+    else:
+        digit = 1
+        indice = ms_oracle.levels[level].oracle.data[-1]
+        if processing == "symbols" or processing == "vectors":
+            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
+            return new_rep, digit
+        else:
+            window = ms_oracle.levels[level - 1].concat_obj.concat_signal
+            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
+            # TODO: jcalandra 22/09/2021 maj le reorésentant (corriger le code, bug)
+            new_rep.update(window, new_rep.label, actual_object_descriptor)
+            return new_rep, 1
+
+    new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
+    new_rep = class_object.ObjRep()
+    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
+
+# compute new representative
+
+    return new_rep, digit
+
+
+def char_next_level_similarity(ms_oracle, level):
+    """ The function compare the actual new structured string with structured strings already seen before. For now,
+    the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
+    the results and the new string of upper level new_char is returned."""
+    new_rep, sim_digit = similarity(ms_oracle, level)
+
+    # new_obj update
+    new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signal
+    new_descriptors = ms_oracle.levels[level - 1].concat_obj.descriptors
+
+    new_obj = class_object.Object()
+    new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+
+    if sim_digit:
+        return [new_obj]
+
+    # material.history update
+    concat_rep = ms_oracle.levels[level - 1].concat_obj
+    ms_oracle.levels[level - 1].materials.history.append((new_rep, concat_rep))
+    return [new_obj]

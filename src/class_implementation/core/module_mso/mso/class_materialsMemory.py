@@ -23,5 +23,5 @@ class SimMatrix:
     def update(self, new_char, sim_tab):
         self.labels += new_char
         self.values.append(sim_tab.copy())
-        for i in range(len(self.values - 1)):
-            self.values.append(self.values[len(self.values[1]) - 1][i])
+        for i in range(len(self.values) - 1):
+            self.values[i].append(self.values[len(self.values) - 1][i])

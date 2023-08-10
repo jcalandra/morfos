@@ -2,6 +2,7 @@ import class_oracle
 import class_similarity_computation
 import class_cog_algo
 import class_object
+import class_concatObj
 from module_visualization.formal_diagram_mso import *
 
 # ================================================= RULES ==============================================================
@@ -182,7 +183,7 @@ def rule_3_recomputed_object(ms_oracle, level):
 
     data_length = len(ms_oracle.levels[level].formal_diagram.material_lines[0])
     to_struct = 0
-    to_struct_obj = class_object.ConcatObj()
+    to_struct_obj = class_concatObj.ConcatObj()
 
     level_up = level
     level_tmp = -1
@@ -238,7 +239,7 @@ def rule_3_recomputed_object(ms_oracle, level):
         while i < len(ms_oracle.levels[level_up].link):
             ms_oracle.levels[level_up].link.pop(i)
         if level_up != level:
-            tmp_concat_obj = class_object.ConcatObj()
+            tmp_concat_obj = class_concatObj.ConcatObj()
             if seg == 0 and len(ms_oracle.levels[level_up].link) > 1 and new_ind == new_ind_p1:
                 str= ''
                 while ms_oracle.levels[level_up].link[len(ms_oracle.levels[level_up].link) - 1] == new_ind:
@@ -262,7 +263,7 @@ def rule_3_recomputed_object(ms_oracle, level):
                     ms_oracle.levels[level_up].concat_obj.concat_labels[
                     :len(new_fo.data) - len(ms_oracle.levels[level_up].link)]
                 if len(str) > 0:
-                    concat_obj = class_object.ConcatObj()
+                    concat_obj = class_concatObj.ConcatObj()
                     for el in str:
                         obj = class_object.Object()
                         obj_rep = class_object.ObjRep()
@@ -364,7 +365,7 @@ def rule_3_recomputed_object(ms_oracle, level):
             ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
             ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
         class_cog_algo.structure(ms_oracle, level)
-        ms_oracle.levels[level].concat_obj = class_object.ConcatObj()
+        ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
 
 
     # concat_obj update at initial level

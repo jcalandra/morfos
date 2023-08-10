@@ -38,6 +38,7 @@ class FormalDiagram:
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
         # print("formal diagram update")
+        print("diagram update")
         actual_char = mso.levels[level].actual_char
         actual_char_ind = mso.levels[level].actual_char_ind
         k_init = actual_char_ind
@@ -100,7 +101,6 @@ class FormalDiagramGraph:
 
     def _print_formal_diagram_update(self, mso, level):
         """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
-        # print("PRINT formal diagram update")
         self.fig_number = plt.figure(level + 1)
         fig = self.fig_number
         plt.clf()

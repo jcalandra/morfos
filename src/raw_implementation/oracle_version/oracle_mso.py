@@ -709,7 +709,7 @@ class MO(FactorOracle):
                     cost_complete += 1
                     k = self.sfx[k]
 
-            if k is None or\
+            if k is None or \
                     (PARCOURS and method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE):
                 # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
                 # meilleur que celui trouvé ou que rien du tout.
@@ -762,7 +762,7 @@ class MO(FactorOracle):
                             mat_rep = np.argmax(comp_rep[1:]) + 1
 
                             if len(comp_rep) > 2 and ((method == 'complete' and len(sorted_suffix_candidates) > 0 and
-                                                      mat_rep == self.data[sorted_suffix_candidates[0][0]])
+                                                       mat_rep == self.data[sorted_suffix_candidates[0][0]])
                                                       or (method == 'inc' and mat_rep == self.data[suffix_candidate])):
                                 new_comp_rep = comp_rep.copy()
                                 new_comp_rep.pop(mat_rep)
@@ -774,8 +774,8 @@ class MO(FactorOracle):
                                     mat_rep = sec_mat_rep
                             if (method == 'complete' and len(sorted_suffix_candidates) > 0 and
                                 mat_rep != self.data[sorted_suffix_candidates[0][0]]) or \
-                               (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
-                               (not suffix_candidate):
+                                    (method == 'inc' and mat_rep != self.data[suffix_candidate]) or \
+                                    (not suffix_candidate):
                                 for j in range(len(self.latent[mat_rep])):
                                     actual_compared = self.latent[mat_rep][j]
                                     cost_nb_comparison_parcours += 1
@@ -817,7 +817,7 @@ class MO(FactorOracle):
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
-                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) /\
+                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
                                                       (self.rep[self.data[self.sfx[i]]][1] + 1)
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         else:
@@ -840,8 +840,8 @@ class MO(FactorOracle):
                 self.data.append(self.data[self.sfx[i]])
                 # if REPRESENTANTS == 1:
                 self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
-                                                           self.rep[self.data[self.sfx[i]]][1] + new_data) / \
-                                                          (self.rep[self.data[self.sfx[i]]][1] + 1)
+                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
+                                                      (self.rep[self.data[self.sfx[i]]][1] + 1)
                 self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         # Temporary adjustment
         # Nouveau suffixe si jamais on trouve une longueur de préfixe plus grande.
