@@ -10,7 +10,7 @@ Cognitive Algorithm and its Musical Applications
     Contains the main files for the application.
     - **class_implementation/**
         This folder contains a new implementation of the cognitive algorithm using Classes and MSO.
-        It aims at integrating signal at every level of hyerarchy and will be the only implementation in few weeks (still bugged for now).
+        It aims at integrating signal at every level of hierarchy and will be the only implementation in few weeks (still bugged for now).
     - **compression/**
         This folder contains encoding and decoding algorithms to study the interest of the cognitive algorithm for compression.
     - **generic/**

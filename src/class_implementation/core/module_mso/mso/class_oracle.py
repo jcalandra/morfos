@@ -746,8 +746,6 @@ class MO(FactorOracle):
 
                 if level > 1:
                     matrix = ms_oracle.levels[level - 2].materials.sim_matrix
-                    print(matrix.labels)
-                    print(matrix.values)
                 else:
                     matrix = ms_oracle.matrix
 
@@ -766,7 +764,7 @@ class MO(FactorOracle):
                                                         ms_oracle.levels[level - 1].concat_obj.concat_labels,
                                                         matrix)[1]
                         comp_rep.append(fss)
-                        sim_tab.append(fss / csc.quotient)
+                        sim_tab.append(fss)
                         if j != 0 and comp_rep[j] > self.params['threshold']:
                             J.append(j)
 
@@ -821,7 +819,6 @@ class MO(FactorOracle):
                                     actual_compared = self.latent[mat_rep][j]
                                     cost_nb_comparison_parcours += 1
                                     fss = similarity_fun(ms_oracle, level, actual_compared - 1, i - 1)
-
                                     if fss > self.params['threshold']:
                                         if method == 'complete':
                                             cost_sfx_candidate_parcours += 1

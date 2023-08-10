@@ -208,10 +208,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
     # end of the recursive loop
     if level == 0 and processing == 'symbols':
         gestion_level(ms_oracle, level)
-        ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
-        ms_oracle.levels[level].iterator = 0
-
-
     rules = ta.Rules()
     level_wait = -1
     global wait
@@ -220,14 +216,13 @@ def fun_segmentation(ms_oracle, objects, level=0):
         print("[INFO] Process in level " + str(level) + "...")
 
     # Every new character is analysed.
+    ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
+    ms_oracle.levels[level].iterator = 0
     while ms_oracle.levels[level].iterator < len(objects):
-        print("level", level)
         iterator = ms_oracle.levels[level].iterator
         if level == 0:
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
-        print("label", objects[iterator].label)
-        print("data",  ms_oracle.levels[level].oracle.data)
 
         if level == 0 and processing == 'symbols':
             # CHECKPOINT #
@@ -253,7 +248,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
                         ms_oracle.matrix.values[len(ms_oracle.matrix.values) - 1][ind_mat])
 
         # formal diagram is updated with the new char
-        print("char ind", ms_oracle.levels[level].actual_char_ind)
         if ms_oracle.levels[level].actual_char_ind == 1:
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
         else:
@@ -272,7 +266,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
         # If the tests are positives, there is structuration.
         if bool and (ms_oracle.end_mk == 0):
-            print("segmentation 1")
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
                 ms_oracle.levels[level + 1].iterator = 0
@@ -293,12 +286,10 @@ def fun_segmentation(ms_oracle, objects, level=0):
             wait = 0
             level_wait = -1
         if ms_oracle.end_mk == 1 and len(ms_oracle.levels) > level + 1:
-            print("segmentation 2")
             ms_oracle.levels[level + 1].iterator -= 1
             structure_new(ms_oracle, level)
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
             ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
-            print("on a segmente")
 
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")

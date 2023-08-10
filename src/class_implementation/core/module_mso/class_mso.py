@@ -4,7 +4,7 @@ from core.module_visualization import class_fd2DVisu
 from object_model import class_object
 import class_concatObj
 
-from module_parameters.parameters import SR, HOP_LENGTH
+from module_parameters.parameters import SR, HOP_LENGTH, teta
 
 from module_precomputing.data_computing import get_data
 
@@ -75,7 +75,7 @@ class MSOLevel:
 
         mso.add_level(self)
 
-    def init_oracle(self, flag, teta=0, dim=1):
+    def init_oracle(self, flag, teta=teta, dim=1):
         self.oracle = class_oracle.create_oracle(flag, threshold=teta, dfunc='cosine', dfunc_handle=None, dim=dim)
 
     def update_objects(self, obj):
