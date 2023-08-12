@@ -178,3 +178,9 @@ class MSOLevel:
             stab[2].append(obj.label)
         return stab
 
+    def print(self):
+        print("formal diagram", self.formal_diagram)
+        print("link", self.link)
+        print("history next", self.materials.history)
+        print("matrix_next",  self.materials.sim_matrix)
+

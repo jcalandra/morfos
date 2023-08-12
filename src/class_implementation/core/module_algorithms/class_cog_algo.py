@@ -3,9 +3,7 @@ import class_similarity_rules
 import tests_administrator as ta
 import class_mso
 import class_concatObj
-from object_model import class_object
 import sys
-import time
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
