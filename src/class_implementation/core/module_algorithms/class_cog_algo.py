@@ -225,7 +225,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
         if level == 0:
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
-        print("level", level, "char", ms_oracle.levels[level].actual_object.label)
 
         if level == 0 and processing == 'symbols':
             # CHECKPOINT #
@@ -268,15 +267,14 @@ def fun_segmentation(ms_oracle, objects, level=0):
             wait = 1
             level_wait = level
 
-        if (level == 0 and iterator == ms_oracle.levels[level].actual_char_ind) or (wait == 1 and level == level_wait and iterator == len(objects) - 1):
-            print("oui")
+        if (level == 0 and iterator == ms_oracle.levels[level].actual_char_ind) or \
+                (wait == 1 and level == level_wait and iterator == len(objects) - 1):
             ms_oracle.end_mk = 1
             wait = 0
             level_wait = -1
 
         # If the tests are positives, there is structuration.
         if (bool and ms_oracle.end_mk == 0) or (level == 0 and ms_oracle.end_mk == 1):
-            print("segmentation")
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
                 ms_oracle.levels[level + 1].iterator = 0
@@ -293,7 +291,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
         # Automatically structuring if this is the End Of String
         if level > 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max >= level:
-            print("segmentation 2")
             if ms_oracle.level_max > level:
                 ms_oracle.levels[level + 1].iterator -= 1
             structure_new(ms_oracle, level)
