@@ -30,7 +30,10 @@ class ResultTest:
 
 
 def segmentation_test(ms_oracle, level, rules):
-    bool = segmentation_str(ms_oracle, level, rules) and segmentation_audio(ms_oracle, level, rules)
+    if class_segmentation_rules.rule_0_segmentation_rule(ms_oracle, level):
+        bool = 1
+    else:
+        bool = segmentation_str(ms_oracle, level, rules) and segmentation_audio(ms_oracle, level, rules)
     return bool
 
 

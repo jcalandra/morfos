@@ -515,12 +515,11 @@ def rule_3_recomputed_object(ms_oracle, level):
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    ind = ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] - 1 + nb_elements
+    ind = ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] + nb_elements
     seg = [level, ind]
     ms_oracle.reset_levels()
     ms_oracle.update_segmentation(seg)
     obj_tab = ms_oracle.init_objects
-    ms_oracle.print()
     class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
 
     return 1

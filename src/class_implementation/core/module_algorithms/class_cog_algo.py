@@ -175,6 +175,7 @@ def gestion_level(ms_oracle,level):
 
         if level == 0 and processing == 'symbols':
             ms_oracle.matrix.init(chr(LETTER_DIFF), [1])
+    return 1
 
 def add_obj_level_up(ms_oracle, level):
     new_obj_tab = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
@@ -184,20 +185,21 @@ def add_obj_level_up(ms_oracle, level):
 def structure_new(ms_oracle, level):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
-    gestion_level(ms_oracle,level+1)
-    new_obj_tab = add_obj_level_up(ms_oracle,level+1)
+    sim = gestion_level(ms_oracle,level+1)
+    if sim:
+        new_obj_tab = add_obj_level_up(ms_oracle,level+1)
 
-    if len(ms_oracle.levels) > level + 1:
-        node = max(ms_oracle.levels[level].link) + 1
-    else:
-        node = 1
-    for ind in range(ms_oracle.levels[level].concat_obj.size):
-        ms_oracle.levels[level].link.append(node)
-    label = ""
-    for obj in new_obj_tab:
-        label += obj.label
-    # send to the next f_oracle the node corresponding to concat_obj
-    fun_segmentation(ms_oracle, new_obj_tab, level + 1)
+        if len(ms_oracle.levels) > level + 1:
+            node = max(ms_oracle.levels[level].link) + 1
+        else:
+            node = 1
+        for ind in range(ms_oracle.levels[level].concat_obj.size):
+            ms_oracle.levels[level].link.append(node)
+        label = ""
+        for obj in new_obj_tab:
+            label += obj.label
+        # send to the next f_oracle the node corresponding to concat_obj
+        fun_segmentation(ms_oracle, new_obj_tab, level + 1)
     return 0
 
 
@@ -223,6 +225,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
         if level == 0:
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
+        print("level", level, "char", ms_oracle.levels[level].actual_object.label)
 
         if level == 0 and processing == 'symbols':
             # CHECKPOINT #
@@ -255,13 +258,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
-        for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
-            print(ms_oracle.levels[level].oracle.objects[el].label)
-        for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
-            if level == 0:
-                print(ms_oracle.levels[level].oracle.concat_objects[el].label)
-            else:
-                print(ms_oracle.levels[level].oracle.concat_objects[el].concat_labels)
 
         # First is the parametrisation of the rules according to the external settings.
         bool = ta.segmentation_test(ms_oracle, level, rules)
@@ -272,8 +268,15 @@ def fun_segmentation(ms_oracle, objects, level=0):
             wait = 1
             level_wait = level
 
+        if (level == 0 and iterator == ms_oracle.levels[level].actual_char_ind) or (wait == 1 and level == level_wait and iterator == len(objects) - 1):
+            print("oui")
+            ms_oracle.end_mk = 1
+            wait = 0
+            level_wait = -1
+
         # If the tests are positives, there is structuration.
-        if bool and (ms_oracle.end_mk == 0):
+        if (bool and ms_oracle.end_mk == 0) or (level == 0 and ms_oracle.end_mk == 1):
+            print("segmentation")
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
                 ms_oracle.levels[level + 1].iterator = 0
@@ -289,12 +292,10 @@ def fun_segmentation(ms_oracle, objects, level=0):
                 ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
 
         # Automatically structuring if this is the End Of String
-        if (level == 0 and iterator == len(objects) - 1) or (wait == 1 and level == level_wait and iterator == len(objects) - 1):
-            ms_oracle.end_mk = 1
-            wait = 0
-            level_wait = -1
-        if ms_oracle.end_mk == 1 and len(ms_oracle.levels) > level + 1:
-            ms_oracle.levels[level + 1].iterator -= 1
+        if level > 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max >= level:
+            print("segmentation 2")
+            if ms_oracle.level_max > level:
+                ms_oracle.levels[level + 1].iterator -= 1
             structure_new(ms_oracle, level)
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
             ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
