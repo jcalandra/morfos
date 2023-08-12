@@ -255,10 +255,8 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
-        print("level", level)
         for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
             print(ms_oracle.levels[level].oracle.objects[el].label)
-        print("concat obj")
         for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
             if level == 0:
                 print(ms_oracle.levels[level].oracle.concat_objects[el].label)

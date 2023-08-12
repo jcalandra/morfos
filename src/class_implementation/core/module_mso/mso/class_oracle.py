@@ -912,7 +912,6 @@ class MO(FactorOracle):
             self.lrs[i] += 1
             self.sfx[i] = k
             cost_sfx_update += 1
-        print("new data all", new_data_all)
         self.concat_objects.append(new_data_all)
         self.rsfx[self.sfx[i]].append(i)
 

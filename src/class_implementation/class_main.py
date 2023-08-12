@@ -56,6 +56,7 @@ def main():
 
         mso = class_mso.MSO(NAME)
         mso.get_data(NAME, obj_tab)
+        mso.print()
         class_cog_algo.fun_segmentation(mso, obj_tab)
 
     elif format == ".npy":

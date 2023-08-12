@@ -4,6 +4,7 @@ from core.module_visualization import class_fd2DVisu
 from object_model import class_object
 import class_concatObj
 import parameters as prm
+import matplotlib.pyplot as plt
 
 from module_parameters.parameters import SR, HOP_LENGTH, teta
 
@@ -73,6 +74,7 @@ class MSO:
         self.segmentations.append(seg)
 
     def reset_levels(self):
+        plt.close('all')
         self.name = ""
         self.set_name(self.name)
         self.level_max = -1
@@ -84,13 +86,14 @@ class MSO:
         self.rate = self.rate
         self.data_length = self.data_length
         self.data_size = self.data_size
-        self.nb_hop = 0
+        self.nb_hop = self.nb_hop
         self.end_mk = 0
         self.segmentations = []
 
         self.matrix = class_materialsMemory.SimMatrix()
 
     def reset(self, name):
+        plt.close('all')
         self.name = ""
         self.set_name(name)
         self.level_max = -1
@@ -108,6 +111,15 @@ class MSO:
 
         self.matrix = class_materialsMemory.SimMatrix()
 
+    def print(self):
+        print("name", self.name)
+        print("level max", self.level_max)
+        # print levels
+        print("init objects", [obj.label for obj in self.init_objects])
+        print("audio", self.audio)
+        print("symbol", self.symbol)
+        print("rate", self.rate, "data_length", self.data_length, "data size", self.data_size, "nb hop", self.nb_hop)
+        print("segmentations", self.segmentations)
 
 
 class MSOLevel:

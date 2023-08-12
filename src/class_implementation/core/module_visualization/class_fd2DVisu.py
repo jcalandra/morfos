@@ -7,7 +7,6 @@ class FormalDiagram:
 
     def _formal_diagram_init(self, mso, level):
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
-        # print("formal diagram init")
         new_mat = [1 for i in range(mso.nb_hop)]
         self.material_lines.append(new_mat)
         if level == 0:
@@ -37,7 +36,6 @@ class FormalDiagram:
     def _formal_diagram_update(self, mso, level):
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
-        # print("formal diagram update")
         actual_char = mso.levels[level].actual_char
         actual_char_ind = mso.levels[level].actual_char_ind
         k_init = actual_char_ind
@@ -76,7 +74,6 @@ class FormalDiagramGraph:
 
     def _print_formal_diagram_init(self, level):
         """ Print the formal diagram at level 'level' at its initialization."""
-        # print("PRINT formal diagram init")
         fig = plt.figure(figsize=(12, 8))
         plt.title("Formal diagram of level " + str(level))
         plt.xlabel("time in seconds (formal memory)")

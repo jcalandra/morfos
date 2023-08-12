@@ -49,9 +49,7 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
     else:
         similarity = (alignment - correc_value) / min_len
     if similarity >= threshold * quotient:
-        # print(nw_align[0][0], nw_align[0][1])
-        # print("tabTransfo", lambda_tabTransfo(nw_align[0][0], nw_align[0][1], [], gap))
-        return 1, similarity/quotient
+         return 1, similarity/quotient
     return 0, similarity/quotient
 
 
@@ -72,8 +70,6 @@ def compute_signal_similarity_old(concat_tab, mean_tab, compared_object_ind):
     # freq_static_sim_fft is ok because s_tab is in the according shape
     '''similarity = 0
     for i in range(len(concat_tab)):
-        print("oh", len(concat_tab[i][compared_object_ind]), concat_tab[i][compared_object_ind])
-        print("ah", len(concat_tab[i][len(concat_tab[i]) - 1]), concat_tab[i][len(concat_tab[i]) - 1])
         similarity += sim_f.frequency_static_similarity_cqt(concat_tab[i], compared_object_ind, len(concat_tab[i]) - 1)
     similarity = similarity/len(concat_tab)
     if similarity >= threshold:

@@ -41,6 +41,15 @@ higher_bound_rule6 = prm.higher_bound_rule6
 
 letter_diff = prm.LETTER_DIFF
 
+
+# Segmentation tab rule
+
+def rule_0_segmentation_rule(ms_oracle, level):
+    for seg in ms_oracle.segmentations:
+        if level == seg[0] and ms_oracle.levels[level].actual_char_ind == seg[1]:
+            return 1
+    return 0
+
 #====================================
 # MANDATORY RULES
 
@@ -203,7 +212,6 @@ def rule_3_recomputed_object_old(ms_oracle, level):
         i = 1
         while i < ind + 1:
             new_state = ms_oracle.levels[level_up].oracle.concat_objects[i]
-            print(new_state)
 
             if level == 0:
                 ms_oracle.levels[level].actual_obj = new_state
@@ -507,11 +515,13 @@ def rule_3_recomputed_object(ms_oracle, level):
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    seg = [level, ms_oracle.levels[level].actual_char_ind]
-    mso = ms_oracle.reset_levels()
-    mso.update_segmentation(seg)
+    ind = ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] - 1 + nb_elements
+    seg = [level, ind]
+    ms_oracle.reset_levels()
+    ms_oracle.update_segmentation(seg)
     obj_tab = ms_oracle.init_objects
-    class_cog_algo.fun_segmentation(mso, obj_tab)
+    ms_oracle.print()
+    class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
 
     return 1
 
