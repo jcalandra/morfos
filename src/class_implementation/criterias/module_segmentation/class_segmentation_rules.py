@@ -3,6 +3,7 @@ import class_similarity_computation
 import class_cog_algo
 import class_object
 import class_concatObj
+import class_mso
 from module_visualization.formal_diagram_mso import *
 
 # ================================================= RULES ==============================================================
@@ -88,7 +89,7 @@ def rule_2_existing_object(ms_oracle, level):
 
 
 # RULE 4: (abcd)(ab + e => (ab)(cd)(ab)(e
-def rule_3_recomputed_object(ms_oracle, level):
+def rule_3_recomputed_object_old(ms_oracle, level):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
@@ -196,13 +197,19 @@ def rule_3_recomputed_object(ms_oracle, level):
 
     # each level level_up superior or equal to actual level is recomputed
     while len(ms_oracle.levels) > level_up != level_tmp:
-        new_fo = class_oracle.create_oracle('f')
+        new_fo = class_oracle.create_oracle('a', prm.teta, dfunc='cosine', dfunc_handle=None, dim=1)
 
         # f_oracle update
         i = 1
         while i < ind + 1:
-            new_state = ms_oracle.levels[level_up].oracle.data[i]
-            new_fo.add_state(new_state)
+            new_state = ms_oracle.levels[level_up].oracle.concat_objects[i]
+            print(new_state)
+
+            if level == 0:
+                ms_oracle.levels[level].actual_obj = new_state
+            else:
+                ms_oracle.levels[level - 1].concat_obj = new_state
+            new_fo.add_state(ms_oracle, level)
             i += 1
 
         # compute k_init according to the adequate frame at level 0 for formal diagram representation
@@ -407,6 +414,106 @@ def rule_3_recomputed_object(ms_oracle, level):
 
     return 1
 
+
+def rule_3_recomputed_object(ms_oracle, level):
+    """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
+    with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
+    algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
+    # allocation of structures of actual level
+    actual_char_ind = ms_oracle.levels[level].actual_char_ind
+    f_oracle = ms_oracle.levels[level].oracle
+    link = ms_oracle.levels[level].link
+    history_next = ms_oracle.levels[level].materials.history
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    k = ms_oracle.levels[level].shift
+    nb_elements = len(concat_obj)
+    sub_suffix = ""
+
+    if level == 0:
+        matrix = ms_oracle.matrix
+    else:
+        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+
+    # if there is only one character in concat_obj, that is already seen, it's rule 1
+    if nb_elements <= 1:
+        return 0
+
+    # if the longest similar suffix is not an adequate value
+    if f_oracle.sfx[actual_char_ind - nb_elements] is None or f_oracle.sfx[actual_char_ind - nb_elements] == 0 or \
+            f_oracle.sfx[actual_char_ind - nb_elements] == actual_char_ind - nb_elements - 1:
+        return 0
+
+    # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
+    if ALIGNEMENT_rule4:
+        for j in range(nb_elements):
+            sub_suffix += chr(f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] + letter_diff)
+            # if there is a difference between concat_obj and the longest similar suffix of the first char of concat_obj
+        if class_similarity_computation.compute_alignment(sub_suffix, concat_obj, matrix)[0] == 0:
+            return 0,
+
+    else:
+        for j in range(nb_elements):
+            if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + j] \
+                    != f_oracle.data[actual_char_ind - nb_elements + j]:
+                return 0
+
+    # if the the longest similar suffix is constitued of different materials
+    for i in range(1, nb_elements):
+        if len(link) < f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements + 1 or \
+                link[f_oracle.sfx[actual_char_ind - nb_elements] + i - 1] != \
+                link[f_oracle.sfx[actual_char_ind - nb_elements] + i]:
+            return 0
+
+    # if the longest similar suffix has only one caracter before it and RULE 5 is activated
+    if RULE_5:
+        if link[f_oracle.sfx[actual_char_ind - nb_elements]] == \
+                link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] \
+                and link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] != \
+                link[f_oracle.sfx[actual_char_ind - nb_elements] - 2]:
+            return 0
+
+    # if the actual concat_obj is not the longest common string :
+    if ALIGNEMENT_rule4:
+        if class_similarity_computation.compute_alignment(
+                sub_suffix, concat_obj + chr(f_oracle.data[actual_char_ind] + letter_diff), matrix)[0] == 1:
+            return 0
+    else:
+        if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
+            return 0
+
+    if len(ms_oracle.levels) > level + 1:
+
+        # allocation of structures of level sup
+        f_oracle_sup = ms_oracle.levels[level + 1].oracle
+        real_ind = link[f_oracle.sfx[actual_char_ind - nb_elements]]
+        real_value = f_oracle_sup.data[real_ind]
+
+        # if concat_obj corresponds to an already known object, return 0.
+        if ALIGNEMENT_rule4:
+            if class_similarity_computation.compute_alignment(
+                    history_next[real_value - 1][1], concat_obj, matrix)[0] == 1 or \
+                    class_similarity_computation.compute_alignment(
+                        history_next[real_value - 1][1], sub_suffix, matrix)[0] == 1:
+                return 0
+        else:
+            if history_next[real_value - 1][1] == concat_obj:
+                return 0
+
+            if link[f_oracle.sfx[actual_char_ind - nb_elements]] != \
+                    link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] and \
+                    link[f_oracle.sfx[actual_char_ind - nb_elements]] != \
+                    link[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements]:
+                return 0
+
+    # else, we are in the required conditions and we rebuild the oracles
+    # we go back to the new already-seen state
+    seg = [level, ms_oracle.levels[level].actual_char_ind]
+    mso = ms_oracle.reset_levels()
+    mso.update_segmentation(seg)
+    obj_tab = ms_oracle.init_objects
+    class_cog_algo.fun_segmentation(mso, obj_tab)
+
+    return 1
 
 #=======================================
 # PROHIBITIVE RULES

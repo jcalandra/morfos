@@ -55,7 +55,7 @@ def main():
             obj_tab.append(new_obj)
 
         mso = class_mso.MSO(NAME)
-        mso.get_symbol(NAME, nb_hop)
+        mso.get_data(NAME, obj_tab)
         class_cog_algo.fun_segmentation(mso, obj_tab)
 
     elif format == ".npy":

@@ -117,6 +117,8 @@ class FactorOracle(object):
         self.rsfx = []
         self.lrs = []
         self.data = []
+        self.objects = []
+        self.concat_objects = []
         self.rep = []
         self.vec = []
 
@@ -161,6 +163,8 @@ class FactorOracle(object):
         self.rsfx = []
         self.lrs = []
         self.data = []
+        self.objects = []
+        self.concat_objects = []
         self.rep = []
 
         # Compression attributes
@@ -447,6 +451,7 @@ class FO(FactorOracle):
         self.lrs.append(0)
         new_symbol = ms_oracle.levels[level].actual_obj.label
         self.data.append(new_symbol)
+        self.objects.append(ms_oracle.levels[level].actual_obj)
 
         # Initialisation des coûts
         cost_init = 0
@@ -587,6 +592,8 @@ class MO(FactorOracle):
         self.f_array = feature_array(self.params['dim'])
         self.f_array.add(np.zeros(self.params['dim'], ))
         self.data[0] = None
+        self.objects = [None]
+        self.concat_objects = [None]
         self.latent = []
 
     def reset(self, **kwargs):
@@ -597,6 +604,8 @@ class MO(FactorOracle):
         self.f_array = feature_array(self.params['dim'])
         self.f_array.add(np.zeros(self.params['dim'], ))
         self.data[0] = None
+        self.objects = [None]
+        self.concat_objects = [None]
         self.latent = []
 
     def add_state(self, ms_oracle, level, method='inc'):
@@ -608,7 +617,7 @@ class MO(FactorOracle):
         self.lrs.append(0)
 
         if level == 0:
-            new_data_all = ms_oracle.levels[level].actual_obj
+            new_data_all = ms_oracle.levels[level].objects[self.n_states - 1]
         else:
             new_data_all = ms_oracle.levels[level - 1].concat_obj
 
@@ -631,15 +640,12 @@ class MO(FactorOracle):
         cost_sfx_candidate_parcours = 0
         # uniquement pour le mode 'complete'
         cost_complete = 0
-        s_tab_all = ms_oracle.levels[level].compute_stab()
 
         if prm.processing == "signal" or prm.processing == "vectors":
-            similarity_fun = csc.compute_signal_similarity
+            similarity_fun = csc.compute_signal_similarity_sim
             new_data = new_data_all.descriptors.mean_descriptors
-            s_tab = s_tab_all[1][0]
         else:
             similarity_fun = csc.compute_symbol_similarity_sim
-            s_tab = s_tab_all[2]
             if level == 0:
                 new_data = new_data_all.label
             else:
@@ -906,7 +912,8 @@ class MO(FactorOracle):
             self.lrs[i] += 1
             self.sfx[i] = k
             cost_sfx_update += 1
-
+        print("new data all", new_data_all)
+        self.concat_objects.append(new_data_all)
         self.rsfx[self.sfx[i]].append(i)
 
         if self.lrs[i] > self.max_lrs[i - 1]:

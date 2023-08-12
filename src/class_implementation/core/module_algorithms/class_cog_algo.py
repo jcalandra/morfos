@@ -237,6 +237,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
                 sys.stdout.flush()
             # END CHECKPOINT #
 
+            ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
             if ord(ms_oracle.levels[level].actual_object.label)> \
             max([ord(ms_oracle.matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.labels))]):
                 vec = [0 for ind_vec in range(len(ms_oracle.matrix.values))]
@@ -254,6 +255,15 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
+        print("level", level)
+        for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
+            print(ms_oracle.levels[level].oracle.objects[el].label)
+        print("concat obj")
+        for el in range(1,len(ms_oracle.levels[level].oracle.objects)):
+            if level == 0:
+                print(ms_oracle.levels[level].oracle.concat_objects[el].label)
+            else:
+                print(ms_oracle.levels[level].oracle.concat_objects[el].concat_labels)
 
         # First is the parametrisation of the rules according to the external settings.
         bool = ta.segmentation_test(ms_oracle, level, rules)

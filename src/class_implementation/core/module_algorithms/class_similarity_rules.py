@@ -163,9 +163,6 @@ def similarity(ms_oracle, level):
     new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
     new_rep = class_object.ObjRep()
     new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
-
-# compute new representative
-
     return new_rep, digit
 
 
@@ -181,6 +178,7 @@ def char_next_level_similarity(ms_oracle, level):
 
     new_obj = class_object.Object()
     new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+    ms_oracle.levels[level].oracle.objects.append(new_obj)
 
     if sim_digit:
         return [new_obj]

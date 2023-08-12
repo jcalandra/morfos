@@ -3,6 +3,7 @@ from module_mso.mso import class_materialsMemory
 from core.module_visualization import class_fd2DVisu
 from object_model import class_object
 import class_concatObj
+import parameters as prm
 
 from module_parameters.parameters import SR, HOP_LENGTH, teta
 
@@ -18,6 +19,7 @@ class MSO:
         self.level_max = -1
         self.levels = []
 
+        self.init_objects = []
         self.audio = []
         self.symbol = ""
         self.rate = SR
@@ -25,6 +27,7 @@ class MSO:
         self.data_size = 0
         self.nb_hop = 0
         self.end_mk = 0
+        self.segmentations = []
 
         self.matrix = class_materialsMemory.SimMatrix()
 
@@ -40,18 +43,71 @@ class MSO:
         self.data_size = data_size
         self.nb_hop = int(data_size/HOP_LENGTH)
 
+    def get_symbol(self, symbol):
+        self.symbol = symbol
+        self.nb_hop = len(symbol)
+
+    def get_objects(self, obj):
+        self.init_objects = obj
+
+    def get_data(self, data, obj):
+        if prm.processing == "signal":
+            self.get_audio(data)
+        if prm.processing == "symbols":
+            self.get_symbol(data)
+        self.get_objects(obj)
+
+    def get_segmentation(self, seg):
+        self.segmentations = [seg]
+
+    def add_level(self, level):
+        self.levels.append(level)
+        self.level_max += 1
+
     def update_audio(self, added_data, data_length, nb_hop):
         self.data_length = data_length
         self.audio = added_data.tolist() + self.audio
         self.nb_hop = nb_hop
 
-    def get_symbol(self, symbol, nb_hop):
-        self.symbol = symbol
-        self.nb_hop = nb_hop
+    def update_segmentation(self, seg):
+        self.segmentations.append(seg)
 
-    def add_level(self, level):
-        self.levels.append(level)
-        self.level_max += 1
+    def reset_levels(self):
+        self.name = ""
+        self.set_name(self.name)
+        self.level_max = -1
+        self.levels = []
+
+        self.init_objects = self.init_objects
+        self.audio = self.audio
+        self.symbol = self.symbol
+        self.rate = self.rate
+        self.data_length = self.data_length
+        self.data_size = self.data_size
+        self.nb_hop = 0
+        self.end_mk = 0
+        self.segmentations = []
+
+        self.matrix = class_materialsMemory.SimMatrix()
+
+    def reset(self, name):
+        self.name = ""
+        self.set_name(name)
+        self.level_max = -1
+        self.levels = []
+
+        self.init_objects = []
+        self.audio = []
+        self.symbol = ""
+        self.rate = SR
+        self.data_length = 0
+        self.data_size = 0
+        self.nb_hop = 0
+        self.end_mk = 0
+        self.segmentations = []
+
+        self.matrix = class_materialsMemory.SimMatrix()
+
 
 
 class MSOLevel:
