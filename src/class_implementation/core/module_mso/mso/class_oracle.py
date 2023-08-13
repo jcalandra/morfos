@@ -746,17 +746,14 @@ class MO(FactorOracle):
                 # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
                 # meilleur que celui trouvé ou que rien du tout.
                 if level > 0:
-                    history = ms_oracle.levels[level - 1].materials.history
-                    compare_tab_rep = []
-                    for j in range(0, len(history)):
-                        compare_tab_rep = np.append(compare_tab_rep, history[j][1].concat_labels)
+                    compare_tab_rep = ms_oracle.levels[level - 1].materials.history
                 else:
-                    compare_tab_rep = ms_oracle.matrix.labels
+                    compare_tab_rep = ms_oracle.matrix.history
 
                 if level > 1:
                     matrix = ms_oracle.levels[level - 2].materials.sim_matrix
                 else:
-                    matrix = ms_oracle.matrix
+                    matrix = ms_oracle.matrix.sim_matrix
 
                 n = len(compare_tab_rep)
 
@@ -766,12 +763,9 @@ class MO(FactorOracle):
                 if n > 0:
                     J = []
                     for j in range(n):
-                        if prm.processing == "signal" or prm.processing == "vectors":
-                            fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
-                        else:
-                            fss = similarity_fun_rep(compare_tab_rep[j],
-                                                        ms_oracle.levels[level - 1].concat_obj.concat_labels,
-                                                        matrix)[1]
+                        fss = similarity_fun_rep(compare_tab_rep[j],
+                                                     ms_oracle.levels[level - 1],
+                                                     matrix)[1]
                         comp_rep.append(fss)
                         sim_tab.append(fss)
                         if j != 0 and comp_rep[j] > self.params['threshold']:

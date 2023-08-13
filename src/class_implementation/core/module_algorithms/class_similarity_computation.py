@@ -19,16 +19,32 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 
-def compute_symbol_similarity_rep(string_compared, actual_string, mat, level=0):
-    if parameters.STRICT_EQUALITY:
+def frequency_static_similarity(s_tab, id_hop_a, id_hop_b):
+    """ Compute the cosine similarity between each cqt of two different hops."""
+    if parameters.DIFF_CONCORDANCE:
+        sim_digit_label, sim_value = sim_sig.diff_concordance(s_tab, id_hop_a, id_hop_b)
+    elif parameters.EUCLID_DISTANCE:
+        sim_digit_label, sim_value = sim_sig.euclid_distance(s_tab, id_hop_a, id_hop_b)
+    else:
+        # concordance is chosen
+        sim_digit_label, sim_value = sim_sig.diff_concordance(s_tab, id_hop_a, id_hop_b)
+    return sim_digit_label, sim_value
+
+
+def compute_signal_similarity_rep(obj_compared, actual_obj, mat, level=0):
+    string_compared = obj_compared[1].descriptors
+    actual_string = actual_obj.concat_obj.descriptors
+    if parameters.DIFF_CONCORDANCE:
         sim_digit_label, sim_value = sim_symb.compute_strict_equality(string_compared, actual_string, mat, level)
-    elif parameters.ALIGNMENT:
+    elif parameters.EUCLID_DISTANCE:
         sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
     else:
         sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
     return sim_digit_label, sim_value
 
-def compute_symbol_symb_rep(string_compared, actual_string, mat, level=0):
+def compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
+    string_compared = obj_compared[1].concat_labels
+    actual_string = actual_obj.concat_obj.concat_labels
     if parameters.STRICT_EQUALITY:
         sim_digit_label, sim_value = sim_symb.compute_strict_equality(string_compared, actual_string, mat, level)
     elif parameters.ALIGNMENT:
@@ -41,7 +57,7 @@ def compute_signal_similarity(ms_oracle, level, obj_compared, actual_obj):
     # freq_static_sim_fft is ok because s_tab is in the according shape
     s_tab_all = ms_oracle.levels[level + 1].compute_stab()
     s_tab = s_tab_all[1][0]
-    similarity = sim_symb.frequency_static_similarity(s_tab, obj_compared, actual_obj)
+    similarity = frequency_static_similarity(s_tab, obj_compared, actual_obj)
     return similarity
 
 
@@ -50,7 +66,7 @@ def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
         if level-1 > 0:
             matrix = ms_oracle.levels[level - 2].materials.sim_matrix
         else:
-            matrix = ms_oracle.matrix
+            matrix = ms_oracle.matrix.sim_matrix
     if level == 0:
         obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].label
         actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].label
@@ -127,5 +143,5 @@ def char_next_level_similarity(ms_oracle, level):
 
     # material.history update
     concat_rep = ms_oracle.levels[level - 1].concat_obj
-    ms_oracle.levels[level - 1].materials.history.append((new_rep, concat_rep))
+    ms_oracle.levels[level - 1].materials.update_history(new_rep, concat_rep, new_rep.descriptors)
     return [new_obj]

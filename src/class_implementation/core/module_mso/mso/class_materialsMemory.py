@@ -3,11 +3,11 @@ class Materials:
         self.history = []
         self.sim_matrix = SimMatrix()
 
-    def update_history(self, rep, concat_obj):
-        self.history.append([rep, concat_obj])
+    def update_history(self, rep, concat_obj, desc):
+        self.history.append([rep, concat_obj, desc])
 
-    def update(self, rep, concat_obj, sim_tab):
-        self.update_history(rep, concat_obj)
+    def update(self, rep, concat_obj, desc, sim_tab):
+        self.update_history(rep, concat_obj, desc)
         self.sim_matrix.update(rep.char, sim_tab)
 
 

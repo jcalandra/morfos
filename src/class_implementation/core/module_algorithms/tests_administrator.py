@@ -4,8 +4,8 @@ import parameters as prm
 
 class Rules:
     def  __init__(self):
-        sigRules = SigRules()
-        symbRules = SymbRules()
+        self.sigRules = SigRules()
+        self.symbRules = SymbRules()
 
 class SigRules:
     def __init__(self):

@@ -76,7 +76,7 @@ def rule_2_existing_object(ms_oracle, level):
     concat_obj_lab = ms_oracle.levels[level].concat_obj.concat_labels
     actual_char = ms_oracle.levels[level].actual_char
     if level == 0:
-        matrix = ms_oracle.matrix
+        matrix = ms_oracle.matrix.sim_matrix
     else:
         matrix = ms_oracle.levels[level - 1].materials.sim_matrix
     if ALIGNEMENT_rule3:
@@ -109,7 +109,7 @@ def rule_3_recomputed_object(ms_oracle, level):
     sub_suffix = ""
 
     if level == 0:
-        matrix = ms_oracle.matrix
+        matrix = ms_oracle.matrix.sim_matrix
     else:
         matrix = ms_oracle.levels[level - 1].materials.sim_matrix
 

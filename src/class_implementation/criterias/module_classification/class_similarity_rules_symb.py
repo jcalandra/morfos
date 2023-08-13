@@ -45,9 +45,12 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
         similarity = nw_alignment
     else:
         similarity = (alignment - correc_value) / min_len
+    sim_value = similarity/quotient
     if similarity >= threshold * quotient:
-        return 1, similarity/quotient
-    return 0, similarity/quotient
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
 
 
 def compute_strict_equality(string_compared, actual_string, mat, level=0):

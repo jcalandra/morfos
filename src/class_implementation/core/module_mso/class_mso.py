@@ -31,7 +31,7 @@ class MSO:
         self.end_mk = 0
         self.segmentations = []
 
-        self.matrix = class_materialsMemory.SimMatrix()
+        self.matrix = class_materialsMemory.Materials()
 
     def set_name(self, name):
         self.name = name
@@ -92,7 +92,7 @@ class MSO:
         self.end_mk = 0
         self.segmentations = []
 
-        self.matrix = class_materialsMemory.SimMatrix()
+        self.matrix = class_materialsMemory.Materials()
 
     def reset(self, name):
         plt.close('all')
@@ -113,7 +113,7 @@ class MSO:
         self.end_mk = 0
         self.segmentations = []
 
-        self.matrix = class_materialsMemory.SimMatrix()
+        self.matrix = class_materialsMemory.Materials()
 
     def print(self):
         print("name", self.name)
@@ -170,7 +170,7 @@ class MSOLevel:
         self.concat_obj.update(obj)
 
     def update_segmentation(self, obj, sim_tab, node):
-        self.materials.update(obj.rep, self.concat_obj, sim_tab)
+        self.materials.update(obj.rep, self.concat_obj, obj.descriptors, sim_tab)
         for i in range(self.concat_obj.size):
             self.update_link(node)
 

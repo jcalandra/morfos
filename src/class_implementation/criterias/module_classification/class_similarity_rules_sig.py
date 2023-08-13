@@ -31,7 +31,7 @@ def volume_static_similarity(v_tab, id_hop_a, id_hop_b):
 
 
 # Spectrum
-def diff_concordance(s_tab, id_hop_a, id_hop_b):
+def diff_concordance_stab(s_tab, id_hop_a, id_hop_b):
     """ Compute the cosine similarity of the frequencies between the frame
         id_hop_a and the frame id_hop_b."""
     square_a = square_b = cs = 0
@@ -47,15 +47,19 @@ def diff_concordance(s_tab, id_hop_a, id_hop_b):
     for j in range(1, n):
         cs = cs + s_tab[id_hop_a][j] * s_tab[id_hop_b][j]
     if square > 0:
-        cs = cs / square
+        sim_value = cs / square
     elif square_a == 0 and square_b == 0:
-        cs = 1
+        sim_value = 1
     else:
-        cs = 0
-    return cs
+        sim_value = 0
+    if sim_value > prm.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
 
 
-def euclid_distance(s_tab, id_hop_a, id_hop_b):
+def euclid_distance_stab(s_tab, id_hop_a, id_hop_b):
     """ Compute the euclid distance. """
     n = len(s_tab[id_hop_a])
     e_distance = 0
@@ -63,97 +67,70 @@ def euclid_distance(s_tab, id_hop_a, id_hop_b):
         e_distance = e_distance + (s_tab[id_hop_a][k] - s_tab[id_hop_b][k]) ** 2
     e_distance = math.sqrt(e_distance)
     if e_distance == 0:
-        fcc = 1
+        sim_value = 1
     else:
-        fcc = 1 / (e_distance + 1)
-    return fcc
-
-
-# FFT
-def frequency_static_similarity_fft(s_tab, id_hop_a, id_hop_b):  # common energy
-    """ Compute the similarity between frequencies according to the chosen method."""
-    if DIFF_CONCORDANCE:
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    elif EUCLID_DISTANCE:
-        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+        sim_value = 1 / (e_distance + 1)
+    if sim_value > prm.teta:
+        sim_digit_label = 1
     else:
-        # concordance is chosen
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    return cs
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
 
-
-# MFCC
-def frequency_static_similarity_mfcc(s_tab, id_hop_a, id_hop_b):
-    """ Compute the euclid distance between each mfcc of two different hops."""
-    if DIFF_CONCORDANCE:
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    elif EUCLID_DISTANCE:
-        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+def diff_concordance(s_tab, id_hop_a, id_hop_b):
+    """ Compute the cosine similarity of the frequencies between the frame
+        id_hop_a and the frame id_hop_b."""
+    square_a = square_b = cs = 0
+    n = len(id_hop_a)
+    # compute sqrt(sum(for j from 1 to s_length/ Aj^2)) between frame hop_i and frame hop_j
+    for j in range(n):
+        a = id_hop_a[j]
+        b = id_hop_b[j]
+        square_a = square_a + a ** 2
+        square_b = square_b + b ** 2
+    square = math.sqrt(square_a) * math.sqrt(square_b)
+    # compute the cosine
+    for j in range(1, n):
+        cs = cs + id_hop_a[j] * id_hop_b[j]
+    if square > 0:
+        sim_value = cs / square
+    elif square_a == 0 and square_b == 0:
+        sim_value = 1
     else:
-        # euclid_distance is chosen
-        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
-    return cs
-
-
-def frequency_static_similarity_cqt(s_tab, id_hop_a, id_hop_b):
-    """ Compute the cosine similarity between each cqt of two different hops."""
-    if DIFF_CONCORDANCE:
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    elif EUCLID_DISTANCE:
-        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+        sim_value = 0
+    if sim_value > prm.teta:
+        sim_digit_label = 1
     else:
-        # concordance is chosen
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    return cs
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
 
 
-def frequency_static_similarity(s_tab, id_hop_a, id_hop_b):
-    """ Compute the cosine similarity between each cqt of two different hops."""
-    if DIFF_CONCORDANCE:
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    elif EUCLID_DISTANCE:
-        cs = euclid_distance(s_tab, id_hop_a, id_hop_b)
+def euclid_distance(s_tab, id_hop_a, id_hop_b):
+    """ Compute the euclid distance. """
+    n = len(id_hop_a)
+    e_distance = 0
+    for k in range(n):
+        e_distance = e_distance + (id_hop_a[k] - id_hop_b[k]) ** 2
+    e_distance = math.sqrt(e_distance)
+    if e_distance == 0:
+        sim_value = 1
     else:
-        # concordance is chosen
-        cs = diff_concordance(s_tab, id_hop_a, id_hop_b)
-    return cs
+        sim_value = 1 / (e_distance + 1)
+    if sim_value > prm.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
 
-
-# ---------------------- DYNAMIC FUNCTIONS -----------------------
-
-
-# ---------------------- CIRCULAR FUNCTIONS ---------------------
-
-# Volume
-
-# Spectrum
-
-
+#=========== # WARNING: depreciated
 # ============================================ COMPARISON ==============================================================
 
-'''def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
-    """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
-    fss = fss2 = 0
-    if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
-        fss = frequency_static_similarity(s_tab, i_hop_a, i_hop_b)
-        fss2 = frequency_static_similarity(s_tab, i_hop_a, i_hop_c)
-    if prm.processing=='signal' and MFCC_BIT or CQT_BIT:
-        s_tab_trans = s_tab.transpose()
-        fss = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_b)
-        fss2 = frequency_static_similarity(s_tab_trans, i_hop_a, i_hop_c)
-    if max(fss2, fss) == fss:
-        good_mat = j_mat
-    else:
-        good_mat = prev2_mat
-    return good_mat'''
-
-
+'''
 def true_mat(i_hop_a, i_hop_b, i_hop_c, j_mat, prev2_mat, s_tab):
     """ Return the closer object of i_hop_a between 'i_hop_b' and 'i_hop_c'."""
     fss = fss2 = 0
-    if prm.processing=='signal' and FFT_BIT or prm.processing=='vectors':
-        fss = frequency_static_similarity_fft(s_tab, i_hop_a, i_hop_b)
-        fss2 = frequency_static_similarity_fft(s_tab, i_hop_a, i_hop_c)
+    if prm.processing=='signal' or prm.processing=='vectors':
+        fss = frequency_static_similarity(s_tab, i_hop_a, i_hop_b)
+        fss2 = frequency_static_similarity(s_tab, i_hop_a, i_hop_c)
     if prm.processing=='signal' and MFCC_BIT:
         s_tab_trans = s_tab.transpose()
         fss = frequency_static_similarity_mfcc(s_tab_trans, i_hop_a, i_hop_b)
@@ -222,7 +199,6 @@ def comparison(i_hop, teta, s_tab, v_tab, mat, path):
 
 # ========================================== REPRESENTANT IMPLEMENTATION ===============================================
 
-
 def frequency_static_similarity_fft_rep(s_id_hop_a, m_id_hop_b):  # common energy
     """ Compute the cosine similarity of the frequencies between the frame
     id_hop_a and the frame id_hop_b."""
@@ -276,5 +252,5 @@ def comparison_rep(i_hop, teta, s_tab, v_tab, mat_rep):
                     return 0
                 if fss > teta:
                     return j_hop
-    return -1
+    return -1'''
 

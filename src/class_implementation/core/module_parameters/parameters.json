@@ -22,8 +22,8 @@
    "DIFF_FOURIER":1,
    "DIFF_DYNAMIC":0,
 
-   "STRICT_EQUALITY":1,
-   "ALIGNMENT":0,
+   "STRICT_EQUALITY":0,
+   "ALIGNMENT":1,
 
    "RULE_1":1,
    "RULE_2":1,

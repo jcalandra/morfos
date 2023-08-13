@@ -30,7 +30,7 @@ def gestion_level(ms_oracle,level):
         ms_oracle.levels[level].init_oracle('a', dim=ms_oracle.dims)
 
         if level == 0:
-            ms_oracle.matrix.init(chr(LETTER_DIFF), [1])
+            ms_oracle.matrix.sim_matrix.init(chr(LETTER_DIFF), [1])
     return 1
 
 def add_obj_level_up(ms_oracle, level):
@@ -97,14 +97,16 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
             ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
             if ord(ms_oracle.levels[level].actual_object.label)> \
-            max([ord(ms_oracle.matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.labels))]):
-                vec = [0 for ind_vec in range(len(ms_oracle.matrix.values))]
-                vec.append(1)
-                ms_oracle.matrix.labels += chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
-                ms_oracle.matrix.values.append(vec)
-                for ind_mat in range(len(ms_oracle.matrix.values) - 1):
-                    ms_oracle.matrix.values[ind_mat].append(
-                        ms_oracle.matrix.values[len(ms_oracle.matrix.values) - 1][ind_mat])
+            max([ord(ms_oracle.matrix.sim_matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.sim_matrix.labels))]):
+                sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
+                sim_tab.append(1)
+                new_char = chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
+                concat_obj = class_concatObj.ConcatObj()
+                concat_obj.init(ms_oracle.levels[level].actual_object)
+                descriptors = ms_oracle.levels[level].actual_object.descriptors
+                ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
+                ms_oracle.matrix.update_history(new_char, concat_obj, descriptors)
+
 
         # formal diagram is updated with the new char
         if ms_oracle.levels[level].actual_char_ind == 1:
