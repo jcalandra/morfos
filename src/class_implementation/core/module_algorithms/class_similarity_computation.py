@@ -1,5 +1,6 @@
 import class_similarity_rules_symb
-import class_similarity_rules_sig as sim_f
+import class_similarity_rules_sig as sim_sig
+import class_similarity_rules_symb as sim_symb
 from module_parameters import parameters
 import class_materialsMemory
 import class_object
@@ -17,15 +18,34 @@ nb_notes = parameters.NB_NOTES
 NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
-def compute_signal_similarity_sim(ms_oracle, level, obj_compared, actual_obj):
+
+def compute_symbol_similarity_rep(string_compared, actual_string, mat, level=0):
+    if parameters.STRICT_EQUALITY:
+        sim_digit_label, sim_value = sim_symb.compute_strict_equality(string_compared, actual_string, mat, level)
+    elif parameters.ALIGNMENT:
+        sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
+    else:
+        sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
+    return sim_digit_label, sim_value
+
+def compute_symbol_symb_rep(string_compared, actual_string, mat, level=0):
+    if parameters.STRICT_EQUALITY:
+        sim_digit_label, sim_value = sim_symb.compute_strict_equality(string_compared, actual_string, mat, level)
+    elif parameters.ALIGNMENT:
+        sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
+    else:
+        sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
+    return sim_digit_label, sim_value
+
+def compute_signal_similarity(ms_oracle, level, obj_compared, actual_obj):
     # freq_static_sim_fft is ok because s_tab is in the according shape
     s_tab_all = ms_oracle.levels[level + 1].compute_stab()
     s_tab = s_tab_all[1][0]
-    similarity = sim_f.frequency_static_similarity(s_tab, obj_compared, actual_obj)
+    similarity = sim_symb.frequency_static_similarity(s_tab, obj_compared, actual_obj)
     return similarity
 
 
-def compute_symbol_similarity_sim(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level > 0:
         if level-1 > 0:
             matrix = ms_oracle.levels[level - 2].materials.sim_matrix

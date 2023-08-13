@@ -643,10 +643,12 @@ class MO(FactorOracle):
         cost_complete = 0
 
         if prm.processing == "signal" or prm.processing == "vectors":
-            similarity_fun = csc.compute_signal_similarity_sim
+            similarity_fun = csc.compute_signal_similarity
+            similarity_fun_rep = csc.compute_signal_similarity_rep
             new_data = new_data_all.descriptors.mean_descriptors
         else:
-            similarity_fun = csc.compute_symbol_similarity_sim
+            similarity_fun = csc.compute_symbol_similarity
+            similarity_fun_rep = csc.compute_symbol_similarity_rep
             if level == 0:
                 new_data = new_data_all.label
             else:
@@ -767,7 +769,7 @@ class MO(FactorOracle):
                         if prm.processing == "signal" or prm.processing == "vectors":
                             fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
                         else:
-                            fss = csrs.compute_alignment(compare_tab_rep[j],
+                            fss = similarity_fun_rep(compare_tab_rep[j],
                                                         ms_oracle.levels[level - 1].concat_obj.concat_labels,
                                                         matrix)[1]
                         comp_rep.append(fss)
