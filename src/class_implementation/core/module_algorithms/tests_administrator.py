@@ -1,13 +1,28 @@
-from criterias.module_segmentation import class_segmentation_rules
+from criterias.module_segmentation import class_segmentation_rules_symb
 from module_parameters.parameters import LETTER_DIFF
 import parameters as prm
 
-
 class Rules:
+    def  __init__(self):
+        sigRules = SigRules()
+        symbRules = SymbRules()
+
+class SigRules:
     def __init__(self):
         if len(prm.MRULES) != len(prm.PRULES):
             raise("problème d'initialisation des règles")
-        self.nb_rules = len(class_segmentation_rules.rule_tab[0])
+        self.nb_rules = len(class_segmentation_rules_symb.sigRule_tab[0])
+        self.mandatory_rules = prm.MRULES
+        self.prohibitive_rules = prm.PRULES
+
+        self.result=ResultTest()
+
+
+class SymbRules:
+    def __init__(self):
+        if len(prm.MRULES) != len(prm.PRULES):
+            raise("problème d'initialisation des règles")
+        self.nb_rules = len(class_segmentation_rules_symb.symbRule_tab[0])
         self.mandatory_rules = prm.MRULES
         self.prohibitive_rules = prm.PRULES
 
@@ -18,9 +33,9 @@ class Rules:
         self.result=ResultTest()
         for r in range(len(self.mandatory_rules)):
             if self.mandatory_rules[r]:
-                self.result.mandatory_tests.append(class_segmentation_rules.rule_tab[0][r]( ms_oracle, level))
+                self.result.mandatory_tests.append(class_segmentation_rules_symb.symbRule_tab[0][r](ms_oracle, level))
             if self.prohibitive_rules[r]:
-                self.result.prohibitive_tests.append(class_segmentation_rules.rule_tab[1][r]( ms_oracle, level))
+                self.result.prohibitive_tests.append(class_segmentation_rules_symb.symbRule_tab[1][r](ms_oracle, level))
         return self.result
 
 class ResultTest:
@@ -30,7 +45,7 @@ class ResultTest:
 
 
 def segmentation_test(ms_oracle, level, rules):
-    if class_segmentation_rules.rule_0_segmentation_rule(ms_oracle, level):
+    if class_segmentation_rules_symb.rule_0_segmentation_rule(ms_oracle, level):
         bool = 1
     else:
         bool = segmentation_str(ms_oracle, level, rules) and segmentation_audio(ms_oracle, level, rules)

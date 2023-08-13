@@ -30,6 +30,7 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import misc as utl
 import class_similarity_computation as csc
+import class_similarity_rules_symb as csrs
 import similarity_functions as sf
 import module_parameters.parameters as prm
 import class_object
@@ -766,7 +767,7 @@ class MO(FactorOracle):
                         if prm.processing == "signal" or prm.processing == "vectors":
                             fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
                         else:
-                            fss = csc.compute_alignment(compare_tab_rep[j],
+                            fss = csrs.compute_alignment(compare_tab_rep[j],
                                                         ms_oracle.levels[level - 1].concat_obj.concat_labels,
                                                         matrix)[1]
                         comp_rep.append(fss)

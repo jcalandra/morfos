@@ -1,5 +1,5 @@
 import module_precomputing.data_computing as dc
-import module_classification.class_similarity_functions as sf
+import module_classification.class_similarity_rules_sig as sf
 from module_parameters import parameters as prm
 import numpy as np
 import cv2
@@ -12,7 +12,7 @@ import class_concatObj
 from object_model import class_object
 from others.synthesis import class_synthesis_mso
 import class_cog_algo
-import class_similarity_rules
+import class_similarity_rules_old
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
@@ -207,7 +207,7 @@ def level_up(ms_oracle, level):
     for ind in range(ms_oracle.levels[level].concat_obj.size):
         ms_oracle.levels[level].link.append(node)
     # history_next update
-    new_obj_tab = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
+    new_obj_tab = class_similarity_rules_old.char_next_level_similarity(ms_oracle, level)
     label = ""
     for obj in new_obj_tab:
         label += obj.label

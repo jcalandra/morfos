@@ -1,62 +1,14 @@
-import numpy as np
-from Bio import pairwise2
-from Bio.Align import substitution_matrices
-import class_similarity_functions as sim_f
+import class_similarity_rules_symb
+import class_similarity_rules_sig as sim_f
 from module_parameters import parameters
 import class_materialsMemory
-
-# In this file are computed the alignment between strings to compute similarity at a symbolic scale
-
-transpo = parameters.TRANSPOSITION
-quotient = parameters.QUOTIENT
-threshold = parameters.TETA
-# ================================================= ALIGNMENT ==========================================================
-# penalty values
-gap_value = parameters.GAP_VALUE
-extend_gap_value = parameters.EXT_GAP_VALUE
-gap = parameters.GAP
-correc_value = parameters.CORREC_VALUE
-
-
-def compute_alignment(string_compared, actual_string, mat, level=0):
-    # initalisation
-    alignment = -pow(10, 10)
-    if len(actual_string) == 0:
-        return 0, 0
-    min_len = min(len(string_compared), len(actual_string))
-
-    # creation of the similarity matrix
-    if not mat.values:
-        mat.values = np.empty((0, 0))
-    np_mat = np.array(mat.values) * quotient
-    matrix = substitution_matrices.Array(alphabet=mat.labels, dims=2, data=np_mat)
-    # conversion of the string if necessary
-    sx = string_compared
-    for j in range(transpo):
-        sy = ''
-        for i in actual_string:
-            sy += chr(ord(i) - j)
-
-        # Needleman-Wunsch alignment
-        nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap)
-        if len(nw_align) == 0:
-            return 0, 0
-        nw_alignment = nw_align[0][2]
-        if nw_alignment > alignment:
-            alignment = nw_alignment
-    if min_len == 1:
-        similarity = nw_alignment
-    else:
-        similarity = (alignment - correc_value) / min_len
-    if similarity >= threshold * quotient:
-         return 1, similarity/quotient
-    return 0, similarity/quotient
-
-
+import class_object
 # ==================================================== SIGNAL ==========================================================
 MFCC_BIT = parameters.MFCC_BIT
 FFT_BIT = parameters.FFT_BIT
 CQT_BIT = parameters.CQT_BIT
+processing = parameters.processing
+letter_diff = parameters.LETTER_DIFF
 
 rate = parameters.SR
 nb_value = parameters.NB_VALUES
@@ -64,20 +16,6 @@ nb_value = parameters.NB_VALUES
 nb_notes = parameters.NB_NOTES
 NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
-
-
-def compute_signal_similarity_old(concat_tab, mean_tab, compared_object_ind):
-    # freq_static_sim_fft is ok because s_tab is in the according shape
-    '''similarity = 0
-    for i in range(len(concat_tab)):
-        similarity += sim_f.frequency_static_similarity_cqt(concat_tab[i], compared_object_ind, len(concat_tab[i]) - 1)
-    similarity = similarity/len(concat_tab)
-    if similarity >= threshold:
-        return 1, similarity'''
-    similarity = sim_f.frequency_static_similarity(mean_tab, compared_object_ind, len(mean_tab) - 1)
-    if similarity >= parameters.teta:
-        return 1, similarity
-    return 0, similarity
 
 def compute_signal_similarity_sim(ms_oracle, level, obj_compared, actual_obj):
     # freq_static_sim_fft is ok because s_tab is in the according shape
@@ -109,22 +47,65 @@ def compute_symbol_similarity_sim(ms_oracle, level, obj_compared_ind, actual_obj
         actual_obj = ms_oracle.levels[level - 1].concat_obj.concat_labels
     if parameters.STRICT_EQUALITY:
         #concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-
-        sim_digit_label = 0
-        if len(actual_obj) == len(obj_compared):
-            j = 0
-            while obj_compared[j] == actual_obj[j]:
-                j = j + 1
-                if j == len(obj_compared):
-                    sim_digit_label = 1
-                    break
-        sim_value = sim_digit_label
+        sim_digit_label, sim_value = class_similarity_rules_symb.compute_strict_equality(obj_compared,
+                                                             actual_obj, matrix, level)
     elif parameters.ALIGNMENT:
-        sim_digit_label, sim_value = compute_alignment(
+        sim_digit_label, sim_value = class_similarity_rules_symb.compute_alignment(
             obj_compared,
             actual_obj, matrix, level)
     else:
-        sim_digit_label, sim_value = compute_alignment(
+        sim_digit_label, sim_value = class_similarity_rules_symb.compute_alignment(
             obj_compared,
             actual_obj, matrix, level)
     return sim_value
+
+def similarity(ms_oracle, level):
+
+    actual_object_descriptor = class_object.Descriptors()
+    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+    len_av = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
+    ms_oracle.levels[level].update_oracle(ms_oracle, level)
+
+    len_ap = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
+    if len_av == 0 or len_ap > len_av:
+        digit = 0
+    else:
+        digit = 1
+        indice = ms_oracle.levels[level].oracle.data[-1]
+        if processing == "symbols" or processing == "vectors":
+            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
+            return new_rep, digit
+        else:
+            window = ms_oracle.levels[level - 1].concat_obj.concat_signal
+            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
+            # TODO: jcalandra 22/09/2021 maj le reorésentant (corriger le code, bug)
+            new_rep.update(window, new_rep.label, actual_object_descriptor)
+            return new_rep, 1
+
+    new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
+    new_rep = class_object.ObjRep()
+    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
+    return new_rep, digit
+
+
+def char_next_level_similarity(ms_oracle, level):
+    """ The function compare the actual new structured string with structured strings already seen before. For now,
+    the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
+    the results and the new string of upper level new_char is returned."""
+    new_rep, sim_digit = similarity(ms_oracle, level)
+
+    # new_obj update
+    new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signal
+    new_descriptors = ms_oracle.levels[level - 1].concat_obj.descriptors
+
+    new_obj = class_object.Object()
+    new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+    ms_oracle.levels[level].oracle.objects.append(new_obj)
+
+    if sim_digit:
+        return [new_obj]
+
+    # material.history update
+    concat_rep = ms_oracle.levels[level - 1].concat_obj
+    ms_oracle.levels[level - 1].materials.history.append((new_rep, concat_rep))
+    return [new_obj]

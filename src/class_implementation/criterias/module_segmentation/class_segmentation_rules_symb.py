@@ -1,9 +1,5 @@
-import class_oracle
 import class_similarity_computation
 import class_cog_algo
-import class_object
-import class_concatObj
-import class_mso
 from module_visualization.formal_diagram_mso import *
 
 # ================================================= RULES ==============================================================
@@ -309,6 +305,6 @@ def rule_8b_repetition_paradigm_seg(ms_oracle, level):
         return 1
     return 0
 
-rule_tab = [[rule_1_similarity_word, rule_2_existing_object, rule_3_recomputed_object, 0, 0, rule_6b_high_bound, rule_7b_mean_word_length_high, rule_8b_repetition_paradigm_seg],
+symbRule_tab = [[rule_1_similarity_word, rule_2_existing_object, rule_3_recomputed_object, 0, 0, rule_6b_high_bound, rule_7b_mean_word_length_high, rule_8b_repetition_paradigm_seg],
             [0, 0, 0, rule_4_not_validated_hypothesis, rule_5_regathering_after, rule_6a_low_bound, rule_7a_mean_word_length_low, rule_8a_repetition_paradigm_noseg]]
 

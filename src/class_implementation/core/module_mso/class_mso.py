@@ -6,7 +6,7 @@ import class_concatObj
 import parameters as prm
 import matplotlib.pyplot as plt
 
-from module_parameters.parameters import SR, HOP_LENGTH, teta
+from module_parameters.parameters import SR, HOP_LENGTH, teta, NB_VALUES
 
 from module_precomputing.data_computing import get_data
 
@@ -27,6 +27,7 @@ class MSO:
         self.data_length = 0
         self.data_size = 0
         self.nb_hop = 0
+        self.dims = 1
         self.end_mk = 0
         self.segmentations = []
 
@@ -87,6 +88,7 @@ class MSO:
         self.data_length = self.data_length
         self.data_size = self.data_size
         self.nb_hop = self.nb_hop
+        self.dims = self.dims
         self.end_mk = 0
         self.segmentations = []
 
@@ -100,12 +102,14 @@ class MSO:
         self.levels = []
 
         self.init_objects = []
+        self.init_objects = []
         self.audio = []
         self.symbol = ""
         self.rate = SR
         self.data_length = 0
         self.data_size = 0
         self.nb_hop = 0
+        self.dims = 1
         self.end_mk = 0
         self.segmentations = []
 

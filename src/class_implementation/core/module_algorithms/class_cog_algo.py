@@ -1,9 +1,11 @@
 from module_parameters.parameters import LETTER_DIFF, processing, verbose, checkpoint
-import class_similarity_rules
+import class_similarity_computation
 import tests_administrator as ta
 import class_mso
 import class_concatObj
+
 import sys
+import numpy as np
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
@@ -25,14 +27,14 @@ def gestion_level(ms_oracle,level):
         if verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         class_mso.MSOLevel(ms_oracle)
-        ms_oracle.levels[level].init_oracle('a')
+        ms_oracle.levels[level].init_oracle('a', dim=ms_oracle.dims)
 
-        if level == 0 and processing == 'symbols':
+        if level == 0:
             ms_oracle.matrix.init(chr(LETTER_DIFF), [1])
     return 1
 
 def add_obj_level_up(ms_oracle, level):
-    new_obj_tab = class_similarity_rules.char_next_level_similarity(ms_oracle, level)
+    new_obj_tab = class_similarity_computation.char_next_level_similarity(ms_oracle, level)
     return new_obj_tab
 
 
@@ -62,9 +64,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user."""
     # end of the recursive loop
-    if level == 0 and processing == 'symbols':
+    if level == 0:
         gestion_level(ms_oracle, level)
-    rules = ta.Rules()
+    rules = ta.SymbRules()
     level_wait = -1
     global wait
     ms_oracle.levels[level].objects = objects
