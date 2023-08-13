@@ -839,9 +839,9 @@ class MO(FactorOracle):
                 self.lrs[i] = 0  # Aucun suffixe répété
                 self.latent.append([i])  # il s'agit d'un nouveau matériau dont le premier indice est i
                 self.data.append(len(self.latent) - 1)  # Numéro du matériau correspondant (qui est un nv num ici)
-                self.rep.append([new_data, 1])
-                if len(self.rep) > 1:
-                    self.vec.append(comp_rep)
+                #self.rep.append([new_data, 1])
+                '''if len(self.rep) > 1:
+                    self.vec.append(comp_rep)'''
 
                 sim_tab.append(1)
                 if level >= 1:
@@ -863,10 +863,10 @@ class MO(FactorOracle):
                 self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
-                self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
+                '''self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
                                                        self.rep[self.data[self.sfx[i]]][1] + new_data) / \
                                                       (self.rep[self.data[self.sfx[i]]][1] + 1)
-                self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
+                self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1'''
         else:
             #methode inc
             if k is None:
@@ -876,9 +876,9 @@ class MO(FactorOracle):
                 self.lrs[i] = 0
                 self.latent.append([i])
                 self.data.append(len(self.latent) - 1)
-                self.rep.append([new_data, 1])
-                if len(self.rep) > 1:
-                    self.vec.append(comp_rep)
+                #self.rep.append([new_data, 1])
+                '''if len(self.rep) > 1:
+                    self.vec.append(comp_rep)'''
 
                 sim_tab.append(1)
                 if level >= 1:
@@ -893,14 +893,14 @@ class MO(FactorOracle):
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
                 # if REPRESENTANTS == 1:
-                if prm.processing == "signal" or prm.processing == "vectors":
+                '''if prm.processing == "signal" or prm.processing == "vectors":
                     self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
                                                            self.rep[self.data[self.sfx[i]]][1] + new_data) / \
                                                           (self.rep[self.data[self.sfx[i]]][1] + 1)
                     self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
                 else:
                     self.rep[self.data[self.sfx[i]]][0] = self.rep[self.data[self.sfx[i]]][0]
-                    self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1]
+                    self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1]'''
 
         # Temporary adjustment
         # Nouveau suffixe si jamais on trouve une longueur de préfixe plus grande.

@@ -1,18 +1,17 @@
 {
-   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
-   "FORMAT":".txt",
+   "NAME":"Geisslerlied",
+   "FORMAT":".wav",
 
    "PATH_SOUND":"/../../../data/Geisslerlied/",
    "PATH_RESULT":"/../../../results/Geisslerlied/",
 
-   "teta":0.96,
+   "teta":0.965,
    "d_threshold":140,
 
    "POLYPHONY":0,
 
    "min_matrix":0.999,
 
-   "processing":"symbols",
    "to_transpose":0,
    "is_micro": 0,
 
@@ -47,8 +46,8 @@
 
    "LETTER_DIFF":97,
 
-   "GAP_VALUE":-2,
-   "EXT_GAP_VALUE":-1,
+   "GAP_VALUE":-3,
+   "EXT_GAP_VALUE":-3,
 
    "GAP":0,
 

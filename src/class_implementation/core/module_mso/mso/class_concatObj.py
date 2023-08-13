@@ -23,6 +23,8 @@ class ConcatObj:
 
     def _update_descriptors(self, new_descriptors):
         for i in range(self.descriptors.nb_descriptors):
+            #print("self desc", self.descriptors.concat_descriptors[i])
+            #print("new desc", new_descriptors.concat_descriptors[i])
             for j in range(len(new_descriptors.concat_descriptors[i])):
                 self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i][j])
             for j in range(len(new_descriptors.mean_descriptors[i])):

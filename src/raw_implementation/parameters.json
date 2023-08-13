@@ -1,11 +1,11 @@
 {
-   "NAME":"track_4",
+   "NAME":"Geisslerlied",
    "FORMAT":".wav",
 
-   "PATH_SOUND":"/../data/exp_cog/",
+   "PATH_SOUND":"/../data/Geisslerlied/",
    "PATH_RESULT":"/../results/ExpCog/4/test2/",
 
-   "teta":0.978,
+   "teta":0.965,
    "d_threshold":140,
 
    "POLYPHONY":0,
@@ -104,7 +104,7 @@
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":0,
+   "EVOL_PRINT":1,
 
    "SHOW_MSO_CONTENT":0,
 

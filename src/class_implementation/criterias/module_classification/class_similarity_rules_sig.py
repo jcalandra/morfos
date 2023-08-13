@@ -76,7 +76,7 @@ def euclid_distance_stab(s_tab, id_hop_a, id_hop_b):
         sim_digit_label = 0
     return sim_digit_label, sim_value
 
-def diff_concordance(s_tab, id_hop_a, id_hop_b):
+def diff_concordance(id_hop_a, id_hop_b):
     """ Compute the cosine similarity of the frequencies between the frame
         id_hop_a and the frame id_hop_b."""
     square_a = square_b = cs = 0
@@ -104,7 +104,7 @@ def diff_concordance(s_tab, id_hop_a, id_hop_b):
     return sim_digit_label, sim_value
 
 
-def euclid_distance(s_tab, id_hop_a, id_hop_b):
+def euclid_distance(id_hop_a, id_hop_b):
     """ Compute the euclid distance. """
     n = len(id_hop_a)
     e_distance = 0

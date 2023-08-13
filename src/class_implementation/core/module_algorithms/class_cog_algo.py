@@ -82,7 +82,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
 
-        if level == 0 and processing == 'symbols':
+        if level == 0:
             # CHECKPOINT #
             # Si le format fournit en entrée du logiciel est une chaîne de caractères.
             # Vous trouvez ici l'information concernant l'avancement du calcul de l'algorithme (approximatif, ne prend pas
@@ -107,7 +107,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
                 ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
                 ms_oracle.matrix.update_history(new_char, concat_obj, descriptors)
 
-
+        print("level", level, ms_oracle.levels[level].actual_object.label)
         # formal diagram is updated with the new char
         if ms_oracle.levels[level].actual_char_ind == 1:
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
@@ -117,7 +117,8 @@ def fun_segmentation(ms_oracle, objects, level=0):
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
         # First is the parametrisation of the rules according to the external settings.
-        bool = ta.segmentation_test(ms_oracle, level, rules)
+        #bool = ta.segmentation_test(ms_oracle, level, rules)
+        bool = 0
         objects = ms_oracle.levels[level].objects
         iterator = ms_oracle.levels[level].iterator
         if level > 0 and ms_oracle.end_mk == 1 and iterator < len(objects) - 1:

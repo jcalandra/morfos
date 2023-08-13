@@ -5,6 +5,7 @@ from parameters import FORMAT, HOP_LENGTH, NOTE_MIN, NB_VALUES, SUFFIX_METHOD, M
 
 def dims_oracle(nb_values, s_tab, v_tab):
     """Initialize an oracle with the given parameters."""
+    print("ici")
     if MFCC_BIT == 1:
         dim = nb_values - 1
         input_data = s_tab.transpose()
@@ -19,7 +20,10 @@ def dims_oracle(nb_values, s_tab, v_tab):
         input_data = np.array(input_data)
     if input_data.ndim != 2:
         input_data = np.expand_dims(input_data, axis=1)
-    return input_data, dim
+    input_data = [input_data[i].tolist() for i in range(len(input_data))]
+    s_tab = []
+    s_tab.append(input_data)
+    return s_tab, dim
 
 
 
@@ -28,14 +32,17 @@ def compute_data_signal(data):
     s_tab = data[1]
     v_tab = data[2]
     obj_tab = []
-    nb_hop = len(s_tab)
+    nb_hop = len(s_tab[0])
     for i in range(nb_hop):
+        stab_i = [[s_tab[0][i]]]
         new_rep = class_object.ObjRep()
         new_signal = [audio[i*HOP_LENGTH:(i+1)*HOP_LENGTH]]
         new_descriptors = class_object.Descriptors()
-        new_descriptors.init([s_tab[i]], [s_tab[i]])
+        new_descriptors.init(stab_i, stab_i)
 
-        new_rep.init(new_signal, "", new_descriptors)
+        #print(new_descriptors.concat_descriptors, new_descriptors.mean_descriptors)
+
+        new_rep.init(new_signal, "a", new_descriptors)
         new_obj = class_object.Object()
         new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
         obj_tab.append(new_obj)

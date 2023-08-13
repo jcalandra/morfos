@@ -49,7 +49,7 @@ def main():
     if FORMAT != ".txt":
         dim = data[3]
         mso.dims = dim
-    mso.get_data(data, obj_tab)
+    mso.get_data(pre_data, obj_tab)
     class_cog_algo.fun_segmentation(mso, obj_tab)
 
     end_time = time.time()

@@ -5,6 +5,7 @@ from object_model import class_object
 import class_concatObj
 import parameters as prm
 import matplotlib.pyplot as plt
+import math
 
 from module_parameters.parameters import SR, HOP_LENGTH, teta, NB_VALUES
 
@@ -43,7 +44,7 @@ class MSO:
             self.audio.append(data[i])
         self.rate = rate
         self.data_size = data_size
-        self.nb_hop = int(data_size/HOP_LENGTH)
+        self.nb_hop = math.ceil(data_size/HOP_LENGTH)
 
     def get_symbol(self, symbol):
         self.symbol = symbol
