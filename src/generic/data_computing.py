@@ -2,11 +2,12 @@ import librosa
 import pydub
 from matplotlib.pyplot import *
 import math
-from module_parameters import parameters as prm
+import parameters as prm
 
 # In this file are implemented all functions that process the signal
 
 SR = prm.SR
+print("sr init", SR, prm.SR)
 DIV = prm.DIV
 TONE_PRECISION = prm.TONE_PRECISION
 NPO = prm.NOTES_PER_OCTAVE
@@ -195,12 +196,13 @@ def get_n_frequencies(data, rate, hop_length, nb_hop, init):
 def get_n_volumes(data, hop_length, nb_hop, init):
     """ Cut the tab data into batches of size hop_length.
     These batches corresponds to the frames."""
-    vn_tab = [[] for i in range(nb_hop + 1)]
-    for i in range(nb_hop):
+    n = nb_hop
+    vn_tab = [[] for i in range(n)]
+    for i in range(n - 1):
         for j in range(hop_length):
             vn_tab[i].append(data[i*hop_length + j + init])
-    for j in range(len(data) - init - (nb_hop) * hop_length):
-        vn_tab[nb_hop].append(data[(nb_hop) * hop_length + j + init])
+    for j in range(len(data) - init - (n - 1) * hop_length):
+        vn_tab[n - 1].append(data[(n - 1) * hop_length + j + init])
     return vn_tab
 
 

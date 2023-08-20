@@ -66,7 +66,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
     # end of the recursive loop
     if level == 0:
         gestion_level(ms_oracle, level)
-    rules = ta.SymbRules()
+        print(ms_oracle.volume)
+        ms_oracle.levels[level].volume = ms_oracle.volume
+    rules = ta.Rules()
     level_wait = -1
     global wait
     ms_oracle.levels[level].objects = objects
@@ -79,6 +81,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
     while ms_oracle.levels[level].iterator < len(objects):
         iterator = ms_oracle.levels[level].iterator
         if level == 0:
+            ms_oracle.levels[level].volume = ms_oracle.volume
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
 
@@ -96,18 +99,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
             # END CHECKPOINT #
 
             ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
-            if ord(ms_oracle.levels[level].actual_object.label)> \
-            max([ord(ms_oracle.matrix.sim_matrix.labels[ind]) for ind in range(len(ms_oracle.matrix.sim_matrix.labels))]):
-                sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
-                sim_tab.append(1)
-                new_char = chr(ms_oracle.levels[level].actual_char + LETTER_DIFF)
-                concat_obj = class_concatObj.ConcatObj()
-                concat_obj.init(ms_oracle.levels[level].actual_object)
-                descriptors = ms_oracle.levels[level].actual_object.descriptors
-                ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
-                ms_oracle.matrix.update_history(new_char, concat_obj, descriptors)
 
-        print("level", level, ms_oracle.levels[level].actual_object.label)
         # formal diagram is updated with the new char
         if ms_oracle.levels[level].actual_char_ind == 1:
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
@@ -117,8 +109,8 @@ def fun_segmentation(ms_oracle, objects, level=0):
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
         # First is the parametrisation of the rules according to the external settings.
-        #bool = ta.segmentation_test(ms_oracle, level, rules)
-        bool = 0
+        bool = ta.segmentation_test(ms_oracle, level, rules)
+        #bool = 0
         objects = ms_oracle.levels[level].objects
         iterator = ms_oracle.levels[level].iterator
         if level > 0 and ms_oracle.end_mk == 1 and iterator < len(objects) - 1:
@@ -133,7 +125,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
             level_wait = -1
 
         # If the tests are positives, there is structuration.
-        if (bool and ms_oracle.end_mk == 0) or (level == 0 and ms_oracle.end_mk == 1):
+        if (bool and ms_oracle.end_mk == 0) or (level == 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max > level):
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
                 ms_oracle.levels[level + 1].iterator = 0

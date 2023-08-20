@@ -3,7 +3,7 @@ from data_mso import algo_cog
 import compression
 import compression_synthesis as com_syn
 import time
-from raw_implementation import parameters as prm
+import parameters as prm
 
 HOP_LENGTH = prm.HOP_LENGTH
 NB_VALUES = prm.NB_VALUES

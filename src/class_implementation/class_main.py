@@ -41,14 +41,13 @@ def main():
         pass
     else:
         pre_data = path
-
+    print("format pre", FORMAT)
     data = pc.precompute_data(pre_data)
     obj_tab = pc.compute_data(data)
 
     mso = class_mso.MSO(NAME)
-    if FORMAT != ".txt":
-        dim = data[3]
-        mso.dims = dim
+    mso.dims = data[3]
+    mso.volume = data[2]
     mso.get_data(pre_data, obj_tab)
     class_cog_algo.fun_segmentation(mso, obj_tab)
 

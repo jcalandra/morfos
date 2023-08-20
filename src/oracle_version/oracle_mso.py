@@ -2,12 +2,12 @@
 oracle.py
 Variable Markov Oracle in python
 
-@copyright:
+@copyright: 
 Copyright (C) 9.2014 Cheng-i Wang
 
 This file is part of vmo.
 
-@license:
+@license: 
 vmo is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -29,9 +29,8 @@ along with vmo.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
 import misc as utl
-import class_similarity_computation as csc
-import class_concatObj
-import module_parameters.parameters as prm
+import similarity_functions as sf
+import parameters as prm
 
 PARCOURS = prm.PARCOURS
 INCERTITUDE = prm.INCERTITUDE
@@ -70,36 +69,36 @@ class data(object):
 
 class FactorOracle(object):
     """ The base class for the FO(factor oracle) and MO(variable markov oracle)
-
+    
     Attributes:
         sfx: a list containing the suffix link of each state.
         trn: a list containing the forward links of each state as a list.
-        rsfx: a list containing the reverse suffix links of each state
+        rsfx: a list containing the reverse suffix links of each state 
             as a list.
         lrs: the value of longest repeated suffix of each state.
-        data: the symobols associated with the direct link
+        data: the symobols associated with the direct link 
             connected to each state.
         compror: a list of tuples (i, i-j), i is the current coded position,
             i-j is the length of the corresponding coded words.
-        code: a list of tuples (len, pos), len is the length of the
+        code: a list of tuples (len, pos), len is the length of the 
             corresponding coded words, pos is the position where the coded
             words starts.
 0        seg: same as code but non-overlapping.
         f_array: (For kind 'a' and 'v'): a list containing the feature array
         latent: (For kind 'a' and 'v'): a list of lists with each sub-list
             containing the indexes for each symbol.
-        kind:
+        kind: 
             'a': Variable Markov oracle
             'f': repeat oracle
             'v': Centroid-based oracle (under test)
-        n_states: number of total states, also is length of the input
+        n_states: number of total states, also is length of the input 
             sequence plus 1.
         max_lrs: the longest lrs so far.
         avg_lrs: the average lrs so far.
         name: the name of the oracle.
         params: a python dictionary for different feature and distance settings.
             keys:
-                'thresholds': the minimum value for separating two values as
+                'thresholds': the minimum value for separating two values as 
                     different symbols.
                 'weights': a dictionary containing different weights for features
                     used.
@@ -116,8 +115,6 @@ class FactorOracle(object):
         self.rsfx = []
         self.lrs = []
         self.data = []
-        self.objects = []
-        self.concat_objects = []
         self.rep = []
         self.vec = []
 
@@ -162,8 +159,6 @@ class FactorOracle(object):
         self.rsfx = []
         self.lrs = []
         self.data = []
-        self.objects = []
-        self.concat_objects = []
         self.rep = []
 
         # Compression attributes
@@ -193,7 +188,7 @@ class FactorOracle(object):
         """Subclass this"""
         self.params.update(kwargs)
 
-    def add_state(self, ms_oracle, level, new_data):
+    def add_state(self, new_data):
         """Subclass this"""
         pass
 
@@ -438,7 +433,7 @@ class FO(FactorOracle):
         super(FO, self).__init__(**kwargs)
         self.kind = 'r'
 
-    def add_state(self, ms_oracle, level):
+    def add_state(self, new_symbol):
         """
 
         :param new_symbol:
@@ -448,9 +443,7 @@ class FO(FactorOracle):
         self.rsfx.append([])
         self.trn.append([])
         self.lrs.append(0)
-        new_symbol = ms_oracle.levels[level].actual_obj.label
         self.data.append(new_symbol)
-        self.objects.append(ms_oracle.levels[level].actual_obj)
 
         # Initialisation des coûts
         cost_init = 0
@@ -552,10 +545,10 @@ class FO(FactorOracle):
 
     def accept(self, context):
         """ Check if the context could be accepted by the oracle
-
+        
         Args:
             context: s sequence same type as the oracle data
-
+        
         Returns:
             bAccepted: whether the sequence is accepted or not
             _next: the state where the sequence is accepted
@@ -591,8 +584,6 @@ class MO(FactorOracle):
         self.f_array = feature_array(self.params['dim'])
         self.f_array.add(np.zeros(self.params['dim'], ))
         self.data[0] = None
-        self.objects = [None]
-        self.concat_objects = [None]
         self.latent = []
 
     def reset(self, **kwargs):
@@ -603,22 +594,15 @@ class MO(FactorOracle):
         self.f_array = feature_array(self.params['dim'])
         self.f_array.add(np.zeros(self.params['dim'], ))
         self.data[0] = None
-        self.objects = [None]
-        self.concat_objects = [None]
         self.latent = []
 
-    def add_state(self, ms_oracle, level, method='inc'):
+    def add_state(self, new_data, s_tab, v_tab, method='inc'):
         """Create new state and update related links and compressed state"""
         # Initialisation de toutes les structures pour l'état i
         self.sfx.append(0)
         self.rsfx.append([])
         self.trn.append([])
         self.lrs.append(0)
-
-        if level == 0:
-            new_data_all = ms_oracle.levels[level].objects[self.n_states - 1]
-        else:
-            new_data_all = ms_oracle.levels[level - 1].concat_obj
 
         # Initialisation des coûts
         cost_init = 0
@@ -640,19 +624,8 @@ class MO(FactorOracle):
         # uniquement pour le mode 'complete'
         cost_complete = 0
 
-        if prm.processing == "signal" or prm.processing == "vectors":
-            similarity_fun = csc.compute_signal_similarity
-            similarity_fun_rep = csc.compute_signal_similarity_rep
-            new_data = new_data_all.descriptors.mean_descriptors
-        else:
-            similarity_fun = csc.compute_symbol_similarity
-            similarity_fun_rep = csc.compute_symbol_similarity_rep
-            if level == 0:
-                new_data = new_data_all.label
-            else:
-                new_data = new_data_all.concat_labels
-
         # Experiment with pointer-based
+        self.f_array.add(new_data)
         audible_threshold = prm.AUDIBLE_THRESHOLD
 
         self.n_states += 1  # Nombre d'états
@@ -673,8 +646,7 @@ class MO(FactorOracle):
 
         # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
         # un silence
-        if k is not None and ms_oracle.levels[level].volume is not None \
-                and ms_oracle.levels[level].volume[i-1] < audible_threshold and prm.NB_SILENCE > 0:
+        if k is not None and v_tab is not None and v_tab[i-1] < audible_threshold:
             if method == 'inc':
                 suffix_candidate = 1
             elif method == 'complete':
@@ -694,7 +666,7 @@ class MO(FactorOracle):
                 cost_nb_comparison += len(self.trn[k])
                 I = []  # I retourne les indices du tableau pour lesquels la distance est supérieure au seuil
                 for j in range(len(self.trn[k])):
-                    fss = similarity_fun(ms_oracle, level, self.trn[k][j] - 1, i - 1)
+                    fss = sf.frequency_static_similarity(s_tab, self.trn[k][j] - 1, i - 1)
                     dvec.append(fss)
                     if dvec[j] > self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
                         I.append(j)
@@ -722,9 +694,6 @@ class MO(FactorOracle):
                         else:
                             suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
                         # pour la méthode 'inc', on s'arrête au premier suffixe dont un lien a été trouvé
-                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                                and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE > 0:
-                            k = None
                         break
                     elif method == 'complete':
                         # prend le lien en question et la valeur de sa distance avec l'état actuel
@@ -734,53 +703,36 @@ class MO(FactorOracle):
                     else:  # même comportement que pour 'inc'
                         cost_sfx_candidate += 1
                         suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
-                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                                and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
-                            k = None
                         break
 
                 if method == 'complete':  # Pour la methode 'complete', on parcourt tous les suffixes jusque k = None
                     cost_complete += 1
                     k = self.sfx[k]
-            if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                    and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
-                k = None
 
-
-            if k is None or (PARCOURS and method == 'inc'
-                     and (prm.processing == "signal" or prm.processing == "vectors")
-                     and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE):
+            if k is None or \
+                    (PARCOURS and method == 'inc' and len(self.latent[self.data[suffix_candidate]]) < INCERTITUDE):
                 # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
                 # meilleur que celui trouvé ou que rien du tout.
-                if level > 0:
-                    compare_tab_rep = ms_oracle.levels[level - 1].materials.history
-                    mso = ms_oracle.levels[level - 1]
-                else:
-                    compare_tab_rep = ms_oracle.matrix.history
-                    mso = ms_oracle.levels[level]
-
-                if level > 1:
-                    matrix = ms_oracle.levels[level - 2].materials.sim_matrix
-                else:
-                    matrix = ms_oracle.matrix.sim_matrix
-
-                n = len(compare_tab_rep)
+                n = len(self.rep)
                 comp_rep = []
-                sim_tab = []
                 cost_nb_comparison_rep += n
                 if n > 0:
+                    compare_tab_rep = [self.rep[0][0]]
+                    for j in range(1, n):
+                        compare_tab_rep = np.append(compare_tab_rep, [self.rep[j][0]], axis=0)
+                    compare_tab_rep = np.concatenate((compare_tab_rep, s_tab))
+
                     J = []
                     for j in range(n):
-                        fss = similarity_fun_rep(compare_tab_rep[j],mso,matrix)[1]
+                        fss = sf.frequency_static_similarity(compare_tab_rep, j, i - 1 + n)
                         comp_rep.append(fss)
-                        sim_tab.append(fss)
                         if j != 0 and comp_rep[j] > self.params['threshold']:
                             J.append(j)
 
                     comp_rep_sc = []
                     for j in range(len(J)):
                         comp_rep_sc.append(comp_rep[J[j]])
-                    if len(J) != 0 and ms_oracle.levels[level].volume[i-1] > audible_threshold:
+                    if len(J) != 0 and (v_tab is None or v_tab[i-1] > audible_threshold):
                         if method == 'inc':
                             cost_sfx_candidate_rep += 1
                             # S'il y en a exactement une seule, alors le suffixe est celle-ci
@@ -827,7 +779,8 @@ class MO(FactorOracle):
                                 for j in range(len(self.latent[mat_rep])):
                                     actual_compared = self.latent[mat_rep][j]
                                     cost_nb_comparison_parcours += 1
-                                    fss = similarity_fun(ms_oracle, level, actual_compared - 1, i - 1)
+                                    fss = sf.frequency_static_similarity(s_tab, actual_compared - 1, i - 1)
+
                                     if fss > self.params['threshold']:
                                         if method == 'complete':
                                             cost_sfx_candidate_parcours += 1
@@ -836,10 +789,6 @@ class MO(FactorOracle):
                                             cost_sfx_candidate_parcours += 1
                                             suffix_candidate = actual_compared
                                         break
-
-                if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                        and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
-                    k = None
         # Ajout du suffixe dans le poll adéquat ou création du poll et maj des autres structures
         if method == 'complete':  # Si on a un nouveau matériau
             if not suffix_candidate:
@@ -849,22 +798,9 @@ class MO(FactorOracle):
                 self.lrs[i] = 0  # Aucun suffixe répété
                 self.latent.append([i])  # il s'agit d'un nouveau matériau dont le premier indice est i
                 self.data.append(len(self.latent) - 1)  # Numéro du matériau correspondant (qui est un nv num ici)
-
-                sim_tab.append(1)
-                if level == 0:
-                    sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
-                    sim_tab.append(1)
-                    #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
-                    new_char = chr(prm.LETTER_DIFF + self.data[-1])
-                    concat_obj = class_concatObj.ConcatObj()
-                    concat_obj.init(ms_oracle.levels[level].actual_obj)
-                    descriptors = ms_oracle.levels[level].actual_obj.descriptors
-                    ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
-                    ms_oracle.matrix.update_history(new_char, concat_obj, descriptors)
-                if level >= 1:
-                    new_char = chr(prm.LETTER_DIFF + self.data[-1])
-                    #ms_oracle.levels[level - 1].materials.sim_matrix.labels += new_char
-                    ms_oracle.levels[level - 1].materials.sim_matrix.update(new_char, sim_tab)
+                self.rep.append([new_data, 1])
+                if len(self.rep) > 1:
+                    self.vec.append(comp_rep)
 
             else:  # Si on a un matériau déjà existant
                 # trie avec le 2e élément de chaque couple par ordre décroissant
@@ -880,8 +816,11 @@ class MO(FactorOracle):
                 self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
+                self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
+                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
+                                                      (self.rep[self.data[self.sfx[i]]][1] + 1)
+                self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         else:
-            #methode inc
             if k is None:
                 cost_new_mat += 1
                 self.sfx[i] = 0
@@ -889,30 +828,21 @@ class MO(FactorOracle):
                 self.lrs[i] = 0
                 self.latent.append([i])
                 self.data.append(len(self.latent) - 1)
-
-                sim_tab.append(1)
-                if level == 0:
-                    sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
-                    sim_tab.append(1)
-                    #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
-                    new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                    concat_obj = class_concatObj.ConcatObj()
-                    concat_obj.init(ms_oracle.init_objects[i - 1])
-                    descriptors = ms_oracle.init_objects[i - 1].descriptors
-                    ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
-                    ms_oracle.matrix.update_history(new_char, concat_obj, descriptors)
-                if level >= 1:
-                    new_char = chr(prm.LETTER_DIFF + self.data[-1])
-                    ms_oracle.levels[level - 1].materials.sim_matrix.update(new_char, sim_tab)
-
+                self.rep.append([new_data, 1])
+                if len(self.rep) > 1:
+                    self.vec.append(comp_rep)
             else:
                 cost_update_mat += 1
                 self.sfx[i] = suffix_candidate
                 cost_sfx += 1
-                self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
+                # self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
                 self.latent[self.data[self.sfx[i]]].append(i)
                 self.data.append(self.data[self.sfx[i]])
-
+                # if REPRESENTANTS == 1:
+                self.rep[self.data[self.sfx[i]]][0] = (self.rep[self.data[self.sfx[i]]][0] *
+                                                       self.rep[self.data[self.sfx[i]]][1] + new_data) / \
+                                                      (self.rep[self.data[self.sfx[i]]][1] + 1)
+                self.rep[self.data[self.sfx[i]]][1] = self.rep[self.data[self.sfx[i]]][1] + 1
         # Temporary adjustment
         # Nouveau suffixe si jamais on trouve une longueur de préfixe plus grande.
         k, cost_nb_comparison_update = self._find_better(i, self.data[i - self.lrs[i]])
@@ -920,7 +850,7 @@ class MO(FactorOracle):
             self.lrs[i] += 1
             self.sfx[i] = k
             cost_sfx_update += 1
-        self.concat_objects.append(new_data_all)
+
         self.rsfx[self.sfx[i]].append(i)
 
         if self.lrs[i] > self.max_lrs[i - 1]:
@@ -1008,7 +938,7 @@ def create_oracle(flag, threshold=0, dfunc='euclidean',
                           dfunc_handle=dfunc_handle, dim=dim)
 
 
-def _build_oracle(flag, oracle, input_data, ms_oracle, level, suffix_method='inc'):
+def _build_oracle(flag, oracle, input_data, volume_data, suffix_method='inc'):
     if type(input_data) != np.ndarray or type(input_data[0]) != np.ndarray:
         input_data = np.array(input_data)
 
@@ -1016,14 +946,14 @@ def _build_oracle(flag, oracle, input_data, ms_oracle, level, suffix_method='inc
         input_data = np.expand_dims(input_data, axis=1)
 
     if flag == 'a':
-        [oracle.add_state(ms_oracle, level, obs, suffix_method) for obs in input_data]
+        [oracle.add_state(obs, input_data, volume_data, suffix_method) for obs in input_data]
         oracle.f_array.finalize()
     else:
         [oracle.add_state(obs) for obs in input_data]
     return oracle
 
 
-def build_oracle(input_data,  ms_oracle, level, flag='a',
+def build_oracle(input_data, volume_data, flag='a',
                  threshold=0, suffix_method='inc',
                  feature=None, weights=None, dfunc='cosine',
                  dfunc_handle=None, dim=1, save_file=None):
@@ -1035,15 +965,15 @@ def build_oracle(input_data,  ms_oracle, level, flag='a',
     if flag == 'a':
         oracle = _create_oracle(flag, threshold=threshold, dfunc=dfunc,
                                 dfunc_handle=dfunc_handle, dim=dim)
-        oracle = _build_oracle(flag, oracle, input_data, ms_oracle, level, suffix_method)
+        oracle = _build_oracle(flag, oracle, input_data, volume_data, suffix_method)
     elif flag == 'f' or flag == 'v':
         oracle = _create_oracle(flag, threshold=threshold, dfunc=dfunc,
                                 dfunc_handle=dfunc_handle, dim=dim)
-        oracle = _build_oracle(flag, oracle, input_data, ms_oracle, level)
+        oracle = _build_oracle(flag, oracle, input_data, volume_data)
     else:
         oracle = _create_oracle('a', threshold=threshold, dfunc=dfunc,
                                 dfunc_handle=dfunc_handle, dim=dim)
-        oracle = _build_oracle(flag, oracle, input_data, ms_oracle, level, suffix_method)
+        oracle = _build_oracle(flag, oracle, input_data, volume_data, suffix_method)
 
     if save_file:
         utl.saveOracle(oracle, save_file)

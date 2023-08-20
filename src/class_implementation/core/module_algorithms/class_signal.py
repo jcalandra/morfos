@@ -14,9 +14,8 @@ from others.synthesis import class_synthesis_mso
 import class_cog_algo
 import class_similarity_rules_old
 
+#warning: depreciated
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
-
-# TODO : intégrer le timbre dans la représentation
 
 # note : matrices are created in HSV
 D_THRESHOLD = prm.D_THRESHOLD

@@ -36,11 +36,9 @@ class FormalDiagram:
     def _formal_diagram_update(self, mso, level):
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
-        actual_char = mso.levels[level].actual_char
         actual_char_ind = mso.levels[level].actual_char_ind
         k_init = actual_char_ind
-        if processing == 'symbols':
-            actual_char = actual_char - mso.levels[level].oracle.data[1] + 1
+        actual_char = mso.levels[level].actual_char - mso.levels[level].oracle.data[1] + 1
         if level == 0:
             n = 1
         else:

@@ -3,7 +3,7 @@ from module_mso.mso import class_materialsMemory
 from core.module_visualization import class_fd2DVisu
 from object_model import class_object
 import class_concatObj
-import parameters as prm
+import module_parameters.parameters as prm
 import matplotlib.pyplot as plt
 import math
 
@@ -24,6 +24,7 @@ class MSO:
         self.init_objects = []
         self.audio = []
         self.symbol = ""
+        self.volume = []
         self.rate = SR
         self.data_length = 0
         self.data_size = 0
@@ -39,12 +40,14 @@ class MSO:
 
     def get_audio(self, audio_path):
         data, rate, data_size, data_length = get_data(audio_path)
-        self.data_length = data_length
+        for i in range(prm.NB_SILENCE):
+            self.audio.append(0)
         for i in range(len(data)):
             self.audio.append(data[i])
         self.rate = rate
-        self.data_size = data_size
-        self.nb_hop = math.ceil(data_size/HOP_LENGTH)
+        self.data_size = data_size + prm.NB_SILENCE
+        self.nb_hop = math.ceil(data_size/HOP_LENGTH + prm.NB_SILENCE/HOP_LENGTH)
+        self.data_length = (data_size + prm.NB_SILENCE)/rate
 
     def get_symbol(self, symbol):
         self.symbol = symbol
@@ -84,6 +87,7 @@ class MSO:
 
         self.init_objects = self.init_objects
         self.audio = self.audio
+        self.volume = []
         self.symbol = self.symbol
         self.rate = self.rate
         self.data_length = self.data_length
@@ -105,6 +109,7 @@ class MSO:
         self.init_objects = []
         self.init_objects = []
         self.audio = []
+        self.volume = []
         self.symbol = ""
         self.rate = SR
         self.data_length = 0
@@ -138,6 +143,7 @@ class MSOLevel:
         self.link = [0]
         self.materials = class_materialsMemory.Materials()
         self.concat_obj = class_concatObj.ConcatObj()
+        self.volume = []
 
         self.actual_objects = [class_object.Object()]
         self.actual_char = ""
@@ -155,6 +161,7 @@ class MSOLevel:
         self.objects.append(obj)
 
     def update_oracle(self, ms_oracle, level):
+        self.volume.append(1)
         self.oracle.add_state(ms_oracle, level)
         self.actual_char = self.oracle.data[self.shift + self.iterator + 1]
         self.actual_char_ind = self.shift + self.iterator + 1

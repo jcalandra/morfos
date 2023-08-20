@@ -87,18 +87,19 @@ class ObjRep:
     def update_descriptors(self, descriptors):
         self.nb += 1
         for i in range(self.descriptors.nb_descriptors):
-            for j in range(len(self.descriptors.concat_descriptors[i])):
+            '''for j in range(len(self.descriptors.concat_descriptors[i])):
                 for k in range(len(self.descriptors.concat_descriptors[i][j])):
                     self.descriptors.concat_descriptors[i][j][k] = \
                         ((self.nb - 1)*self.descriptors.concat_descriptors[i][j][k] +
-                         descriptors.concat_descriptors[i][j][k])/self.nb
+                         descriptors.concat_descriptors[i][j][k])/self.nb'''
             for j in range(len(self.descriptors.mean_descriptors[i])):
-                if self.nb <= borders + 1:
-                    self.descriptors.mean_descriptors[i][j] = descriptors.mean_descriptors[i][j]
-                else:
-                    self.descriptors.mean_descriptors[i][j] = \
-                        ((self.nb - borders - 1)*self.descriptors.mean_descriptors[i][j] + descriptors.mean_descriptors[i][j]) / \
-                        (self.nb - borders)
+                for k in range(len(self.descriptors.mean_descriptors[i][j])):
+                    if self.nb <= borders + 1:
+                        self.descriptors.mean_descriptors[i][j][k] = descriptors.mean_descriptors[i][j][k]
+                    else:
+                        self.descriptors.mean_descriptors[i][j][k] = \
+                            ((self.nb - borders - 1)*self.descriptors.mean_descriptors[i][j][k] + descriptors.mean_descriptors[i][j][k]) / \
+                            (self.nb - borders)
 
     def update(self, signal, label, descriptors):
         self.update_signal(signal)

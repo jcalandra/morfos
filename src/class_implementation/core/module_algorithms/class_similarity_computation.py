@@ -2,7 +2,6 @@ import class_similarity_rules_symb
 import class_similarity_rules_sig as sim_sig
 import class_similarity_rules_symb as sim_symb
 from module_parameters import parameters
-import class_materialsMemory
 import class_object
 # ==================================================== SIGNAL ==========================================================
 MFCC_BIT = parameters.MFCC_BIT
@@ -19,8 +18,8 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
-    desc_compared = obj_compared[1].descriptors
-    actual_desc = actual_obj.concat_obj.descriptors
+    desc_compared = obj_compared[1].descriptors.mean_descriptors[0][0]
+    actual_desc = actual_obj.concat_obj.descriptors.mean_descriptors[0][0]
     if parameters.DIFF_CONCORDANCE:
         sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
     elif parameters.EUCLID_DISTANCE:
@@ -32,6 +31,8 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
 def compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
     string_compared = obj_compared[1].concat_labels
     actual_string = actual_obj.concat_obj.concat_labels
+    if level == 0:
+        actual_string = actual_string[-1]
     if parameters.STRICT_EQUALITY:
         sim_digit_label, sim_value = sim_symb.compute_strict_equality(string_compared, actual_string, mat, level)
     elif parameters.ALIGNMENT:
@@ -63,22 +64,13 @@ def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
 
 
 def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
-    print("là")
-    if level > 0:
-        if level-1 > 0:
-            matrix = ms_oracle.levels[level - 2].materials.sim_matrix
-        else:
-            matrix = ms_oracle.matrix.sim_matrix
+    if level > 1:
+        matrix = ms_oracle.levels[level - 2].materials.sim_matrix
+    else:
+        matrix = ms_oracle.matrix.sim_matrix
     if level == 0:
         obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].label
         actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].label
-        matrix = class_materialsMemory.SimMatrix()
-        matrix.labels = ''
-        matrix.values = [[0 for i in range(len(ms_oracle.symbol))] for j in range(len(ms_oracle.symbol))]
-        for i in range(len(ms_oracle.symbol)):
-            matrix.labels += chr(parameters.LETTER_DIFF + i)
-            matrix.values[i][i] = 1
-
     else:
         label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
         obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].concat_labels
@@ -98,27 +90,20 @@ def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
     return sim_value
 
 def similarity(ms_oracle, level):
-
     actual_object_descriptor = class_object.Descriptors()
     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
     len_av = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
     ms_oracle.levels[level].update_oracle(ms_oracle, level)
-
     len_ap = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
     if len_av == 0 or len_ap > len_av:
         digit = 0
     else:
         digit = 1
         indice = ms_oracle.levels[level].oracle.data[-1]
-        if processing == "symbols" or processing == "vectors":
-            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
-            return new_rep, digit
-        else:
-            window = ms_oracle.levels[level - 1].concat_obj.concat_signal
-            new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
-            # TODO: jcalandra 22/09/2021 maj le reorésentant (corriger le code, bug)
-            new_rep.update(window, new_rep.label, actual_object_descriptor)
-            return new_rep, 1
+        window = ms_oracle.levels[level - 1].concat_obj.concat_signal
+        new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
+        new_rep.update(window, new_rep.label, actual_object_descriptor)
+        return new_rep, digit
 
     new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
     new_rep = class_object.ObjRep()

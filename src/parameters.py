@@ -9,7 +9,7 @@ file = Path(__file__).resolve()
 project_root = str(file.parents[1])
 
 import json
-with open(project_root + '/module_parameters/parameters.json') as json_parameters:
+with open(project_root + '/src/parameters.json') as json_parameters:
    data=json.load(json_parameters)
 
 # ------------- MAIN -----------------
@@ -45,12 +45,7 @@ elif min_matrix < 0:
 
 # Choose here either to process the cognitive algorithm from signal or character string
 # processing must be str 'symbols' or 'signal' or 'vectors'
-if FORMAT == ".wav" or FORMAT == ".mp3":
-   processing = "signal"
-elif FORMAT == ".npy":
-   processing = "vectors"
-else:
-   processing = "symbols"
+processing = data["processing"]
 to_transpose = data["to_transpose"]
 is_micro = data["is_micro"]
 
@@ -84,25 +79,21 @@ if STRICT_EQUALITY + ALIGNMENT != 1:
 # parameters
 # Definitions in segmentation_rules_mso.py
 
-RULE_1 = data["RULE_1"]
+RULE_1a = data["RULE_1a"]
+RULE_1b = data["RULE_1b"]
 RULE_2 = data["RULE_2"]
 RULE_3 = data["RULE_3"]
 RULE_4 = data["RULE_4"]
-RULE_5 = data["RULE_5"]
+RULE_5a = data["RULE_5a"]
 RULE_5b = data["RULE_5b"]
 RULE_6 = data["RULE_6"]
 RULE_7 = data["RULE_7"]
 RULE_8 = data["RULE_8"]
-SYMB_MRULES = [RULE_1, RULE_2, RULE_3, 0, 0, RULE_6, RULE_7, RULE_8]
-SYMB_PRULES = [0, 0, 0, RULE_4, RULE_5, RULE_6, RULE_7, RULE_8]
-RULES = [SYMB_MRULES, SYMB_PRULES]
 
 ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
 ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
 lower_bound_rule6 = data["lower_bound_rule6"]
 higher_bound_rule6 = data["higher_bound_rule6"]
-
-compute_level0 = data["compute_level0"]
 
 # ============ SIMILARITY AND SEGMENTATION
 # SPECIFIC PARAMETRISATION ===============
@@ -232,10 +223,7 @@ WRITE_RESULTS = data["WRITE_RESULTS"]
 # Number of frames corresponding to silence
 # that we want to add at the beggining of the
 # audio file
-if processing == "signal":
-   NB_SILENCE = data["NB_SILENCE"]*data["HOP_LENGTH"]
-else:
-   NB_SILENCE = 0
+NB_SILENCE = data["NB_SILENCE"]*1024
 
 # Type of algorithm we want to use. ALGO_REP
 # and ALGO_USUAL ar outdated.

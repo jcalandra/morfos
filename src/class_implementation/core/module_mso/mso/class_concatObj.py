@@ -23,13 +23,11 @@ class ConcatObj:
 
     def _update_descriptors(self, new_descriptors):
         for i in range(self.descriptors.nb_descriptors):
-            #print("self desc", self.descriptors.concat_descriptors[i])
-            #print("new desc", new_descriptors.concat_descriptors[i])
-            for j in range(len(new_descriptors.concat_descriptors[i])):
-                self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i][j])
+            """for j in range(len(new_descriptors.concat_descriptors[i])):
+                self.descriptors.concat_descriptors[i].append(new_descriptors.concat_descriptors[i][j])"""
             for j in range(len(new_descriptors.mean_descriptors[i])):
                 for k in range(len(new_descriptors.mean_descriptors[i][j])):
-                    self.descriptors.mean_descriptors[i][j][k] = (self.descriptors.mean_descriptors[i][j][k]*self.size + self.descriptors.mean_descriptors[i][j][k])/(self.size+1)
+                    self.descriptors.mean_descriptors[i][j][k] = (self.descriptors.mean_descriptors[i][j][k]*self.size + new_descriptors.mean_descriptors[i][j][k])/(self.size+1)
 
     def _update_labels(self, label):
         self.concat_labels += label

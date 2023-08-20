@@ -21,7 +21,6 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
     if len(actual_string) == 0:
         return 0, 0
     min_len = min(len(string_compared), len(actual_string))
-
     # creation of the similarity matrix
     if not mat.values:
         mat.values = np.empty((0, 0))
