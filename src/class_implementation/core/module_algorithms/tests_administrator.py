@@ -1,6 +1,7 @@
 from criterias.module_segmentation import class_segmentation_rules_symb
 from criterias.module_segmentation import class_segmentation_rules_sig
 import module_parameters.parameters as prm
+import random
 
 class Rules:
     def  __init__(self):
@@ -65,6 +66,25 @@ def segmentation_test(ms_oracle, level, rules):
 
         else:
             bool = segmentation_str(ms_oracle, level, rules.symbRules) and segmentation_audio(ms_oracle, level, rules.symbRules)
+    return bool
+
+def segmentation_test_noseg(ms_oracle, level, rules):
+    bool = 0
+    return bool
+
+def segmentation_test_allseg(ms_oracle, level, rules):
+    bool = 1
+    return bool
+
+def segmentation_test_maxseg(ms_oracle, level, rules):
+    if len(ms_oracle.levels[level].concat_obj) == 2:
+        bool = 1
+    else:
+        bool = 0
+    return bool
+
+def segmentation_test_random(ms_oracle, level, rules):
+    bool = round(random.random())
     return bool
 
 

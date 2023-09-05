@@ -9,7 +9,6 @@ import numpy as np
 
 # In this file is defined the main loop for the algorithm at symbolic scale
 # structring test function according to rules (rules_parametrization) and similarity test function
-wait = 0
 
 
 # TODO: modifier les objets: un objet doit être une structure qui contient
@@ -69,8 +68,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
         print(ms_oracle.volume)
         ms_oracle.levels[level].volume = ms_oracle.volume
     rules = ta.Rules()
-    level_wait = -1
-    global wait
     ms_oracle.levels[level].objects = objects
     if verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
@@ -84,6 +81,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].volume = ms_oracle.volume
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
+        print("level", level, "actual obj", ms_oracle.levels[level].actual_object.label)
 
         if level == 0:
             # CHECKPOINT #
@@ -99,7 +97,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
             # END CHECKPOINT #
 
             ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
-
         # formal diagram is updated with the new char
         if ms_oracle.levels[level].actual_char_ind == 1:
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
@@ -108,24 +105,15 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
         ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
 
-        # First is the parametrisation of the rules according to the external settings.
-        bool = ta.segmentation_test(ms_oracle, level, rules)
-        #bool = 0
         objects = ms_oracle.levels[level].objects
         iterator = ms_oracle.levels[level].iterator
-        if level > 0 and ms_oracle.end_mk == 1 and iterator < len(objects) - 1:
-            ms_oracle.end_mk = 0
-            wait = 1
-            level_wait = level
 
-        if (level == 0 and iterator == ms_oracle.levels[level].actual_char_ind) or \
-                (wait == 1 and level == level_wait and iterator == len(objects) - 1):
+        if (level == 0 and ms_oracle.levels[level].actual_char_ind == len(objects)):
             ms_oracle.end_mk = 1
-            wait = 0
-            level_wait = -1
 
         # If the tests are positives, there is structuration.
-        if (bool and ms_oracle.end_mk == 0) or (level == 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max > level):
+        if (ms_oracle.end_mk == 0 and ta.segmentation_test(ms_oracle, level, rules)): #or (level == 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max > level):
+            print("segmentation 1")
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
                 ms_oracle.levels[level + 1].iterator = 0
@@ -135,19 +123,20 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
             ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
         else:
+            if level == 0 and ms_oracle.levels[level].iterator == len(objects):
+                break
             if ms_oracle.levels[level].concat_obj.size == 0:
                 ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
             else:
                 ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
 
         # Automatically structuring if this is the End Of String
-        if level > 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max >= level:
+        if ms_oracle.end_mk == 1 and ms_oracle.level_max > level:
             if ms_oracle.level_max > level:
                 ms_oracle.levels[level + 1].iterator -= 1
             structure(ms_oracle, level)
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
             ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
-
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
         ms_oracle.levels[level].iterator += 1

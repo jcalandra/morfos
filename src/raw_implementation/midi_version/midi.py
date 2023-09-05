@@ -18,7 +18,7 @@ NB_SILENCE = prm.NB_SILENCE
 
 AUDIBLE_THRESHOLD = prm.AUDIBLE_THRESHOLD
 
-PATH_RESULT = "../../results/"
+PATH_RESULT = "../../../results/"
 
 
 # TODO : mettre ce code dans le dossier src et modifier les tests en conséquence
