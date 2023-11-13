@@ -236,7 +236,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             formal_diagram_graph, level, formal_diagram, data_length)
 
         # First is the parametrisation of the rules according to the external settings.
-        test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
+        test_1, test_2, test_3, test_4, test_5, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
         i, k, actual_char, f_oracle, link, history_next, concat_obj, \
         formal_diagram, formal_diagram_graph, str_obj, input_data = similarity_rules.rules_parametrization(
                 f_oracle, matrix, actual_char, actual_char_ind, link, oracles, level, i, k, history_next, concat_obj,
@@ -251,7 +251,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         if prm.COMPUTE_COSTS == 1:
             alpha_or_delta_t += cost_seg_test_2
         if ((test_1 and test_2) or (test_2 and test_3) or test_4 or test_6b or test_7b or test_8b) \
-                and (test_5a and test_5b and test_6a and test_7a and test_8a) and (end_mk == 0):
+                and (test_5 and test_6a and test_7a and test_8a) and (end_mk == 0):
             diff = 1
             # or (end_mk == 1 and len(concat_obj) != 0):
             if prm.verbose == 1:

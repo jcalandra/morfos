@@ -1,11 +1,11 @@
 {
-   "NAME":"Geisslerlied_piano_guitarbasic",
-   "FORMAT":".wav",
+   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
+   "FORMAT":".txt",
 
    "PATH_SOUND":"/../data/Geisslerlied/",
    "PATH_RESULT":"/../results/Geisslerlied/chap6/raw/sil/timbre/guitarepiano_justetimbre/",
 
-   "teta":0.15,
+   "teta":0.87,
    "d_threshold":150,
 
    "POLYPHONY":0,
@@ -25,19 +25,17 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
-   "RULE_1a":1,
-   "RULE_1b":0,
+   "RULE_1":1,
    "RULE_2":1,
    "RULE_3":1,
-   "RULE_4":0,
-   "RULE_5a":0,
-   "RULE_5b":0,
-   "RULE_6":1,
+   "RULE_4":1,
+   "RULE_5":0,
+   "RULE_6":0,
    "RULE_7":0,
-   "RULE_8":1,
+   "RULE_8":0,
 
+   "ALIGNEMENT_rule2":0,
    "ALIGNEMENT_rule3":0,
-   "ALIGNEMENT_rule4":0,
    "lower_bound_rule6":3,
    "higher_bound_rule6":16,
 
@@ -99,12 +97,12 @@
    "TO_SAVE_BMP":0,
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
-   "TO_SHOW_PYP":0,
+   "TO_SHOW_PYP":1,
    "TO_SAVE_FINAL":0,
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":0,
+   "EVOL_PRINT":1,
 
    "SHOW_MSO_CONTENT":0,
 

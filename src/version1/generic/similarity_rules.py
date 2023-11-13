@@ -9,47 +9,40 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
                           concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data, level_max, end_mk):
     """ Structuring test function: if one test is validated, there is structuration."""
     potential_obj = None
-    if segmentation_rules_mso.RULE_1a:
+    if segmentation_rules_mso.RULE_1:
         # test_1 = segmentation_rules_mso.rule_1a_similarity_mat(f_oracle, actual_char_ind)
-        test_1 = segmentation_rules_mso.rule_1b_similarity_word(oracles, level, actual_char)
+        test_1 = segmentation_rules_mso.rule_1_similarity_word(oracles, level, actual_char)
     else:
         test_1 = 1
-    if segmentation_rules_mso.RULE_2:
+    if segmentation_rules_mso.RULE_5:
         test_2 = segmentation_rules_mso.rule_2_not_validated_hypothesis(f_oracle, link, actual_char, actual_char_ind)
     else:
         test_2 = 1
-    if not segmentation_rules_mso.RULE_1a and not segmentation_rules_mso.RULE_2:
+    if not segmentation_rules_mso.RULE_1 and not segmentation_rules_mso.RULE_5:
         test_1 = 0
         test_2 = 0
-    if segmentation_rules_mso.RULE_4:
+    if segmentation_rules_mso.RULE_3:
         test_4, potential_obj = segmentation_rules_mso.rule_4_recomputed_object(
             oracles, matrix, level, actual_char_ind, str_obj, k, level_max, end_mk)
     else:
         test_4 = 0
-    if segmentation_rules_mso.RULE_3 and test_4 == 0:
+    if segmentation_rules_mso.RULE_2 and test_4 == 0:
         test_3 = segmentation_rules_mso.rule_3_existing_object(history_next, concat_obj, actual_char, matrix)
     else:
         test_3 = 0
-    if segmentation_rules_mso.RULE_5a:
-        test_5a = segmentation_rules_mso.rule_5a_regathering_after(concat_obj)
+    if segmentation_rules_mso.RULE_4:
+        test_5 = segmentation_rules_mso.rule_5a_regathering_after(concat_obj)
     else:
-        test_5a = 1
-    if segmentation_rules_mso.RULE_5b:
-        test_5a = 1
-        test_5b = segmentation_rules_mso.rule_5b_regathering_before()
-    else:
-        test_5b = 1
+        test_5 = 1
     if segmentation_rules_mso.RULE_6:
-        test_5a = 1
-        test_5b = 1
+        test_5 = 1
         test_6a = segmentation_rules_mso.rule_6a_low_bound(concat_obj)
         test_6b = segmentation_rules_mso.rule_6b_high_bound(concat_obj)
     else:
         test_6a = 1
         test_6b = 0
     if segmentation_rules_mso.RULE_7:
-        test_5a = 1
-        test_5b = 1
+        test_5 = 1
         test_6a = 1
         test_6b = 0
         test_7a = segmentation_rules_mso.rule_7a_mean_word_length_low(f_oracle, concat_obj)
@@ -86,7 +79,7 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
             formal_diagram_graph, level, formal_diagram, data_length)
         formal_diagram_graph = oracles[1][level][5]
 
-    return test_1, test_2, test_3, test_4, test_5a, test_5b, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
+    return test_1, test_2, test_3, test_4, test_5, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
            i, k, actual_char, \
            f_oracle, link, history_next, concat_obj, formal_diagram, formal_diagram_graph, str_obj, input_data
 

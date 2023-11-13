@@ -79,19 +79,17 @@ if STRICT_EQUALITY + ALIGNMENT != 1:
 # parameters
 # Definitions in segmentation_rules_mso.py
 
-RULE_1a = data["RULE_1a"]
-RULE_1b = data["RULE_1b"]
+RULE_1 = data["RULE_1"]
 RULE_2 = data["RULE_2"]
 RULE_3 = data["RULE_3"]
 RULE_4 = data["RULE_4"]
-RULE_5a = data["RULE_5a"]
-RULE_5b = data["RULE_5b"]
+RULE_5 = data["RULE_5"]
 RULE_6 = data["RULE_6"]
 RULE_7 = data["RULE_7"]
 RULE_8 = data["RULE_8"]
 
+ALIGNEMENT_rule2 = data["ALIGNEMENT_rule2"]
 ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
-ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
 lower_bound_rule6 = data["lower_bound_rule6"]
 higher_bound_rule6 = data["higher_bound_rule6"]
 

@@ -19,18 +19,16 @@ from formal_diagram_mso import *
 # RULE_6 and RULE_7 priores to RULE_8
 
 
-RULE_1a = prm.RULE_1a
-RULE_1b = prm.RULE_1b
+RULE_1 = prm.RULE_1
 RULE_2 = prm.RULE_2
 RULE_3 = prm.RULE_3
 RULE_4 = prm.RULE_4
-RULE_5a = prm.RULE_5a
-RULE_5b = prm.RULE_5b
+RULE_5 = prm.RULE_5
 RULE_6 = prm.RULE_6
 RULE_7 = prm.RULE_7
 RULE_8 = prm.RULE_8
-ALIGNEMENT_rule3 = prm.ALIGNEMENT_rule3
-ALIGNEMENT_rule4 = prm.ALIGNEMENT_rule4
+ALIGNEMENT_rule3 = prm.ALIGNEMENT_rule2
+ALIGNEMENT_rule4 = prm.ALIGNEMENT_rule3
 
 lower_bound_rule6 = prm.lower_bound_rule6
 higher_bound_rule6 = prm.higher_bound_rule6
@@ -38,9 +36,9 @@ higher_bound_rule6 = prm.higher_bound_rule6
 letter_diff = prm.LETTER_DIFF
 
 
-# RULE 1a:  (ab + a => (ab)(a
+# RULE 1old:  (ab + a => (ab)(a
 #          (ab + b => (ab)(b
-def rule_1a_similarity_mat(f_oracle, actual_char_ind):
+def rule_1old_similarity_mat(f_oracle, actual_char_ind):
     """ Look the suffix of actual char which is at 'actual_char_ind'. Return 1 if the actual_char has already been seen,
      meaning its suffix is not 0, otherwise the function returns 0, meaning it's a new material."""
     if f_oracle.sfx[actual_char_ind] != 0:
@@ -49,7 +47,7 @@ def rule_1a_similarity_mat(f_oracle, actual_char_ind):
 
 # RULE 1b:  (ab + a => (ab)(a
 #          (ab + b => (abb
-def rule_1b_similarity_word(oracles, level, actual_char):
+def rule_1_similarity_word(oracles, level, actual_char):
     '''
     if prm.processing == 'signal'and prm.NB_SILENCE > 0 and \
             level == 0 and actual_char == 1:
@@ -149,7 +147,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             return 0, str_obj
 
     # if the longest similar suffix has only one caracter before it and RULE 5 is activated
-    if RULE_5a:
+    if RULE_5:
         if link[f_oracle.sfx[actual_char_ind - nb_elements]] ==\
                 link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] \
                 and link[f_oracle.sfx[actual_char_ind - nb_elements] - 1] !=\

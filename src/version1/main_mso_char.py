@@ -93,4 +93,4 @@ def rwcpop_tests():
     print(pop01)
     main(pop01)
 
-#example()
+example()
