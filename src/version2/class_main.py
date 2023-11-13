@@ -1,9 +1,17 @@
 import time
 import matplotlib.pyplot as plt
 import module_parameters.parameters as prm
+import module_visualization.class_fd2DVisu as fd2D
+import os
 import class_mso
 import class_cog_algo
 import precomputer as pc
+import costs
+import hypothesis
+import json
+import others.object_storage as obj_s
+import shutil
+from pathlib import Path
 
 
 # This is the main loop for the whole cognitive algorithm
@@ -31,9 +39,11 @@ def main_print(mso):
 def main():
     """ Main loop for the cognitive algorithm starting from a string describing the audio."""
     # initialisation of the structures
+    prm.mk_rule3 = 0
     start_time = time.time()
     path = PATH_SOUND + NAME + FORMAT
     pre_data = None
+    costs.init_cost()
 
     if FORMAT == ".txt":
         pre_data = NAME
@@ -46,6 +56,7 @@ def main():
     obj_tab = pc.compute_data(data)
 
     mso = class_mso.MSO(NAME)
+    obj_s.data_init(data)
     mso.dims = data[3]
     mso.volume = data[2]
     mso.get_data(pre_data, obj_tab)
@@ -53,6 +64,33 @@ def main():
 
     end_time = time.time()
     print("Temps d execution de l'algorithme : %s secondes ---" % (end_time - start_time))
+
+    if prm.TO_SAVE_FINAL:
+        print("path result :", prm.PATH_RESULT)
+        if not os.path.exists(prm.PATH_RESULT):
+            os.makedirs(prm.PATH_RESULT)
+        fd2D.final_save_one4all(mso)
+        fd2D.final_save_all4one(mso)
+        shutil.copy2(str(Path(__file__).resolve().parents[1]) +
+                     '/version2/parameters.json', prm.PATH_RESULT+'/parameters.json')
+
+    if prm.COMPUTE_HYPOTHESIS:
+        hypothesis.print_phases()
+
+    if prm.COMPUTE_COSTS:
+        if not os.path.exists(prm.PATH_RESULT):
+            os.makedirs(prm.PATH_RESULT)
+        costs.normalise_cost()
+        costs.print_cost()
+        costs.save_cost()
+        costs.cost_general_diagram_all_levels()
+
+    if prm.SAVE_MATERIALS:
+        with open(prm.PATH_RESULT + '/materials.json', 'w') as myFile:
+            json.dump(obj_s.objects, myFile)
+
+
+
     plt.pause(3000)
 
 
