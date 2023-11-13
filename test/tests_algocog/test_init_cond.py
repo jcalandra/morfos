@@ -1,4 +1,4 @@
-import time
+import time_manager
 import signal_ac as sig
 import interface as ui
 
@@ -63,21 +63,21 @@ def main():
     file = open("../results/error.txt", "a")
     # file.write("GEISSLERLIED\nTEST INIT_COND\n")
     # file.close()
-    start_time = time.time()
+    start_time = time_manager.time()
     # test_init_cond(name)
-    print("Temps d execution : %s secondes ---" % (time.time() - start_time))
+    print("Temps d execution : %s secondes ---" % (time_manager.time() - start_time))
 
     # file.write("\nTEST TEMPO\n")
     # file.close()
-    start_time = time.time()
+    start_time = time_manager.time()
     # test_tempo(name)
-    print("Temps d execution : %s secondes ---" % (time.time() - start_time))
+    print("Temps d execution : %s secondes ---" % (time_manager.time() - start_time))
 
     # file.write("\nTEST TRANSPO\n")
     # file.close()
-    start_time = time.time()
+    start_time = time_manager.time()
     test_transpose(name)
-    print("Temps d execution : %s secondes ---" % (time.time() - start_time))
+    print("Temps d execution : %s secondes ---" % (time_manager.time() - start_time))
 
 
 main()

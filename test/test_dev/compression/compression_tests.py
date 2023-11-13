@@ -2,7 +2,7 @@ from algo_segmentation_mso import fun_segmentation
 from data_mso import algo_cog
 import compression
 import compression_synthesis as com_syn
-import time
+import time_manager
 import parameters as prm
 
 HOP_LENGTH = prm.HOP_LENGTH
@@ -47,13 +47,13 @@ def test_compression(mso):
 
 def test_compression_encodage(mso):
     lvl_max = len(mso) - 1
-    start_time = time.time()
+    start_time = time_manager.time()
     for j in range(10000):
         compression.nb_materials = [-1 for i in range(lvl_max + 1)]
         compression.encoded_char = []
         t_end = len(mso[lvl_max][0].data)
         compression.encode(lvl_max, mso, fd_str=[], t_start=1, t_end=t_end)
-    print("time =", time.time() - start_time)
+    print("time =", time_manager.time() - start_time)
 
 
 def test_compression_decodage(mso):
@@ -65,19 +65,19 @@ def test_compression_decodage(mso):
     compression.encode(lvl_max, mso, fd_str=[], t_start=1, t_end=t_end)
     tmp = compression.encoded_char
 
-    start_time = time.time()
+    start_time = time_manager.time()
     for j in range(10000):
         compression.encoded_char = tmp
         compression.dictionary = [[] for i in range(lvl_max + 1)]
         compression.formal_diagrams = [[] for i in range(lvl_max + 1)]
         compression.decode(lvl_max)
-    print("time =", time.time() - start_time)
+    print("time =", time_manager.time() - start_time)
 
 
 def test_compression_repeat(mso):
     lvl_max = len(mso) - 1
 
-    start_time = time.time()
+    start_time = time_manager.time()
     for j in range(10000):
         compression.nb_materials = [-1 for i in range(lvl_max + 1)]
         compression.encoded_char = []
@@ -87,7 +87,7 @@ def test_compression_repeat(mso):
         compression.dictionary = [[] for i in range(lvl_max + 1)]
         compression.formal_diagrams = [[] for i in range(lvl_max + 1)]
         compression.decode(lvl_max)
-    print("time =", time.time() - start_time)
+    print("time =", time_manager.time() - start_time)
 
 
 def main():

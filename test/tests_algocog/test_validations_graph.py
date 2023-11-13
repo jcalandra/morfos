@@ -1,4 +1,4 @@
-import time
+import time_manager
 import data_mso as sig
 import interface as ui
 import matplotlib.pyplot as plt
@@ -203,9 +203,9 @@ def test_auto(name):
 
 def main():
     name = "Geisslerlied/Geisslerlied"
-    start_time = time.time()
+    start_time = time_manager.time()
     test_auto(name)
-    print("Temps d execution : %s secondes ---" % (time.time() - start_time))
+    print("Temps d execution : %s secondes ---" % (time_manager.time() - start_time))
 
 
 main()

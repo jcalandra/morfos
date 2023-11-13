@@ -1,4 +1,4 @@
-import time
+import time_manager
 import numpy as np
 import matplotlib.pyplot as plt
 import midi as md
@@ -227,14 +227,14 @@ def test_diff(name, hop_length, nb_values, teta, tempo, init):
 
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
-    start_time = time.time()
+    start_time = time_manager.time()
     matrix_audio, data_length, data_size, distance, t = sig.algo_cog(path_wav, hop_length, nb_values, teta, init)
-    print("[INFO] Execution time audio : %s secondes ---" % (time.time() - start_time))
+    print("[INFO] Execution time audio : %s secondes ---" % (time_manager.time() - start_time))
     ui.graph_algo_cogn(name + "-audio", "", matrix_audio, nb_values, data_length, teta, hop_length, init)
 
-    start_time = time.time()
+    start_time = time_manager.time()
     matrix_midi = md.interface(path_midi, tempo)
-    print("[INFO] Execution time midi : %s secondes ---" % (time.time() - start_time))
+    print("[INFO] Execution time midi : %s secondes ---" % (time_manager.time() - start_time))
 
     copy_matrix_midi, copy_matrix_audio, ns_lines, inf_lines, sup_lines = df_comparison(matrix_midi, matrix_audio,
                                                                                         data_size, data_length,

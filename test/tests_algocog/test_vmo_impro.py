@@ -2,7 +2,7 @@ import numpy as np
 import oracle_mso
 import generate as vge
 import matplotlib.pyplot as plt
-import time
+import time_manager
 import sklearn.preprocessing as pre
 import librosa
 import scipy.io.wavfile as wave
@@ -34,7 +34,7 @@ RESYNTHESIS = 0
 FORMAL_DIAGRAM = 1
 
 # ANALYSIS
-start_time_full = time.time()
+start_time_full = time_manager.time()
 
 # chroma
 if CHROMA == 1:
@@ -59,9 +59,9 @@ elif CQT == 1:
     NB_OCTAVES = 4
     DIM = NB_OCTAVES*NB_NPO*PRECISION
 
-    here_time = time.time()
+    here_time = time_manager.time()
     datanum, sr = librosa.load(target_file, sr=sample_rate)
-    temps_data = time.time() - here_time
+    temps_data = time_manager.time() - here_time
     print("Temps data : %s secondes ---" % temps_data)
 
     cqt_values = np.abs(librosa.cqt(datanum, sr=sr, hop_length=hop_size, fmin=librosa.note_to_hz('C3'),
@@ -91,7 +91,7 @@ else:
     oracle_t = oracle_mso.build_oracle(
         mfcc_frames, volume_data, flag='a', threshold=ideal_t[0][1], feature='mfcc', dim=20)
 
-print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
+print("Temps d execution de l'algorithme entier : %s secondes ---" % (time_manager.time() - start_time_full))
 
 
 # PLOT THE THRESHOLD

@@ -1,4 +1,4 @@
-import time
+import time_manager
 import numpy as np
 import midi as md
 import signal_ac as sig
@@ -132,14 +132,14 @@ def test_replace(name, hop_length, nb_mfcc, teta, init, tempo):
 
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
-    start_time = time.time()
+    start_time = time_manager.time()
     matrix_audio, data_length, data_size, distance = sig.algo_cog(path_wav, hop_length, nb_mfcc, teta, init)
-    print("[INFO] Execution time audio : %s secondes ---" % (time.time() - start_time))
+    print("[INFO] Execution time audio : %s secondes ---" % (time_manager.time() - start_time))
     ui.graph_algo_cogn(name + "-audio", "",  matrix_audio, nb_mfcc, data_length, teta, hop_length, init)
 
-    start_time = time.time()
+    start_time = time_manager.time()
     matrix_midi = md.interface(path_midi, hop_length, tempo)
-    print("[INFO] Execution time midi : %s secondes ---" % (time.time() - start_time))
+    print("[INFO] Execution time midi : %s secondes ---" % (time_manager.time() - start_time))
 
     err, mat_audio_mdfy = compute_replace(matrix_midi, matrix_audio)
     diff = print_replace(mat_audio_mdfy, matrix_midi, name, data_length, hop_length, teta)
