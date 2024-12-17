@@ -89,9 +89,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
     # Every new character is analysed.
     ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
     ms_oracle.levels[level].iterator = 0
-    while ms_oracle.levels[level].iterator < len(objects):
+    while ms_oracle.levels[level].iterator < len(objects) and level > 0 or ms_oracle.levels[level].iterator < len(objects) - 1:
         iterator = ms_oracle.levels[level].iterator
-        if level == 0:
+        if level == 0 and ms_oracle.end_mk == 0:
             ms_oracle.levels[level].volume = ms_oracle.volume
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_object = objects[iterator]
@@ -129,7 +129,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
             costs.compute_cost(ms_oracle, level)
 
         # If the tests are positives, there is structuration.
-        if (ms_oracle.end_mk == 0 and ta.segmentation_test(ms_oracle, level, rules)): #or (level == 0 and ms_oracle.end_mk == 1 and ms_oracle.level_max > level):
+        if ((ms_oracle.levels[level].iterator > 0 and level ==0 or level > 0) and ms_oracle.end_mk == 0 and ta.segmentation_test(ms_oracle, level, rules)):
+            if ms_oracle.out:
+                return 1
             # print("segmentation 1")
             if len(ms_oracle.levels) > level + 1:
                 ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
@@ -145,6 +147,8 @@ def fun_segmentation(ms_oracle, objects, level=0):
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
             ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
         else:
+            if ms_oracle.out:
+                return 1
             # print("no segmentation")
             if level == 0 and ms_oracle.levels[level].iterator == len(objects):
                 break
@@ -165,6 +169,8 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
         # Automatically structuring if this is the End Of String
         if ms_oracle.end_mk == 1 and ms_oracle.level_max > level:
+            if ms_oracle.out:
+                return 1
             # print("segmentation 2")
             if ms_oracle.level_max > level:
                 ms_oracle.levels[level + 1].iterator -= 1

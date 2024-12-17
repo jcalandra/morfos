@@ -585,7 +585,7 @@ def algo_cog(audio_path, ms_oracle):
         f_ac.write(str(algocog_time) + "\n")
         f_ac.close()
         name = audio_path.split('/')[-1]
-        file = open("../results/error.txt", "a")
+        file = open("../../../../results/results/error.txt", "a")
         file.write("\nERROR file " + name + ", " + str(hop_length) + ", " + str(nb_values) + ", " + str(teta) +
                    ", " + str(init) + "\nseg_error = " + str(seg_error) + "\nclass_error = " + str(class_error) +
                    "\ndistance = " + str(distance) + "\n")

@@ -60,7 +60,6 @@ def compute_data_symbol(data):
         #new_descriptors.init([["a"],["b"]],[["a"],["b"]])
         new_descriptors.init([[[1,2,3]]],[[[1,2,3]]])
 
-
         new_obj = class_object.Object()
         new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
         obj_tab.append(new_obj)

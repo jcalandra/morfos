@@ -115,7 +115,7 @@ class ObjRep:
 
 class Descriptors:
     def __init__(self):
-        self.nb_descriptors = 1
+        self.nb_descriptors = 0
         self.concat_descriptors = []
         self.mean_descriptors = []
 
@@ -130,15 +130,16 @@ class Descriptors:
     def init(self, concat_descriptors, mean_descriptors):
         self.init_concat_descriptors(concat_descriptors)
         self.init_mean_descriptors(mean_descriptors)
-        self.nb_descriptors = len(concat_descriptors)
+        self.nb_descriptors += 1
 
     def update_concat_descriptors(self, concat_descriptors):
-        for i in range(self.nb_descriptors):
+
+        for i in range(self.concat_descriptors):
             for j in range(len(self.concat_descriptors[i])):
                 self.concat_descriptors[i].append(concat_descriptors[i])
 
     def update_mean_descriptors(self, mean_descriptors):
-        for i in range(self.nb_descriptors):
+        for i in range(self.mean_descriptors):
             for j in range(len(self.mean_descriptors[i])):
                 if len(self.concat_descriptors[0]) <= borders + 1:
                     self.mean_descriptors[i][j] = mean_descriptors[j]

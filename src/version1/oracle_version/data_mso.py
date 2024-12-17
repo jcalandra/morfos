@@ -43,6 +43,8 @@ hop_length = prm.HOP_LENGTH
 init = prm.INIT
 nb_values = prm.NB_VALUES
 teta = prm.TETA
+if prm.MFCC_BIT:
+    teta = prm.TETA_MFCC
 
 # COSTS
 global gamma_t

@@ -3,10 +3,12 @@
 # Add python_path to perform relative import
 # main_mso.py must stay on src
 
+import json
 import sys
 import os
 from pathlib import Path # if you haven't already done so
-from formal_diagram_mso import final_save_one4all, final_save_all4one
+
+
 file = Path(__file__).resolve()
 import shutil
 
@@ -20,6 +22,7 @@ sys.path.append(generic_path)
 
 oracle_path = src_path + '/version1/oracle_version'
 sys.path.append(oracle_path)
+print("oracle path", oracle_path)
 
 plot_path = project_root + '/version1/lib/vmo-master/vmo'
 sys.path.append(plot_path)
@@ -27,10 +30,12 @@ sys.path.append(plot_path)
 misc_path = plot_path + '/version1/VMO/utility'
 sys.path.append(misc_path)
 
+misc_path = plot_path + '/version1/VMO/utility'
+sys.path.append(misc_path)
+
 # ======== IMPORT ======== 
 
 import time
-import plot
 import matplotlib.pyplot as plt
 import data_mso
 import version1.parameters as prm
@@ -38,6 +43,8 @@ import objects_storage as obj_s
 import scipy.io.wavfile as wave
 import cost_storage as cs
 import phases_storage as hs
+from formal_diagram_mso import final_save_one4all, final_save_all4one
+import audacity_marker
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -48,11 +55,6 @@ FORMAT = prm.FORMAT
 PATH_SOUND = prm.PATH_SOUND
 PATH_RESULT = prm.PATH_RESULT
 PATH = PATH_SOUND + NAME + FORMAT
-
-HOP_LENGTH = prm.HOP_LENGTH
-NB_VALUES = prm.NB_VALUES
-TETA = prm.TETA
-INIT = prm.INIT
 
 # ======================================= COGNITIVE ALGORITHM MAIN FUNCTION ============================================
 def main(path=PATH, result_path=prm.PATH_RESULT):
@@ -112,6 +114,8 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
                      '/version1/parameters.json', prm.PATH_RESULT+'/parameters.txt')
         print('file saved as ' + prm.PATH_RESULT+ '/parameters.txt')
 
+    audacity_marker.produce_file(obj_s.objects)
+
     if prm.COMPUTE_HYPOTHESIS:
         hs.phases_print()
         hs.phases_cost_diagram_perphase()
@@ -131,8 +135,22 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
     if prm.TO_SHOW_PYP or prm.SHOW_COMPUTE_COSTS:
         plt.pause(3000)
 
-    '''if prm.SAVE_MATERIALS:
+    if prm.SAVE_MATERIALS:
         with open(prm.PATH_RESULT + '/materials.json', 'w') as myFile:
-            json.dump(obj_s.objects, myFile)'''
+            json.dump(obj_s.objects, myFile)
+        print('file saved as ' + prm.PATH_RESULT+ '/materials.json')
+
+        file = open(prm.PATH_RESULT + "/structure.txt", "w")
+        for i in range(len(mso_oracle[1])):
+            file.write("level" + str(i) + "\n")
+            new_fd.append([tab_f_oracle[i][0].data[j]
+                           for j in range(1, len(tab_f_oracle[i][0].data))])
+            file.write("new_fd: " + str(new_fd[i])+ "\n")
+            file.write("link: " + str(mso_oracle[1][i][1])+ "\n")
+            file.write("history table: " + str(mso_oracle[1][i][2])+ "\n")
+            file.write("material similarity matrix: "+ str(mso_oracle[1][i][6])+ "\n\n")
+        file.close()
+        print('file saved as ' + prm.PATH_RESULT+ '/structure.txt')
+
 
 main()

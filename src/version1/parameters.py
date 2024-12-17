@@ -123,6 +123,7 @@ GAP = chr(data["GAP"])
 # fft : 0.91; mfcc : 0.019 pour 50; cqt : 0.97
 # at precision 2, 0.927 at precision 1
 TETA = teta
+TETA_MFCC = data["teta_mfcc"]
 
 # Value under with the signal is considered as silence
 AUDIBLE_THRESHOLD = data["AUDIBLE_THRESHOLD"]

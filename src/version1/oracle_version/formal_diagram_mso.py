@@ -23,7 +23,7 @@ global_factor = 20
 # Implementation for an evolutive formal diagram
 def print_formal_diagram_init(level):
     """ Print the formal diagram at level 'level' at its initialization."""
-    # print("PRINT formal diagram init")
+    print("PRINT formal diagram init")
     if prm.TO_SHOW_PYP:
         fig = plt.figure(figsize= figsize)
         plt.title("Formal diagram of level " + str(level))
@@ -37,7 +37,7 @@ def print_formal_diagram_init(level):
 
 def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
-    # print("PRINT formal diagram update")
+    #print("PRINT formal diagram update")
     if prm.TO_SHOW_PYP:
         fig = plt.figure(fig_number, figsize=figsize)
         plt.clf()
@@ -72,7 +72,7 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
 
 def formal_diagram_init_nobound(formal_diagram, data_length, oracles, level):
     """Initialize the formal diagram 'formal_diagram' at level 'level'."""
-    # print("formal diagram init")
+    #print("formal diagram init nobound")
     new_mat = [1 for i in range(data_length)]
     formal_diagram.append(new_mat)
     if level == 0:
@@ -117,7 +117,7 @@ def formal_diagram_init_nobound(formal_diagram, data_length, oracles, level):
 def formal_diagram_update_nobound(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
     """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
     'actual_char'."""
-    # print("formal diagram update")
+    print("formal diagram update nobound")
     k_init = actual_char_ind
     if processing == 'symbols':
         actual_char = actual_char - oracles[1][level][0].data[1] + 1

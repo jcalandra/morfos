@@ -6,11 +6,14 @@ import numpy as np
 f_number = 0
 global_factor = 20
 figsize= [30, 5]
+global color_nb
 
 class FormalDiagram:
 
     def _formal_diagram_init(self, mso, level):
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
+        global color_nb
+        color_nb = 0
         if processing == 'signal' and level==0:
             factor = 1
         else:
@@ -30,6 +33,7 @@ class FormalDiagram:
                 link_r = link.copy()
                 link_r.reverse()
                 k_end = len(link_r) - link_r.index(k_end) - 1
+                print(k_end)
                 if lv == level - 1:
                     k_end_link = k_end
                 lv = lv - 1
@@ -72,6 +76,7 @@ class FormalDiagram:
     def _formal_diagram_update(self, mso, level):
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
+        global color_nb
         if processing == 'signal' and level==0:
             factor = 1
         else:
@@ -103,6 +108,7 @@ class FormalDiagram:
             n = k_end - k_init + 1
         prm.ind_lvl0 = k_init - 1
         color = 0.7
+        color_nb += 1
         if actual_char > len(self.material_lines):
             new_mat = [1 for i in range(mso.nb_hop*factor)]
             self.material_lines.append(new_mat)
@@ -111,7 +117,7 @@ class FormalDiagram:
 
         self.material_lines[actual_char - 1][k_init*factor- 1*factor] = 0
         for i in range(1, n*factor):
-            self.material_lines[actual_char - 1][factor*k_init+ i - 1*factor] = color
+            self.material_lines[actual_char - 1][factor*k_init+ i - 1*factor] = (color_nb%4 + 0.3)/4
 
         # create and update object
         links = []
@@ -138,7 +144,7 @@ class FormalDiagramGraph:
 
     def _print_formal_diagram_init(self, level):
         """ Print the formal diagram at level 'level' at its initialization."""
-        fig = plt.figure(figsize=(12, 8))
+        fig = plt.figure(figsize=(9, 6))
         plt.title("Formal diagram of level " + str(level))
         plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
@@ -198,7 +204,7 @@ class FormalDiagramGraph:
         self._print_formal_diagram_update(mso, level)
 
 
-def final_save_one4all(mso):
+def final_save_one4all(mso, path_result):
         """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
         for level in range(mso.level_max + 1):
@@ -217,19 +223,18 @@ def final_save_one4all(mso):
                 plt.xlabel("time in seconds (formal memory)")
             plt.ylabel("material (material memory)")
             plt.yticks(np.arange(0, len_formal_diagram, 5))
-            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 5))
+            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
 
-            result_path = prm.PATH_RESULT
             plt.imshow(formal_diagram, extent=[0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
-            plt.savefig(result_path + file_name_pyplot, transparent=True, dpi=1000)
-            print("file saved as " + result_path + file_name_pyplot)
+            plt.savefig(path_result + file_name_pyplot, transparent=True, dpi=1000)
+            print("file saved as " + path_result + file_name_pyplot)
             plt.close()
 
 
-def final_save_all4one(mso):
+def final_save_all4one(mso, path_result):
         """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
         # print("PRINT formal diagram update")
-        f = plt.figure(figsize=[12,30])
+        f = plt.figure(figsize=[9,24])
         for level in range(mso.level_max + 1):
             formal_diagram = mso.levels[level].formal_diagram.material_lines
             len_formal_diagram = len(mso.levels[level].formal_diagram.material_lines)
@@ -241,11 +246,10 @@ def final_save_all4one(mso):
                 plt.xlabel("time in seconds (formal memory)")
             plt.ylabel("material (material memory)")
             plt.yticks(np.arange(0, len_formal_diagram, 5))
-            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 5))
+            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
             plt.imshow(formal_diagram, extent=[0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
 
         file_name_pyplot = 'FD_all.png'
-        result_path = prm.PATH_RESULT
-        plt.savefig(result_path + file_name_pyplot, transparent=False, dpi=1000)
-        print("file saved as " + result_path + file_name_pyplot)
+        plt.savefig(path_result + file_name_pyplot, transparent=False, dpi=1000)
+        print("file saved as " + path_result + file_name_pyplot)
         plt.close()

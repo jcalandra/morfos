@@ -13,8 +13,8 @@ class SigRules:
         if len(prm.SYMB_MRULES) != len(prm.SYMB_PRULES):
             raise("problème d'initialisation des règles")
         self.nb_rules = len(class_segmentation_rules_sig.sigRule_tab[0])
-        self.mandatory_rules = [1]
-        self.prohibitive_rules = [0]
+        self.mandatory_rules = prm.SIG_MRULES
+        self.prohibitive_rules = prm.SIG_PRULES
 
         self.result=ResultTest()
 
@@ -60,12 +60,13 @@ def segmentation_test(ms_oracle, level, rules):
     if class_segmentation_rules_symb.rule_0_segmentation_rule(ms_oracle, level):
         bool = 1
     else:
-        if prm.processing == "signal" and level == 0:
-            bool =  segmentation_str(ms_oracle, level, rules.sigRules) and \
-                    segmentation_audio(ms_oracle, level, rules.sigRules)
+        if prm.processing == "signal":
+            bool =  segmentation_str(ms_oracle, level, rules.symbRules) or \
+                   segmentation_audio(ms_oracle, level, rules.sigRules)
+            #bool = segmentation_audio(ms_oracle, level, rules.sigRules)
 
         else:
-            bool = segmentation_str(ms_oracle, level, rules.symbRules) and segmentation_audio(ms_oracle, level, rules.symbRules)
+            bool = segmentation_str(ms_oracle, level, rules.symbRules) #and segmentation_audio(ms_oracle, level, rules.symbRules)
     return bool
 
 def segmentation_test_noseg(ms_oracle, level, rules):
@@ -127,4 +128,14 @@ def segmentation_str(ms_oracle, level, rules):
     return bool
 
 def segmentation_audio(ms_oracle, level, rules):
-    return 1
+    results = rules.getResult(ms_oracle, level)
+    mbool = 0
+    pbool = 1
+    for i in results.mandatory_tests:
+        if i:
+            mbool = 1
+    for i in results.prohibitive_tests:
+        if i == 0:
+            pbool = 0
+    bool = mbool and pbool
+    return bool

@@ -36,6 +36,7 @@ lower_bound_rule6 = prm.lower_bound_rule6
 higher_bound_rule6 = prm.higher_bound_rule6
 
 letter_diff = prm.LETTER_DIFF
+bool_past = 0
 
 
 # Segmentation tab rule
@@ -100,6 +101,7 @@ def rule_3_recomputed_object(ms_oracle, level):
     with substrings of objects of the upper level stocked in the tab history_next[]. If the strings are similar, the
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
     # allocation of structures of actual level
+    global bool_past
     actual_char_ind = ms_oracle.levels[level].actual_char_ind
     f_oracle = ms_oracle.levels[level].oracle
     link = ms_oracle.levels[level].link
@@ -161,6 +163,13 @@ def rule_3_recomputed_object(ms_oracle, level):
         if f_oracle.data[f_oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == f_oracle.data[actual_char_ind]:
             return 0
 
+    if RULE_8 :
+        if len(f_oracle.data) > 2 and len(concat_obj) > 0 and \
+                f_oracle.data[actual_char_ind - 1] == f_oracle.data[actual_char_ind]:
+            return 0
+        if f_oracle.data[ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] + nb_elements] == \
+            f_oracle.data[ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] + nb_elements + 1]:
+            return 0
     if len(ms_oracle.levels) > level + 1:
 
         # allocation of structures of level sup
@@ -189,12 +198,39 @@ def rule_3_recomputed_object(ms_oracle, level):
     # we go back to the new already-seen state
     ind = ms_oracle.levels[level].oracle.sfx[actual_char_ind - nb_elements] + nb_elements
     seg = [level, ind]
+    if seg in ms_oracle.segmentations:
+        return 0
     ms_oracle.reset_levels()
     ms_oracle.update_segmentation(seg)
     obj_tab = ms_oracle.init_objects
     class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
+    ms_oracle.update_out(1)
 
     return 1
+
+# RULE 9: (ab + aa => (ab)(aa
+def rule_9_prerepetition_seg(ms_oracle, level):
+    """ If there is repetition of the actual object with it's following object, segment before the actual object"""
+    global bool_past
+    f_oracle = ms_oracle.levels[level].oracle
+    actual_char_ind = ms_oracle.levels[level].actual_char_ind
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    ind = actual_char_ind - 1
+    seg = [level, ind]
+    if len(f_oracle.data) > 3 and \
+            seg not in ms_oracle.segmentations and\
+            len(concat_obj) > 3 and \
+            f_oracle.data[actual_char_ind - 3] != f_oracle.data[actual_char_ind - 2] and \
+            f_oracle.data[actual_char_ind - 2] != f_oracle.data[actual_char_ind - 1] and\
+            f_oracle.data[actual_char_ind - 1] == f_oracle.data[actual_char_ind]:
+
+        ms_oracle.reset_levels()
+        ms_oracle.update_segmentation(seg)
+        obj_tab = ms_oracle.init_objects
+        class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
+        ms_oracle.update_out(1)
+        return 1
+    return 0
 
 #=======================================
 # PROHIBITIVE RULES
@@ -285,7 +321,7 @@ def rule_7b_mean_word_length_high(ms_oracle, level):
         return 1
     return 0
 
-
+# (a + a => (aa
 def rule_8a_repetition_paradigm_noseg(ms_oracle, level):
     concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
     f_oracle = ms_oracle.levels[level].oracle
@@ -295,7 +331,7 @@ def rule_8a_repetition_paradigm_noseg(ms_oracle, level):
         return 0
     return 1
 
-
+# (aa + b => (aa)(b
 def rule_8b_repetition_paradigm_seg(ms_oracle, level):
     concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
     f_oracle = ms_oracle.levels[level].oracle
@@ -306,6 +342,7 @@ def rule_8b_repetition_paradigm_seg(ms_oracle, level):
         return 1
     return 0
 
-symbRule_tab = [[rule_1_similarity_word, rule_2_existing_object, rule_3_recomputed_object, 0, 0, rule_6b_high_bound, rule_7b_mean_word_length_high, rule_8b_repetition_paradigm_seg],
-            [0, 0, 0, rule_4_not_validated_hypothesis, rule_5_regathering_after, rule_6a_low_bound, rule_7a_mean_word_length_low, rule_8a_repetition_paradigm_noseg]]
+symbRule_tab = [[rule_1_similarity_word, rule_2_existing_object, rule_3_recomputed_object, 0, 0, rule_6b_high_bound,
+                 rule_7b_mean_word_length_high, rule_8b_repetition_paradigm_seg, rule_9_prerepetition_seg],
+            [0, 0, 0, rule_4_not_validated_hypothesis, rule_5_regathering_after, rule_6a_low_bound, rule_7a_mean_word_length_low, rule_8a_repetition_paradigm_noseg, 0]]
 

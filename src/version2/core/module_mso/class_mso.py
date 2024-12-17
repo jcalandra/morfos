@@ -1,4 +1,4 @@
-import module_mso.mso.class_oracle as class_oracle
+import module_mso.mso.oracle.class_oracle as class_oracle
 from module_mso.mso import class_materialsMemory
 from core.module_visualization import class_fd2DVisu
 from object_model import class_object
@@ -31,6 +31,7 @@ class MSO:
         self.nb_hop = 0
         self.dims = 1
         self.end_mk = 0
+        self.out = 0
         self.segmentations = []
 
         self.matrix = class_materialsMemory.Materials()
@@ -46,8 +47,11 @@ class MSO:
             self.audio.append(data[i])
         self.rate = rate
         self.data_size = data_size + prm.NB_SILENCE
-        self.nb_hop = math.ceil(data_size/HOP_LENGTH + prm.NB_SILENCE/HOP_LENGTH)
-        self.data_length = (data_size + prm.NB_SILENCE)/rate
+        #self.nb_hop = math.ceil(data_size/HOP_LENGTH + prm.NB_SILENCE/HOP_LENGTH)
+        #self.data_length = (data_size + prm.NB_SILENCE)/rate
+        self.nb_hop = math.ceil(data_size/HOP_LENGTH)
+        self.data_length = data_size/rate
+
 
     def get_symbol(self, symbol):
         self.symbol = symbol
@@ -78,6 +82,9 @@ class MSO:
     def update_segmentation(self, seg):
         self.segmentations.append(seg)
 
+    def update_out(self, bool):
+        self.out = bool
+
     def reset_levels(self):
         plt.close('all')
         self.name = ""
@@ -95,7 +102,7 @@ class MSO:
         self.nb_hop = self.nb_hop
         self.dims = self.dims
         self.end_mk = 0
-        self.segmentations = []
+        self.out = 0
 
         self.matrix = class_materialsMemory.Materials()
 
@@ -168,7 +175,7 @@ class MSOLevel:
 
 
     def update_link(self, node):
-        self.objects.append(node)
+        self.link.append(node)
 
     def update_similarity(self, mso, obj, data, level):
         self.update_oracle(data)

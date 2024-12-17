@@ -18,7 +18,7 @@ nb_notes = parameters.NB_NOTES
 NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
-def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
+def _compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     desc_compared = obj_compared[1].descriptors.mean_descriptors[0][0]
     actual_desc = actual_obj.concat_obj.descriptors.mean_descriptors[0][0]
     if parameters.DIFF_CONCORDANCE:
@@ -29,7 +29,7 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
         sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
     return sim_digit_label, sim_value
 
-def compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
+def _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
     string_compared = obj_compared[1].concat_labels
     actual_string = actual_obj.concat_obj.concat_labels
     if level == 0:
@@ -42,7 +42,29 @@ def compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
         sim_digit_label, sim_value = sim_symb.compute_alignment(string_compared, actual_string, mat, level)
     return sim_digit_label, sim_value
 
-def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
+    sim_digit_label_sig, sim_value_sig = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
+    sim_digit_label_symb, sim_value_symb = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
+    sim_value = (sim_value_sig + sim_value_symb)/2
+    if sim_value >= parameters.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
+
+
+def compute_symbol_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
+    #sim_digit_label_sig, sim_value_sig = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
+    sim_digit_label_symb, sim_value_symb = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
+    sim_value = sim_value_symb
+    if sim_value >= parameters.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
+
+
+def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level == 0:
         obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].descriptors
         actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].descriptors
@@ -64,7 +86,7 @@ def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
     return sim_value
 
 
-def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+def _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level > 1:
         matrix = ms_oracle.levels[level - 2].materials.sim_matrix
     else:
@@ -89,6 +111,19 @@ def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
             obj_compared,
             actual_obj, matrix, level)
     return sim_value
+
+def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+    sim_value_sig = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value_symb = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value = (sim_value_sig + sim_value_symb)/2
+    return sim_value
+
+def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
+    #sim_value_sig = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value_symb = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value = sim_value_symb
+    return sim_value
+
 
 def similarity(ms_oracle, level):
     actual_object_descriptor = class_object.Descriptors()

@@ -1,3 +1,11 @@
+# ======== PATH IMPORT ========
+
+# Add python_path to perform relative import
+# class_main.py must stay on src/version2
+import paths
+from pathlib import Path
+# ======== IMPORT ===========
+
 import time
 import matplotlib.pyplot as plt
 import module_parameters.parameters as prm
@@ -11,7 +19,8 @@ import hypothesis
 import json
 import others.object_storage as obj_s
 import shutil
-from pathlib import Path
+import mikhail_marker
+
 
 
 # This is the main loop for the whole cognitive algorithm
@@ -36,26 +45,26 @@ def main_print(mso):
     plt.pause(3000)
 
 
-def main():
-    """ Main loop for the cognitive algorithm starting from a string describing the audio."""
+def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESULT):
     # initialisation of the structures
     prm.mk_rule3 = 0
     start_time = time.time()
-    path = PATH_SOUND + NAME + FORMAT
+    path = path_sound + name + format
     pre_data = None
     costs.init_cost()
 
-    if FORMAT == ".txt":
-        pre_data = NAME
+    if format == ".txt":
+        pre_data = name
     elif format == ".npy":
         pass
     else:
         pre_data = path
-    print("format pre", FORMAT)
+
     data = pc.precompute_data(pre_data)
+
     obj_tab = pc.compute_data(data)
 
-    mso = class_mso.MSO(NAME)
+    mso = class_mso.MSO(name)
     obj_s.data_init(data)
     mso.dims = data[3]
     mso.volume = data[2]
@@ -65,33 +74,47 @@ def main():
     end_time = time.time()
     print("Temps d execution de l'algorithme : %s secondes ---" % (end_time - start_time))
 
+
     if prm.TO_SAVE_FINAL:
-        print("path result :", prm.PATH_RESULT)
-        if not os.path.exists(prm.PATH_RESULT):
-            os.makedirs(prm.PATH_RESULT)
-        fd2D.final_save_one4all(mso)
-        fd2D.final_save_all4one(mso)
-        shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                     '/version2/parameters.json', prm.PATH_RESULT+'/parameters.json')
+        #print("path result :", path_result)
+        if not os.path.exists(path_result):
+            os.makedirs(path_result)
+        fd2D.final_save_one4all(mso, path_result)
+        fd2D.final_save_all4one(mso, path_result)
+    if prm.SAVE_PARAMETERS:
+        if not os.path.exists(path_result):
+            os.makedirs(path_result)
+        if format == ".txt":
+            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
+                         '/version2/parameters.json', path_result + '/parameters.json')
+        else:
+            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
+                        '/version2/parameters_audio.json', path_result + '/parameters.json')
+        print("file saved as " + path_result + '/parameters.json')
 
     if prm.COMPUTE_HYPOTHESIS:
         hypothesis.print_phases()
 
     if prm.COMPUTE_COSTS:
-        if not os.path.exists(prm.PATH_RESULT):
-            os.makedirs(prm.PATH_RESULT)
+        if not os.path.exists(path_result):
+            os.makedirs(path_result)
         costs.normalise_cost()
         costs.print_cost()
         costs.save_cost()
         costs.cost_general_diagram_all_levels()
 
     if prm.SAVE_MATERIALS:
-        with open(prm.PATH_RESULT + '/materials.json', 'w') as myFile:
-            json.dump(obj_s.objects, myFile)
+        if not os.path.exists(path_result):
+            os.makedirs(path_result)
+        with open(path_result + '/materials.json', 'w') as myFile:
+            # json.dump(obj_s.objects, myFile)
+            json.dump(str(obj_s.objects), myFile)
+        print("file saved as " + path_result + '/materials.json')
+
+    mikhail_marker.produce_file(obj_s.objects, path_result)
 
 
-
-    plt.pause(3000)
+    #plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
@@ -106,7 +129,9 @@ def example():
         Debussy4 += chr(Debussy3[i] + 96)
     Debussy2 = 'abcdefabcghijklabcfmnopqrstustvwabcdxfyzfzaz'
     Debussy = 'abccddeefabccggghijjjklabccfmnopqrstuusttvwwwabccddxxfyzfzzazfzzfz'
-    Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu',".txt"
+    Mozart = 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
+    loop = 'abababcdefghfghfijabklcdehifgmnop'
+    main(name=Mozart)
 
 
 main()

@@ -1,4 +1,5 @@
 import parameters as prm
+import class_similarity_computation as csc
 import math
 
 RULE_1 = prm.DIFF_FOURIER
@@ -99,7 +100,7 @@ def frequency_dynamic_dissimilarity_mfcc_cqt(id_hop_a, id_hop_b):
 
 
 
-def dissimilarity(ms_oracle, level):
+def rule1_dissimilarity(ms_oracle, level):
     """ Compute the dissimilarity between the frequencies of i_hop and i_hop - 1."""
     v_tab = ms_oracle.levels[level].volume
     actual_ind = ms_oracle.levels[level].actual_char_ind
@@ -125,6 +126,30 @@ def dissimilarity(ms_oracle, level):
             return 1
     return 0
 
-sigRule_tab = [[dissimilarity],
-                [0]]
+def rule2_isolated_object(ms_oracle, level):
+    """ Don't segment if the concatenate object is of size 1."""
+    if len(ms_oracle.levels[level].concat_obj.concat_labels) > 1:
+        return 1
+    return 0
+
+#TODO: change label by descriptors csc.compute_signal_similarity
+def rule_3a_repetition_paradigm_noseg(ms_oracle, level):
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    actual_obj_ind = len(ms_oracle.levels[level].oracle.data) - 1
+    if len(concat_obj) > 0 and\
+            csc.compute_signal_similarity(ms_oracle, level, actual_obj_ind - 1, actual_obj_ind) > prm.teta:
+        return 0
+    return 1
+
+def rule_3b_repetition_paradigm_seg(ms_oracle, level):
+    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    actual_obj_ind = len(ms_oracle.levels[level].oracle.data) - 1
+    if len(concat_obj) > 1 and \
+            csc.compute_signal_similarity(ms_oracle, level, actual_obj_ind - 2, actual_obj_ind -1) > prm.teta and \
+            csc.compute_signal_similarity(ms_oracle, level, actual_obj_ind - 1, actual_obj_ind) < prm.teta:
+        return 1
+    return 0
+
+sigRule_tab = [[rule1_dissimilarity, 0, rule_3a_repetition_paradigm_noseg],
+                [0, rule2_isolated_object, rule_3b_repetition_paradigm_seg]]
 

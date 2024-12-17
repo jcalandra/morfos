@@ -34,7 +34,7 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
             sy += chr(ord(i) - j)
 
         # Needleman-Wunsch alignment
-        nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap)
+        nw_align = pairwise2.align.globalds(sx, sy, matrix, gap_value, extend_gap_value, gap_char=gap, one_alignment_only=True)
         if len(nw_align) == 0:
             return 0, 0
         nw_alignment = nw_align[0][2]

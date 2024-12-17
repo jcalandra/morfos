@@ -9,7 +9,7 @@ file = Path(__file__).resolve()
 project_root = str(file.parents[1])
 
 import json
-with open(project_root + '/../parameters_audio.json') as json_parameters:
+with open(project_root + '/../parameters.json') as json_parameters:
    data=json.load(json_parameters)
 
 # ------------- MAIN -----------------
@@ -34,6 +34,7 @@ if d_threshold < 0:
    d_threshold = 0
 
 # This is a boolean parameter to display or not a pseudo-polyphony. Work only with MSO implementation.
+lvl0notcompute = data["lvl0notcompute"]
 POLYPHONY = data["POLYPHONY"]
 
 # A value that determine the color variation if pseudo-polyphony is displayed
@@ -93,9 +94,16 @@ RULE_5b = data["RULE_5b"]
 RULE_6 = data["RULE_6"]
 RULE_7 = data["RULE_7"]
 RULE_8 = data["RULE_8"]
-SYMB_MRULES = [RULE_1, RULE_2, RULE_3, 0, 0, RULE_6, RULE_7, RULE_8]
-SYMB_PRULES = [0, 0, 0, RULE_4, RULE_5, RULE_6, RULE_7, RULE_8]
-RULES = [SYMB_MRULES, SYMB_PRULES]
+RULE_9 = data["RULE_9"]
+SYMB_MRULES = [RULE_1, RULE_2, RULE_3, 0, 0, RULE_6, RULE_7, RULE_8, RULE_9]
+SYMB_PRULES = [0, 0, 0, RULE_4, RULE_5, RULE_6, RULE_7, RULE_8, 0]
+
+RULE1_DISSIMILARITY = data["RULE1_DISSIMILARITY"]
+RULE2_ISOLATION = data["RULE2_ISOLATION"]
+RULE3_REPETITION = data["RULE3_REPETITION"]
+SIG_MRULES = [RULE1_DISSIMILARITY, 0, RULE3_REPETITION]
+SIG_PRULES = [0, RULE2_ISOLATION, RULE3_REPETITION]
+#RULES = [SYMB_MRULES, SYMB_PRULES]
 
 ALIGNEMENT_rule3 = data["ALIGNEMENT_rule3"]
 ALIGNEMENT_rule4 = data["ALIGNEMENT_rule4"]
@@ -275,7 +283,8 @@ verbose = data["verbose"]
 checkpoint = data["checkpoint"]
 
 # Save materials as results
-SAVE_MATERIALS = 1
+SAVE_MATERIALS = data["SAVE_MATERIALS"]
+SAVE_PARAMETERS = data["SAVE_PARAMETERS"]
 
 # ------------ DISPLAY ----------------
 # Only for level 0

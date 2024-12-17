@@ -1,5 +1,6 @@
 import librosa
 import pydub
+import os
 from matplotlib.pyplot import *
 import math
 from module_parameters import parameters as prm
@@ -36,12 +37,14 @@ CLEAN_SPECTRUM = prm.CLEAN_SPECTRUM
 def get_data(audio_path):
     """ Read the signal at path 'audio_path' and compute it's frame rate, the size
     of the signal, and it's duration"""
-    if audio_path.split('.')[-1] == 'mp3':  # mp3 files are converted into wave files.
-        mp3 = pydub.AudioSegment.from_mp3(audio_path)
+    if audio_path.split('.')[-1] != 'wav':  # mp3 files are converted into wave files.
+        print("old audio path", audio_path)
+        file = pydub.AudioSegment.from_file(audio_path, format=audio_path.split('.')[-1])
         if prm.verbose:
             print("[INFO] Converting audio from mp3 to wav...")
-        audio_path = audio_path.split('.')[-2] + ".wav"
-        mp3.export(audio_path, format="wav")
+        audio_path = os.path.dirname(audio_path) + '/' + audio_path.split('/')[-1].split('.')[-2] + ".wav"
+        print("new audio path", audio_path)
+        file.export(audio_path, format="wav")
     # rate, data = wave.read(audio_path)
     data, rate = librosa.load(audio_path, sr=SR)
     if type(data[0]) == np.ndarray:
@@ -195,12 +198,12 @@ def get_n_frequencies(data, rate, hop_length, nb_hop, init):
 def get_n_volumes(data, hop_length, nb_hop, init):
     """ Cut the tab data into batches of size hop_length.
     These batches corresponds to the frames."""
-    vn_tab = [[] for i in range(nb_hop + 1)]
-    for i in range(nb_hop):
+    vn_tab = [[] for i in range(nb_hop)]
+    for i in range(nb_hop - 1):
         for j in range(hop_length):
             vn_tab[i].append(data[i*hop_length + j + init])
-    for j in range(len(data) - init - (nb_hop) * hop_length):
-        vn_tab[nb_hop].append(data[(nb_hop) * hop_length + j + init])
+    for j in range(len(data) - init - (nb_hop - 1) * hop_length):
+        vn_tab[nb_hop - 1].append(data[(nb_hop - 1) * hop_length + j + init])
     return vn_tab
 
 

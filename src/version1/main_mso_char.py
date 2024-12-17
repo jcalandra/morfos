@@ -1,11 +1,46 @@
+
+# ======== PATH IMPORT ========
+
+# Add python_path to perform relative import
+# main_mso.py must stay on src
+
+import json
+import sys
+import os
+from pathlib import Path # if you haven't already done so
+
+
+file = Path(__file__).resolve()
+import shutil
+
+project_root = str(file.parents[1])
+
+src_path = project_root
+sys.path.append(src_path)
+
+generic_path = src_path + '/version1/generic'
+sys.path.append(generic_path)
+
+oracle_path = src_path + '/version1/oracle_version'
+sys.path.append(oracle_path)
+print("oracle path", oracle_path)
+
+plot_path = project_root + '/version1/lib/vmo-master/vmo'
+sys.path.append(plot_path)
+
+misc_path = plot_path + '/version1/VMO/utility'
+sys.path.append(misc_path)
+
+misc_path = plot_path + '/version1/VMO/utility'
+sys.path.append(misc_path)
+
+
 from algo_segmentation_mso import *
 import objects_storage as obj_s
 import cost_storage as cs
-from rwcpop_parser import parser, Path
+#from rwcpop_parser import parser, Path
 from formal_diagram_mso import final_save_one4all, final_save_all4one
 import matplotlib.pyplot as plt
-import plot
-import os
 
 
 # This is the main loop starting the algorithm from a string
@@ -41,9 +76,6 @@ def main(char_ex, result_path=prm.PATH_RESULT):
                       "level:", obj_s.objects[i][j]["level"],
                       "sound:", obj_s.objects[i][j]["sound"])
 
-            if prm.PLOT_ORACLE:
-                im = plot.start_draw(tab_f_oracle[i][0], size=(900 * 4, 400 * 4))
-                im.show()
 
     if prm.TO_SAVE_FINAL:
         if not os.path.exists(result_path):
@@ -85,12 +117,12 @@ def example():
     Chouvel2 = 'abcdaabbdcbadabddacabacbbaaaddcccbccaacdbdbcbdadbbbcaccdcadcdddbab'
     main(Mozart)
 
-def rwcpop_tests():
+'''def rwcpop_tests():
     file = Path(__file__).resolve()
     project_root = str(file.parents[1])
     test_path = project_root + '/data/rwcpop/Pop 06 (grid).csv'
     pop01 = parser(test_path)
     print(pop01)
-    main(pop01)
+    main(pop01)'''
 
 example()

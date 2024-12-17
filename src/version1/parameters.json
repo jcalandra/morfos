@@ -1,18 +1,19 @@
 {
-   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
-   "FORMAT":".txt",
+   "NAME":"3_BWV244",
+   "FORMAT":".wav",
 
-   "PATH_SOUND":"/../data/Geisslerlied/",
-   "PATH_RESULT":"/../results/Geisslerlied/chap6/raw/sil/timbre/guitarepiano_justetimbre/",
+   "PATH_SOUND":"/../data/Analyses_Elia/",
+   "PATH_RESULT":"/../results/Somax/3_BWV244/",
 
-   "teta":0.87,
-   "d_threshold":150,
+   "teta_mfcc": 0.15,
+   "teta":0.974,
+   "d_threshold":100,
 
    "POLYPHONY":0,
 
    "min_matrix":0.999,
 
-   "processing":"symbols",
+   "processing":"symbol",
    "to_transpose":0,
    "is_micro": 0,
 
@@ -28,25 +29,25 @@
    "RULE_1":1,
    "RULE_2":1,
    "RULE_3":1,
-   "RULE_4":1,
+   "RULE_4":0,
    "RULE_5":0,
-   "RULE_6":0,
+   "RULE_6":1,
    "RULE_7":0,
    "RULE_8":0,
 
    "ALIGNEMENT_rule2":0,
    "ALIGNEMENT_rule3":0,
-   "lower_bound_rule6":3,
-   "higher_bound_rule6":16,
+   "lower_bound_rule6":30,
+   "higher_bound_rule6":300,
 
    "QUOTIENT":100,
 
    "TRANSPOSITION":1,
 
-   "LETTER_DIFF":96,
+   "LETTER_DIFF":97,
 
    "GAP_VALUE":-3,
-   "EXT_GAP_VALUE":-3,
+   "EXT_GAP_VALUE":-1,
 
    "GAP":0,
 
@@ -60,11 +61,11 @@
 
    "PRECISION":4,
    "NB_NOTES":48,
-   "NB_MFCC":30,
+   "NB_MFCC":50,
    "INIT":0,
 
-   "MFCC_BIT":1,
-   "CQT_BIT":0,
+   "MFCC_BIT":0,
+   "CQT_BIT":1,
    "FFT_BIT":0,
 
    "NOTES_PER_OCTAVE":12,
@@ -84,11 +85,11 @@
 
    "TEMPO":120,
 
-   "CORRECTION_BIT":1,
+   "CORRECTION_BIT":0,
    "CORRECTION_BIT_COLOR":0,
    "SEGMENTATION_BIT":0,
    "WRITE_RESULTS":0,
-   "NB_SILENCE":12,
+   "NB_SILENCE":0,
 
    "ALGO_VMO":1,
    "ALGO_REP":0,
@@ -102,9 +103,9 @@
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":1,
+   "EVOL_PRINT":0,
 
-   "SHOW_MSO_CONTENT":0,
+   "SHOW_MSO_CONTENT":1,
 
    "SHOW_COMPUTE_COSTS":0,
 
@@ -114,7 +115,7 @@
 
    "checkpoint":1,
 
-   "SAVE_MATERIALS":0,
+   "SAVE_MATERIALS":1,
 
    "BASIC_FRAME":[0, 0, 0],
    "BACKGROUND":[0, 0, 255],
