@@ -69,12 +69,12 @@ def precompute_signal(pre_data):
     #ajouter la gestion des frames de silence
     audio, rate, data_size, data_length = dc.get_data(pre_data)
     audio_data = []
-    nb_hop = int(data_size/HOP_LENGTH)
     for i in range(NB_SILENCE):
         audio_data.append(0)
     for i in range(len(audio)):
         audio_data.append(audio[i])
-    nb_hop = math.ceil(nb_hop+NB_SILENCE/HOP_LENGTH)
+    data_size = int(data_size + NB_SILENCE)
+    nb_hop = math.ceil(data_size/HOP_LENGTH)
     v_tab, s_tab = dc.get_descriptors(np.array(audio_data), rate, HOP_LENGTH, nb_hop, NB_VALUES, init=0,
                                       fmin=NOTE_MIN)
     input_data, dim = dims_oracle(NB_VALUES, s_tab, v_tab)
@@ -91,7 +91,6 @@ def precompute_symbol(pre_data):
     return [audio, input_data, v_tab, dim]
 
 def precompute_data(pre_data):
-    print("format", FORMAT)
     if FORMAT == ".txt":
         data = precompute_symbol(pre_data)
     elif format == ".npy":

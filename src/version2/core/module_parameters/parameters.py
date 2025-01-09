@@ -9,7 +9,7 @@ file = Path(__file__).resolve()
 project_root = str(file.parents[1])
 
 import json
-with open(project_root + '/../parameters.json') as json_parameters:
+with open(project_root + '/../parameters_audio.json') as json_parameters:
    data=json.load(json_parameters)
 
 # ------------- MAIN -----------------

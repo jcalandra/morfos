@@ -19,7 +19,7 @@ import hypothesis
 import json
 import others.object_storage as obj_s
 import shutil
-import mikhail_marker
+import somax_marker
 
 
 
@@ -111,10 +111,10 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
             json.dump(str(obj_s.objects), myFile)
         print("file saved as " + path_result + '/materials.json')
 
-    mikhail_marker.produce_file(obj_s.objects, path_result)
+    somax_marker.produce_file(obj_s.objects, path_result)
 
 
-    #plt.pause(3000)
+    plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'

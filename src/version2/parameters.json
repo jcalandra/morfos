@@ -105,11 +105,11 @@
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":0,
-   "TO_SAVE_FINAL":1,
+   "TO_SAVE_FINAL":0,
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":0,
+   "EVOL_PRINT":1,
 
    "SHOW_MSO_CONTENT":0,
 

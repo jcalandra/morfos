@@ -6,6 +6,7 @@ import class_concatObj
 import module_parameters.parameters as prm
 import matplotlib.pyplot as plt
 import math
+import criterias.module_precomputing.precomputer as pc
 
 from module_parameters.parameters import SR, HOP_LENGTH, teta, NB_VALUES
 
@@ -38,6 +39,7 @@ class MSO:
 
     def set_name(self, name):
         self.name = name
+
 
     def get_audio(self, audio_path):
         data, rate, data_size, data_length = get_data(audio_path)

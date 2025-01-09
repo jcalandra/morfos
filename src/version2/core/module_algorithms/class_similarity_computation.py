@@ -46,7 +46,7 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     sim_digit_label_sig, sim_value_sig = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
     sim_digit_label_symb, sim_value_symb = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
     sim_value = (sim_value_sig + sim_value_symb)/2
-    if sim_value >= parameters.teta:
+    if sim_value - (level)*0 >= parameters.teta:
         sim_digit_label = 1
     else:
         sim_digit_label = 0

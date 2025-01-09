@@ -89,7 +89,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
     # Every new character is analysed.
     ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
     ms_oracle.levels[level].iterator = 0
-    while ms_oracle.levels[level].iterator < len(objects) and level > 0 or ms_oracle.levels[level].iterator < len(objects) - 1:
+    while ms_oracle.levels[level].iterator < len(objects) :
         iterator = ms_oracle.levels[level].iterator
         if level == 0 and ms_oracle.end_mk == 0:
             ms_oracle.levels[level].volume = ms_oracle.volume
