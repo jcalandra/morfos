@@ -1,5 +1,5 @@
 {
-   "NAME":"abababcdefghfghfijabklcdehifgmnop",
+   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
    "FORMAT":".txt",
 
    "PATH_SOUND":"/../../../data/Geisslerlied/",
@@ -50,7 +50,7 @@
 
    "TRANSPOSITION":1,
 
-   "LETTER_DIFF":1,
+   "LETTER_DIFF":97,
 
    "GAP_VALUE":-1,
    "EXT_GAP_VALUE":-1,

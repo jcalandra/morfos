@@ -46,7 +46,7 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     sim_digit_label_sig, sim_value_sig = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
     sim_digit_label_symb, sim_value_symb = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
     sim_value = (sim_value_sig + sim_value_symb)/2
-    if sim_value - (level)*0 >= parameters.teta:
+    if sim_value  >= parameters.teta:
         sim_digit_label = 1
     else:
         sim_digit_label = 0
@@ -55,7 +55,7 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
 
 def compute_symbol_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     #sim_digit_label_sig, sim_value_sig = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
-    sim_digit_label_symb, sim_value_symb = _compute_signal_similarity_rep(obj_compared, actual_obj, mat, level)
+    sim_digit_label_symb, sim_value_symb = _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level)
     sim_value = sim_value_symb
     if sim_value >= parameters.teta:
         sim_digit_label = 1
@@ -87,10 +87,6 @@ def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
 
 
 def _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
-    if level > 1:
-        matrix = ms_oracle.levels[level - 2].materials.sim_matrix
-    else:
-        matrix = ms_oracle.matrix.sim_matrix
     if level == 0:
         obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].label
         actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].label
@@ -98,6 +94,11 @@ def _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
         label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
         obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].concat_labels
         actual_obj = ms_oracle.levels[level - 1].concat_obj.concat_labels
+    if level > 1:
+        matrix = ms_oracle.levels[level - 2].materials.sim_matrix
+    else:
+        matrix = ms_oracle.matrix.sim_matrix
+
     if parameters.STRICT_EQUALITY:
         #concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
         sim_digit_label, sim_value = class_similarity_rules_symb.compute_strict_equality(obj_compared,
@@ -120,7 +121,7 @@ def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
 
 def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     #sim_value_sig = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
-    sim_value_symb = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value_symb = _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
     sim_value = sim_value_symb
     return sim_value
 

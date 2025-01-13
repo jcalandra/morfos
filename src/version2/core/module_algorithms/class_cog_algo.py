@@ -112,6 +112,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
 
             ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
         # formal diagram is updated with the new char
+
         if ms_oracle.levels[level].actual_char_ind == 1:
             ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
         else:
