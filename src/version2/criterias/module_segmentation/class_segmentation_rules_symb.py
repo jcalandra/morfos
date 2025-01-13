@@ -1,6 +1,6 @@
 import class_similarity_computation
 import class_cog_algo
-from module_visualization.formal_diagram_mso import *
+from class_fd2DVisu import *
 
 # ================================================= RULES ==============================================================
 # In this file are implemented the rules that give segmentation criteria
