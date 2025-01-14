@@ -90,7 +90,7 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
                          '/version2/parameters.json', path_result + '/parameters.json')
         else:
             shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                        '/version2/parameters_audio.json', path_result + '/parameters.json')
+                        '/version2/parameters.json', path_result + '/parameters.json')
         print("file saved as " + path_result + '/parameters.json')
 
     if prm.COMPUTE_HYPOTHESIS:
