@@ -642,7 +642,7 @@ class MO(FactorOracle):
         else:
             suffix_candidate = 0
 
-        '''if prm.processing == "signal" and level == 0 and i > 1:
+        if prm.processing == "signal" and level == 0 and i > 1:
             fss = similarity_fun(ms_oracle, level, i-2, i - 1)
             if fss <= self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
                 if method == 'inc':
@@ -697,7 +697,7 @@ class MO(FactorOracle):
                 descriptors = ms_oracle.init_objects[i - 1].descriptors
                 ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
                 ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
-            return 1'''
+            return 1
 
 
         # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
