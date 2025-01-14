@@ -24,6 +24,7 @@ import somax_marker
 
 
 # This is the main loop for the whole cognitive algorithm
+# TODO: supprimer le niveau 0
 
 NAME = prm.NAME
 FORMAT = prm.FORMAT
