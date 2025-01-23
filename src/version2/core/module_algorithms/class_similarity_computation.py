@@ -1,5 +1,5 @@
-import class_similarity_rules_sig as sim_sig
-import class_similarity_rules_symb as sim_symb
+from module_classification import class_similarity_rules_sig as sim_sig
+from module_classification import class_similarity_rules_symb as sim_symb
 from module_parameters import parameters
 import class_object
 

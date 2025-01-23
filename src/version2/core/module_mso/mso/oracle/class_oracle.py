@@ -662,8 +662,9 @@ class MO(FactorOracle):
                 new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
                 actual_object_descriptor = class_object.Descriptors()
                 actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+                duration = ms_oracle.levels[level - 1].concat_obj.durations
                 new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors)
+                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
 
                 concat_obj = class_concatObj.ConcatObj()
                 concat_obj.init(ms_oracle.levels[level].actual_obj)
@@ -690,8 +691,10 @@ class MO(FactorOracle):
                 new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
                 actual_object_descriptor = class_object.Descriptors()
                 actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+                duration = ms_oracle.levels[level - 1].concat_obj.durations
+
                 new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors)
+                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
                 concat_obj = class_concatObj.ConcatObj()
                 concat_obj.init(ms_oracle.init_objects[i - 1])
                 descriptors = ms_oracle.init_objects[i - 1].descriptors
@@ -911,8 +914,10 @@ class MO(FactorOracle):
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+                    duration = ms_oracle.levels[level - 1].concat_obj.durations
+
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].concat_signal, new_char, ms_oracle.init_objects[i-1].descriptors)
+                    new_rep.init(ms_oracle.init_objects[i-1].concat_signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
 
                     concat_obj = class_concatObj.ConcatObj()
                     concat_obj.init(ms_oracle.levels[level].actual_obj)
@@ -958,8 +963,10 @@ class MO(FactorOracle):
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
+                    duration = ms_oracle.levels[level - 1].concat_obj.durations
+
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors)
+                    new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
                     concat_obj = class_concatObj.ConcatObj()
                     concat_obj.init(ms_oracle.init_objects[i - 1])
                     descriptors = ms_oracle.init_objects[i - 1].descriptors
