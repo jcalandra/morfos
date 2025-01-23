@@ -5,8 +5,9 @@ class Object:
     def __init__(self):
         self.id = None
         self.signal = []
-        self.descriptors = Descriptors()
         self.label = ""
+        self.descriptors = Descriptors()
+        self.duration = 0
         self.transfo_functions = TransFunctions()
         self.obj_rep = ObjRep()
 
@@ -16,11 +17,14 @@ class Object:
     def get_signal(self, signal):
         self.signal = signal
 
+    def get_label(self, label):
+        self.label = label
+
     def get_descriptors(self, descriptors):
         self.descriptors.copy(descriptors)
 
-    def get_label(self, label):
-        self.label = label
+    def get_duration(self, duration):
+        self.duration = duration
 
     def get_rep(self, rep):
         self.obj_rep.copy(rep)
@@ -29,18 +33,20 @@ class Object:
     def get_similarity(self):
         return
 
-    def update(self, label, descriptors, signal, rep):
+    def update(self, label, descriptors, signal, duration, rep):
+        self.get_signal(signal)
         self.get_label(label)
         self.get_descriptors(descriptors)
-        self.get_signal(signal)
+        self.get_duration(duration)
         self.transfo_functions.get_functions()
         self.get_rep(rep)
 
     def copy(self, obj):
         self.id = obj.id
         self.signal = obj.signal
-        self.descriptors.copy(obj.descriptors)
         self.label = obj.label
+        self.descriptors.copy(obj.descriptors)
+        self.duration = obj.duration
         self.transfo_functions = obj.transfo_functions
         self.obj_rep.copy(obj.rep)
 
@@ -56,6 +62,7 @@ class ObjRep:
         self.signal = []
         self.label = ""
         self.descriptors = Descriptors()
+        self.duration = 0
         self.nb = 0
 
     def init_signal(self, signal):
@@ -67,13 +74,17 @@ class ObjRep:
     def init_descriptors(self, descriptors):
         self.descriptors.copy(descriptors)
 
+    def init_duration(self, duration):
+        self.duration = duration
+
     def init_nb(self):
         self.nb = 1
 
-    def init(self, signal, label, descriptors):
+    def init(self, signal, label, descriptors, duration):
         self.init_signal(signal)
         self.init_label(label)
         self.init_descriptors(descriptors)
+        self.init_duration(duration)
         self.init_nb()
 
     # TODO: jcalandra 20/09/2021 update function obj_rep.update_signal()
@@ -85,31 +96,39 @@ class ObjRep:
         self.label = label
 
     def update_descriptors(self, descriptors):
-        self.nb += 1
         for i in range(self.descriptors.nb_descriptors):
             '''for j in range(len(self.descriptors.concat_descriptors[i])):
                 for k in range(len(self.descriptors.concat_descriptors[i][j])):
                     self.descriptors.concat_descriptors[i][j][k] = \
-                        ((self.nb - 1)*self.descriptors.concat_descriptors[i][j][k] +
-                         descriptors.concat_descriptors[i][j][k])/self.nb'''
+                        ((self.nb)*self.descriptors.concat_descriptors[i][j][k] +
+                         descriptors.concat_descriptors[i][j][k])/(self.nb + 1)'''
             for j in range(len(self.descriptors.mean_descriptors[i])):
                 for k in range(len(self.descriptors.mean_descriptors[i][j])):
-                    if self.nb <= borders + 1:
+                    if self.nb <= borders:
                         self.descriptors.mean_descriptors[i][j][k] = descriptors.mean_descriptors[i][j][k]
                     else:
                         self.descriptors.mean_descriptors[i][j][k] = \
-                            ((self.nb - borders - 1)*self.descriptors.mean_descriptors[i][j][k] + descriptors.mean_descriptors[i][j][k]) / \
-                            (self.nb - borders)
+                            ((self.nb - borders)*self.descriptors.mean_descriptors[i][j][k] + descriptors.mean_descriptors[i][j][k]) / \
+                            (self.nb - borders + 1)
+                        
+    def update_duration(self, duration):
+        self.duration = (self.nb * self.duration + duration)/(self.nb + 1)
+                         
+    def update_nb(self):
+        self.nb += 1
 
-    def update(self, signal, label, descriptors):
+    def update(self, signal, label, descriptors, duration):
         self.update_signal(signal)
         self.update_label(label)
         self.update_descriptors(descriptors)
+        self.update_duration(duration)
+        self.update_nb()
 
     def copy(self, rep):
         self.signal = rep.signal
         self.label = rep.label
         self.descriptors.copy(rep.descriptors)
+        self.duration = rep.duration
         self.nb = rep.nb
 
 
@@ -119,8 +138,9 @@ class Descriptors:
         self.concat_descriptors = []
         self.mean_descriptors = []
 
-    # TODO: @jcalandra 09/09/2021 Descriptors functions
-    #  MAJ les fonctions pour la classe descripteurs.
+    def init_nb_descriptors(self):
+        self.nb_descriptors = 1
+
     def init_concat_descriptors(self, descriptors):
         self.concat_descriptors = descriptors
 
@@ -130,7 +150,7 @@ class Descriptors:
     def init(self, concat_descriptors, mean_descriptors):
         self.init_concat_descriptors(concat_descriptors)
         self.init_mean_descriptors(mean_descriptors)
-        self.nb_descriptors += 1
+        self.init_nb_descriptors()
 
     def update_concat_descriptors(self, concat_descriptors):
 
