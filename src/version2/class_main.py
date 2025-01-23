@@ -2,7 +2,7 @@
 
 # Add python_path to perform relative import
 # class_main.py must stay on src/version2
-import paths
+import my_paths
 from pathlib import Path
 # ======== IMPORT ===========
 
@@ -85,12 +85,8 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     if prm.SAVE_PARAMETERS:
         if not os.path.exists(path_result):
             os.makedirs(path_result)
-        if format == ".txt":
-            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                         '/version2/parameters.json', path_result + '/parameters.json')
-        else:
-            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                        '/version2/parameters_audio.json', path_result + '/parameters.json')
+        shutil.copy2(str(Path(__file__).resolve().parents[1]) +
+                    '/version2/parameters.json', path_result + '/parameters.json')
         print("file saved as " + path_result + '/parameters.json')
 
     if prm.COMPUTE_HYPOTHESIS:

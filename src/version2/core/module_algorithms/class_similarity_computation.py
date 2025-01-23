@@ -1,4 +1,3 @@
-import class_similarity_rules_symb
 import class_similarity_rules_sig as sim_sig
 import class_similarity_rules_symb as sim_symb
 from module_parameters import parameters
@@ -137,14 +136,16 @@ def similarity(ms_oracle, level):
     else:
         digit = 1
         indice = ms_oracle.levels[level].oracle.data[-1]
-        window = ms_oracle.levels[level - 1].concat_obj.concat_signal
+        window = ms_oracle.levels[level - 1].concat_obj.concat_signals
         new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
-        new_rep.update(window, new_rep.label, actual_object_descriptor)
+        duration = ms_oracle.levels[level - 1].concat_obj.durations
+        new_rep.update(window, new_rep.label, actual_object_descriptor, duration)
         return new_rep, digit
 
     new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
+    duration = ms_oracle.levels[level - 1].concat_obj.durations # à verifier
     new_rep = class_object.ObjRep()
-    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signal, new_char, actual_object_descriptor)
+    new_rep.init(ms_oracle.levels[level].concat_obj.concat_signals, new_char, actual_object_descriptor, duration)
     return new_rep, digit
 
 
@@ -155,11 +156,12 @@ def char_next_level_similarity(ms_oracle, level):
     new_rep, sim_digit = similarity(ms_oracle, level)
 
     # new_obj update
-    new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signal
+    new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signals
     new_descriptors = ms_oracle.levels[level - 1].concat_obj.descriptors
+    new_duration = ms_oracle.levels[level - 1].concat_obj.durations
 
     new_obj = class_object.Object()
-    new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+    new_obj.update(new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
     ms_oracle.levels[level].oracle.objects.append(new_obj)
 
     if sim_digit:

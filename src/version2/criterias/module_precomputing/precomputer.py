@@ -1,4 +1,4 @@
-import module_precomputing.data_computing as dc
+import data_computing as dc
 import math
 import class_object
 import numpy as np
@@ -36,12 +36,14 @@ def compute_data_signal(data):
         stab_i = [[s_tab[0][i]]]
         new_rep = class_object.ObjRep()
         new_signal = [audio[i*HOP_LENGTH:(i+1)*HOP_LENGTH]]
+        new_label = "a" # default label
         new_descriptors = class_object.Descriptors()
         new_descriptors.init(stab_i, stab_i)
+        new_duration = HOP_LENGTH
 
-        new_rep.init(new_signal, "a", new_descriptors)
+        new_rep.init(new_signal, new_label, new_descriptors, new_duration)
         new_obj = class_object.Object()
-        new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+        new_obj.update(new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
         obj_tab.append(new_obj)
     return obj_tab
 
@@ -64,6 +66,9 @@ def compute_data_symbol(data):
         new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
         obj_tab.append(new_obj)
     return obj_tab
+
+def compute_data_midi(data):
+    return 0
 
 def precompute_signal(pre_data):
     #ajouter la gestion des frames de silence

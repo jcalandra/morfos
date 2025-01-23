@@ -33,7 +33,7 @@ class Object:
     def get_similarity(self):
         return
 
-    def update(self, label, descriptors, signal, duration, rep):
+    def update(self, signal, label, descriptors,  duration, rep):
         self.get_signal(signal)
         self.get_label(label)
         self.get_descriptors(descriptors)
