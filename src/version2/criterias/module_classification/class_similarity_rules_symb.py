@@ -14,7 +14,7 @@ extend_gap_value = parameters.EXT_GAP_VALUE
 gap = parameters.GAP
 correc_value = parameters.CORREC_VALUE
 
-
+#TODO: jcalandra 23/01/2025 update the function compute_alignment as Bio is depreciated
 def compute_alignment(string_compared, actual_string, mat, level=0):
     # initalisation
     alignment = -pow(10, 10)
