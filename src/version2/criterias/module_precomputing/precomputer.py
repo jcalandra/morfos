@@ -83,6 +83,16 @@ def precompute_signal(pre_data):
 def precompute_vector(pre_data):
     return pre_data
 
+def parse_midi(pre_data):
+    return pre_data
+
+def precompute_midi(pre_data):
+    audio = 0
+    v_tab = [1 for i in range(len(pre_data))]
+    dim = 1
+    input_data = parse_midi(pre_data)
+    return [audio, input_data, v_tab, dim]
+
 def precompute_symbol(pre_data):
     audio = 0
     v_tab = [1 for i in range(len(pre_data))]
@@ -95,6 +105,8 @@ def precompute_data(pre_data):
         data = precompute_symbol(pre_data)
     elif format == ".npy":
         data = precompute_vector(pre_data)
+    elif format == ".mid":
+        data = precompute_midi(pre_data)
     else:
         data = precompute_signal(pre_data)
     return data
