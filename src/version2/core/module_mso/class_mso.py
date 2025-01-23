@@ -59,6 +59,10 @@ class MSO:
         self.symbol = symbol
         self.nb_hop = len(symbol)
 
+    def get_midi(self, midi):
+        self.midi = midi
+        self.nb_hop = len(midi)
+
     def get_objects(self, obj):
         self.init_objects = obj
 
@@ -67,6 +71,8 @@ class MSO:
             self.get_audio(data)
         if prm.processing == "symbols":
             self.get_symbol(data)
+        if prm.processing == "midi":
+            self.get_midi(data)
         self.get_objects(obj)
 
     def get_segmentation(self, seg):
