@@ -163,6 +163,9 @@ def char_next_level_similarity(ms_oracle, level):
     new_obj = class_object.Object()
     new_obj.update(new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
     ms_oracle.levels[level].oracle.objects.append(new_obj)
+    ms_oracle.levels[level].actual_objects.append(new_obj)
+
+    ms_oracle.levels[level].total_duration += new_duration
 
     if sim_digit:
         return [new_obj]

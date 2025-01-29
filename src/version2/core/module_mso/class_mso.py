@@ -159,6 +159,7 @@ class MSOLevel:
         self.materials = class_materialsMemory.Materials()
         self.concat_obj = class_concatObj.ConcatObj()
         self.volume = []
+        self.total_duration = 0
 
         self.actual_objects = [class_object.Object()]
         self.actual_char = ""

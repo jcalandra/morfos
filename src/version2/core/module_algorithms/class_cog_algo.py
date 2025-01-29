@@ -10,13 +10,8 @@ import hypothesis
 import time_manager as tm
 import numpy as np
 
-# In this file is defined the main loop for the algorithm at symbolic scale
+# In this file is defined the main loop for the algorithm
 # structring test function according to rules (rules_parametrization) and similarity test function
-
-
-# TODO: modifier les objets: un objet doit être une structure qui contient
-#  - un label
-#  - un ensemble de fonctions et les paramètres associés
 
 # ================================= MAIN COGNITIVE ALGORITHM AT SYMBOLIC SCALE =========================================
 
@@ -94,7 +89,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
         if level == 0 and ms_oracle.end_mk == 0:
             ms_oracle.levels[level].volume = ms_oracle.volume
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
-        ms_oracle.levels[level].actual_object = objects[iterator]
+        ms_oracle.levels[level].actual_obj = objects[iterator]
         #print("level", level, "actual obj", ms_oracle.levels[level].actual_object.label)
 
         if level == 0:
@@ -110,7 +105,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
                 sys.stdout.flush()
             # END CHECKPOINT #
 
-            ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_object)
+            ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_obj)
+            ms_oracle.levels[level].actual_objects.append(ms_oracle.levels[level].actual_obj)
+            ms_oracle.levels[level].total_duration += ms_oracle.levels[level].actual_obj.duration
         # formal diagram is updated with the new char
 
         if ms_oracle.levels[level].actual_char_ind == 1:
@@ -146,7 +143,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
-            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
+            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
         else:
             if ms_oracle.out:
                 return 1
@@ -164,9 +161,9 @@ def fun_segmentation(ms_oracle, objects, level=0):
                     if len(prm.bit_class[level]) > 1:
                         hypothesis.compute_phases(level, ms_oracle.end_mk)
             if ms_oracle.levels[level].concat_obj.size == 0:
-                ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
+                ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
             else:
-                ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_object)
+                ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_obj)
 
         # Automatically structuring if this is the End Of String
         if ms_oracle.end_mk == 1 and ms_oracle.level_max > level:
@@ -182,7 +179,7 @@ def fun_segmentation(ms_oracle, objects, level=0):
                     hypothesis.compute_phases(level, ms_oracle.end_mk)
             structure(ms_oracle, level)
             ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
-            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_object)
+            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
         ms_oracle.levels[level].iterator += 1

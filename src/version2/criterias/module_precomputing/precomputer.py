@@ -31,15 +31,15 @@ def compute_data_signal(data):
     audio = data[0]
     s_tab = data[1]
     obj_tab = []
-    nb_hop = len(s_tab[0])
-    for i in range(nb_hop):
+    length = len(s_tab[0])
+    for i in range(length):
         stab_i = [[s_tab[0][i]]]
         new_rep = class_object.ObjRep()
         new_signal = [audio[i*HOP_LENGTH:(i+1)*HOP_LENGTH]]
         new_label = "a" # default label
         new_descriptors = class_object.Descriptors()
         new_descriptors.init(stab_i, stab_i)
-        new_duration = HOP_LENGTH
+        new_duration = int((HOP_LENGTH)/HOP_LENGTH)
 
         new_rep.init(new_signal, new_label, new_descriptors, new_duration)
         new_obj = class_object.Object()
@@ -51,19 +51,31 @@ def compute_data_vector(vector):
     return 0
 
 def compute_data_symbol(data):
-    name = data[1]
-    nb_hop = len(name)
+    if len(data[1]) != 2:
+        raise ValueError("The data is not well formatted")
+    name = data[1][0]
+    duration = data[1][1]
+    descriptors = data[1][2]
+    if len(duration) != len(name):
+        duration = [1 for i in range(len(name))]
+    
+    if len(descriptors) != len(name):
+        descriptors = [class_object.Descriptors() for i in range(len(name))]
+        for i in range(len(name)):
+            descriptors[i].init([[[1,2,3]]],[[[1,2,3]]])
+
+    length = len(name)
     obj_tab = []
-    for i in range(nb_hop):
+    for i in range(length):
         new_rep = class_object.ObjRep()
         new_rep.init([], name[i], class_object.Descriptors())
         new_signal = []
         new_descriptors = class_object.Descriptors()
-        #new_descriptors.init([["a"],["b"]],[["a"],["b"]])
-        new_descriptors.init([[[1,2,3]]],[[[1,2,3]]])
+        new_descriptors = descriptors[i]
+        new_duration = duration[i]
 
         new_obj = class_object.Object()
-        new_obj.update(new_rep.label, new_descriptors, new_signal, new_rep)
+        new_obj.update( new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
         obj_tab.append(new_obj)
     return obj_tab
 

@@ -14,30 +14,26 @@ class FormalDiagram:
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
         global color_nb
         color_nb = 0
-        if processing == 'signal' and level==0:
+        if processing == 'signal':
             factor = 1
         else:
             factor = global_factor
         new_mat = [1 for i in range(mso.nb_hop*factor)]
         self.material_lines.append(new_mat)
+        k_end_link = 1
         if level == 0:
-            n = 1
-            k_end = k_end_link = n
             obj_s.objects_init()
             obj_s.first_occ_init()
+            
         else:
-            k_end = k_end_link = 1
             lv = level - 1
-            while lv >= 0:
-                link = mso.levels[lv].link
-                link_r = link.copy()
-                link_r.reverse()
-                k_end = len(link_r) - link_r.index(k_end) - 1
-                print(k_end)
-                if lv == level - 1:
-                    k_end_link = k_end
-                lv = lv - 1
-            n = k_end
+            link = mso.levels[lv].link
+            link_r = link.copy()
+            link_r.reverse()
+            k_end_link = len(link_r) - link_r.index(k_end_link) - 1
+        n = mso.levels[level].actual_objects[1].duration
+        k_end = n
+        
         prm.ind_lvl0 = k_end
         self.material_lines[0][0] = 0
         for i in range(1, n*factor):
@@ -77,47 +73,44 @@ class FormalDiagram:
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
         global color_nb
-        if processing == 'signal' and level==0:
+        if processing == 'signal':
             factor = 1
         else:
             factor = global_factor
         actual_char_ind = mso.levels[level].actual_char_ind
         actual_char = mso.levels[level].actual_char - mso.levels[level].oracle.data[1] + 1
-        k_init = actual_char_ind
         if level == 0:
-            n = k_init_link = k_end_link = 1
+            k_init_link = k_end_link = 1
         else:
-            k_end = k_init
-            k_init_link = k_init
-            k_end_link = k_init
+            k_end_link =  k_init_link = actual_char_ind
             lv = level - 1
-            while lv >= 0:
-                link = mso.levels[lv].link
-                link_r = link.copy()
-                link_r.reverse()
-                k_init = link.index(k_init)
-                true_len = len(link) - link_r.index(len(mso.levels[lv + 1].oracle.data) - 1)
-                sub_link_r = link.copy()
-                sub_link_r = sub_link_r[:true_len]
-                sub_link_r.reverse()
-                k_end = true_len - sub_link_r.index(k_end) - 1
-                if lv == level - 1:
-                    k_init_link = k_init
-                    k_end_link = k_end
-                lv = lv - 1
-            n = k_end - k_init + 1
-        prm.ind_lvl0 = k_init - 1
+            link = mso.levels[lv].link
+            link_r = link.copy()
+            link_r.reverse()
+            k_init_link = link.index(k_init_link)
+            true_len = len(link) - link_r.index(len(mso.levels[lv + 1].oracle.data) - 1)
+            sub_link_r = link.copy()
+            sub_link_r = sub_link_r[:true_len]
+            sub_link_r.reverse()
+            k_end_link = true_len - sub_link_r.index(k_end_link) - 1
+        n = mso.levels[level].actual_objects[actual_char_ind].duration
+        k_init = mso.levels[level].total_duration - n
+
+        
+
+
+        prm.ind_lvl0 = k_init
         color = 0.7
         color_nb += 1
         if actual_char > len(self.material_lines):
             new_mat = [1 for i in range(mso.nb_hop*factor)]
             self.material_lines.append(new_mat)
-            first_occ_mat = (k_init - 1)*(prm.HOP_LENGTH/prm.SR)
+            first_occ_mat = (k_init)*(prm.HOP_LENGTH/prm.SR)
             obj_s.first_occ_add_obj(level, first_occ_mat)
 
-        self.material_lines[actual_char - 1][k_init*factor- 1*factor] = 0
+        self.material_lines[actual_char - 1][k_init*factor] = 0
         for i in range(1, n*factor):
-            self.material_lines[actual_char - 1][factor*k_init+ i - 1*factor] = (color_nb%4 + 0.3)/4
+            self.material_lines[actual_char - 1][factor*k_init + i] = color #(color_nb%4 + 0.3)/4
 
         # create and update object
         links = []
