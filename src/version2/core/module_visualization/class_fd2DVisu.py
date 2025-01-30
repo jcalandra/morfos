@@ -4,7 +4,7 @@ import others.object_storage as obj_s
 from module_parameters.parameters import processing, EVOL_PRINT, LETTER_DIFF
 import numpy as np
 f_number = 0
-global_factor = 20
+global_factor = 10
 figsize= [30, 5]
 global color_nb
 
@@ -12,9 +12,10 @@ class FormalDiagram:
 
     def _formal_diagram_init(self, mso, level):
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
+        print("nb hop", mso.nb_hop)
         global color_nb
         color_nb = 0
-        if processing == 'signal':
+        if processing == 'signal' or processing == 'midi':
             factor = 1
         else:
             factor = global_factor
@@ -32,9 +33,9 @@ class FormalDiagram:
             link_r.reverse()
             k_end_link = len(link_r) - link_r.index(k_end_link) - 1
         n = mso.levels[level].actual_objects[1].duration
-        k_end = n
+        k_init = 0
         
-        prm.ind_lvl0 = k_end
+        prm.ind_lvl0 = k_init + n
         self.material_lines[0][0] = 0
         for i in range(1, n*factor):
             self.material_lines[0][i] = 0.7
@@ -73,7 +74,7 @@ class FormalDiagram:
         """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
         'actual_char'."""
         global color_nb
-        if processing == 'signal':
+        if processing == 'signal' or processing == 'midi':
             factor = 1
         else:
             factor = global_factor
@@ -180,6 +181,8 @@ class FormalDiagramGraph:
         #plt.imshow(formal_diagram, extent=[0, mso.data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
         if processing == 'symbols':
             plt.imshow(formal_diagram, extent=[0, mso.nb_hop, len(formal_diagram), 0])
+        elif processing == 'midi':
+            plt.imshow(formal_diagram, extent=[0, mso.nb_hop/120, len(formal_diagram), 0])
         elif processing == 'signal':
             plt.imshow(formal_diagram, extent=[0, mso.data_length, len(formal_diagram), 0])
         if EVOL_PRINT == 1:

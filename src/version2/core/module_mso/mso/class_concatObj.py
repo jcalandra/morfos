@@ -5,16 +5,20 @@ class ConcatObj:
         self.objects = []
         self.concat_signals = []
         self.concat_labels = ""
+        self.concat_pitches = []
         self.descriptors = Descriptors()
         self.durations = 0
+        self.date = 0
         self.size = 0
 
     def init(self, new_obj):
         self.objects = [new_obj]
         self.concat_signals = new_obj.signal
         self.concat_labels = new_obj.label
+        self.concat_pitches = new_obj.pitch
         self.descriptors.copy(new_obj.descriptors)
         self.durations = new_obj.duration
+        self.date = new_obj.date
         self.size = 1
 
     def _update_objects(self, obj):
@@ -26,6 +30,9 @@ class ConcatObj:
     def _update_labels(self, label):
         self.concat_labels += label
 
+    def _update_pitches(self, pitch):
+        self.concat_pitches += pitch
+
     def _update_descriptors(self, new_descriptors):
         for i in range(self.descriptors.nb_descriptors):
             """for j in range(len(new_descriptors.concat_descriptors[i])):
@@ -34,19 +41,24 @@ class ConcatObj:
                 for k in range(len(new_descriptors.mean_descriptors[i][j])):
                     self.descriptors.mean_descriptors[i][j][k] = (self.descriptors.mean_descriptors[i][j][k]*self.size + new_descriptors.mean_descriptors[i][j][k])/(self.size+1)
 
-    def update_duration(self, duration):
+    def _update_duration(self, duration):
         self.durations += duration
+    
+    def _update_date(self, date):
+        pass
 
-    def update_size(self):
+    def _update_size(self):
         self.size += 1
 
     def update(self, obj):
         self._update_objects(obj)
         self._update_signal(obj.signal)
         self._update_labels(obj.label)
+        self._update_pitches(obj.pitch)
         self._update_descriptors(obj.descriptors)
-        self.update_duration(obj.duration)
-        self.update_size()
+        self._update_duration(obj.duration)
+        self._update_date(obj.date)
+        self._update_size()
 
     def _reset_object(self, objects):
         self.objects = objects
@@ -57,37 +69,51 @@ class ConcatObj:
     def _reset_concat_label(self, labels):
         self.concat_labels = labels
 
+    def _reset_concat_pitch(self, pitches):
+        self.concat_pitches = pitches
+
     def _reset_descriptors(self, descriptors):
         self.descriptors.copy(descriptors)
 
     def _reset_durations(self, durations):
         self.durations = durations
+    
+    def _reset_date(self, date):
+        self.date = date
 
     def reset(self, objects):
         signals = objects[0].signal
         labels = objects[0].label
+        pitches = objects[0].pitch
+        date = objects[0].date
         descriptors = Descriptors()
         descriptors.copy(objects[0].descriptors)
         durations = objects[0].duration
         for obj in objects[1:]:
             labels += obj.label
             signals.extend(obj.signal)
+            pitches.extend(obj.pitch)
             for i in range(descriptors.nb_descriptors):
                 descriptors.update(obj.descriptors.concat_descriptors[i], obj.descriptors.mean_descriptors[i])
             durations += obj.duration
         self._reset_object(objects)
         self._reset_concat_signal(signals)
         self._reset_concat_label(labels)
+        self._reset_concat_pitch(pitches)
         self._reset_descriptors(descriptors)
         self._reset_durations(durations)
+        self._reset_date(date)
         self.size = len(labels)
-
-    def _pop_concat_label(self):
-        self.concat_labels = self.concat_labels[:-1]
 
     def _pop_concat_signal(self):
         nb = int(len(self.objects[-1].signal))
         self.concat_signal = self.concat_signal[:-nb]
+
+    def _pop_concat_label(self):
+        self.concat_labels = self.concat_labels[:-1]
+    
+    def _pop_concat_pitch(self):
+        self.concat_pitches = self.concat_pitches[:-1]
 
     def _pop_object(self):
         self.objects.pop()
@@ -119,6 +145,7 @@ class ConcatObj:
     def pop(self):
         self._pop_concat_label()
         self._pop_concat_signal()
+        self._pop_concat_pitch()
         self._pop_descriptors()
         self._pop_duration()
         self._pop_object()
@@ -128,7 +155,9 @@ class ConcatObj:
         self.objects = concatObj.objects
         self.concat_signal = concatObj.concat_signal
         self.concat_labels = concatObj.concat_labels
+        self.concat_pitches = concatObj.concat_pitches
         self.descriptors = concatObj.descriptors
         self.durations = concatObj.durations
+        self.date = concatObj.date
         self.size = concatObj.size
 

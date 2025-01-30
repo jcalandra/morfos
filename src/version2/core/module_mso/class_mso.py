@@ -25,6 +25,7 @@ class MSO:
         self.init_objects = []
         self.audio = []
         self.symbol = ""
+        self.midi = []
         self.volume = []
         self.rate = SR
         self.data_length = 0
@@ -57,11 +58,34 @@ class MSO:
 
     def get_symbol(self, symbol):
         self.symbol = symbol
-        self.nb_hop = len(symbol)
+        self.nb_hop = len(symbol[0])
 
     def get_midi(self, midi):
-        self.midi = midi
-        self.nb_hop = len(midi)
+        midi_stream = pc.open_midi(midi, 0)
+        partStream = pc.list_instruments(midi_stream)
+        for instrument in partStream:
+            y, parent_element = pc.extract_notes(instrument.flat.notes)
+            pitch = []
+            duration = []
+            descriptors = []
+            velocity = []
+            date = []
+            for i in range(len(y)):
+                pitch.append(y[i])
+                dur = int(parent_element[i].duration.quarterLength*12)
+                duration.append(dur)
+                descriptors.append(([[[1,2,3]]],[[[1,2,3]]]))
+                velocity.append(parent_element[i].volume.velocity)
+                dat = int(parent_element[i].offset*12)
+                date.append(dat)
+
+        self.midi = [pitch, duration, descriptors, velocity, date]
+        #self.nb_hop = date[-1] + duration[-1]
+        sum_duration = 0
+        for i in range(len(duration)):
+            sum_duration += duration[i]
+        print("sum duration", sum_duration)
+        self.nb_hop = sum_duration
 
     def get_objects(self, obj):
         self.init_objects = obj

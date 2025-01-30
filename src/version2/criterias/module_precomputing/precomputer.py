@@ -2,6 +2,7 @@ import data_computing as dc
 import math
 import class_object
 import numpy as np
+from music21 import converter, corpus, instrument, midi, note, chord, pitch
 from module_parameters.parameters import FORMAT, HOP_LENGTH, NOTE_MIN, NB_VALUES, MFCC_BIT, FFT_BIT, NB_SILENCE
 
 def dims_oracle(nb_values, s_tab, v_tab):
@@ -32,19 +33,22 @@ def compute_data_signal(data):
     s_tab = data[1]
     obj_tab = []
     length = len(s_tab[0])
+    new_date = 0
     for i in range(length):
         stab_i = [[s_tab[0][i]]]
         new_rep = class_object.ObjRep()
         new_signal = [audio[i*HOP_LENGTH:(i+1)*HOP_LENGTH]]
         new_label = "a" # default label
+        new_pitch = [0] # default pitch
         new_descriptors = class_object.Descriptors()
         new_descriptors.init(stab_i, stab_i)
         new_duration = int((HOP_LENGTH)/HOP_LENGTH)
 
-        new_rep.init(new_signal, new_label, new_descriptors, new_duration)
+        new_rep.init(new_signal, new_label, new_pitch, new_descriptors, new_duration, new_date)
         new_obj = class_object.Object()
-        new_obj.update(new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
+        new_obj.update(new_signal, new_rep.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
         obj_tab.append(new_obj)
+        new_date += new_duration
     return obj_tab
 
 def compute_data_vector(vector):
@@ -66,24 +70,50 @@ def compute_data_symbol(data):
 
     length = len(name)
     obj_tab = []
+    new_date = 0
     for i in range(length):
-        new_rep = class_object.ObjRep()
-        new_rep.init([], name[i], class_object.Descriptors())
         new_signal = []
+        new_label = name[i]
+        new_pitch = [0]
         new_descriptors = class_object.Descriptors()
         new_descriptors = descriptors[i]
         new_duration = duration[i]
 
+        new_rep = class_object.ObjRep()
+        new_rep.init(new_signal, new_label, new_pitch, new_descriptors, duration[i], new_date)
         new_obj = class_object.Object()
-        new_obj.update( new_signal, new_rep.label, new_descriptors, new_duration, new_rep)
+        new_obj.update( new_signal, new_rep.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
         obj_tab.append(new_obj)
+        new_date += new_duration
     return obj_tab
 
 def compute_data_midi(data):
-    return 0
+    pitch = data[1][0]
+    duration = data[1][1]
+    desc = data[1][2]
+    date = data[1][4]
+
+    descriptors = [class_object.Descriptors() for i in range(len(pitch))]
+    length = len(pitch)
+    obj_tab = []
+    for i in range(length):
+        new_signal = []
+        new_label = "a" # default label
+        new_pitch = [pitch[i]]
+        descriptors[i].init(desc[i][0], desc[i][1])
+        new_descriptors = class_object.Descriptors()
+        new_descriptors = descriptors[i]
+        new_duration = duration[i]
+        new_date = date[i]
+
+        new_rep = class_object.ObjRep()
+        new_rep.init(new_signal, new_label, new_pitch, new_descriptors, new_duration, new_date)
+        new_obj = class_object.Object()
+        new_obj.update(new_signal, new_label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
+        obj_tab.append(new_obj)
+    return obj_tab
 
 def precompute_signal(pre_data):
-    #ajouter la gestion des frames de silence
     audio, rate, data_size, data_length = dc.get_data(pre_data)
     audio_data = []
     for i in range(NB_SILENCE):
@@ -100,19 +130,77 @@ def precompute_signal(pre_data):
 def precompute_vector(pre_data):
     return pre_data
 
+def open_midi(midi_path, remove_drums):
+    mf = midi.MidiFile()
+    mf.open(midi_path)
+    mf.read()
+    mf.close()
+    if (remove_drums):
+        for i in range(len(mf.tracks)):
+            mf.tracks[i].events = [ev for ev in mf.tracks[i].events if ev.channel != 10]          
+
+    return midi.translate.midiFileToStream(mf)
+
+def list_instruments(midi):
+    partStream = midi.parts.stream()
+    print("List of instruments found on MIDI file:")
+    for p in partStream:
+        aux = p
+        print (p.partName)
+    return partStream
+
+def extract_notes(midi_part):
+    parent_element = []
+    ret = []
+    for nt in midi_part.flat.notes:        
+        if isinstance(nt, note.Note):
+            ret.append(max(0.0, nt.pitch.ps))
+            parent_element.append(nt)
+        elif isinstance(nt, chord.Chord):
+            for pitch in nt.pitches:
+                ret.append(max(0.0, pitch.ps))
+                parent_element.append(nt)
+    
+    return ret, parent_element
+
 def parse_midi(pre_data):
+    #TODO: @jcalandra 30/01/25 - modelise silences
+    midi_stream = open_midi(pre_data, 0)
+    partStream = list_instruments(midi_stream)
+    for instrument in partStream:
+        y, parent_element = extract_notes(instrument.flat.notes)
+        pitch = []
+        duration = []
+        descriptors = []
+        velocity = []
+        date = []
+        for i in range(len(y)):
+            pitch.append(y[i])
+            dur = int(parent_element[i].duration.quarterLength*12)
+            duration.append(dur)
+            descriptors.append(([[[1,2,3]]],[[[1,2,3]]]))
+            velocity.append(parent_element[i].volume.velocity)
+            dat = int(parent_element[i].offset*12)
+            date.append(dat)
+            print("date", date)
+
+    pre_data = [pitch, duration, descriptors, velocity, date]
     return pre_data
 
 def precompute_midi(pre_data):
-    audio = 0
-    v_tab = [1 for i in range(len(pre_data))]
-    dim = 1
+    print("oui")
     input_data = parse_midi(pre_data)
+    audio = 0
+    v_tab = input_data[3]
+    dim = 1 
     return [audio, input_data, v_tab, dim]
 
 def precompute_symbol(pre_data):
+    #tab[0] = symbols, tab[1] = duration, tab[2] = descriptors, tab[3] = velocity
     audio = 0
-    v_tab = [1 for i in range(len(pre_data))]
+    if len(pre_data[3]) != len(pre_data[0]):
+        pre_data[3] = [1 for i in range(len(pre_data[0]))]
+    v_tab = pre_data[3]
     dim = 1
     input_data = pre_data
     return [audio, input_data, v_tab, dim]
@@ -120,9 +208,9 @@ def precompute_symbol(pre_data):
 def precompute_data(pre_data):
     if FORMAT == ".txt":
         data = precompute_symbol(pre_data)
-    elif format == ".npy":
+    elif FORMAT == ".npy":
         data = precompute_vector(pre_data)
-    elif format == ".mid":
+    elif FORMAT == ".mid":
         data = precompute_midi(pre_data)
     else:
         data = precompute_signal(pre_data)
@@ -133,6 +221,8 @@ def compute_data(pre_data):
         data = compute_data_symbol(pre_data)
     elif format == ".npy":
         data = compute_data_vector(pre_data)
+    elif FORMAT == ".mid":
+        data = compute_data_midi(pre_data)
     else:
         data = compute_data_signal(pre_data)
     return data

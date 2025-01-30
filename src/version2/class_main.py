@@ -58,6 +58,10 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
         pre_data = name
     elif format == ".npy":
         pass
+    elif format == ".mid":
+        pre_data = path
+    elif format == ".wav" or format == ".mp3":
+        pre_data = path
     else:
         pre_data = path
 

@@ -6,8 +6,10 @@ class Object:
         self.id = None
         self.signal = []
         self.label = ""
+        self.pitch = []
         self.descriptors = Descriptors()
         self.duration = 0
+        self.date = 0
         self.transfo_functions = TransFunctions()
         self.obj_rep = ObjRep()
 
@@ -20,11 +22,17 @@ class Object:
     def get_label(self, label):
         self.label = label
 
+    def get_pitch(self, pitch):
+        self.pitch = pitch
+
     def get_descriptors(self, descriptors):
         self.descriptors.copy(descriptors)
 
     def get_duration(self, duration):
         self.duration = duration
+
+    def get_date(self, date):
+        self.date = date
 
     def get_rep(self, rep):
         self.obj_rep.copy(rep)
@@ -33,11 +41,13 @@ class Object:
     def get_similarity(self):
         return
 
-    def update(self, signal, label, descriptors,  duration, rep):
+    def update(self, signal, label, pitch, descriptors,  duration, date, rep):
         self.get_signal(signal)
         self.get_label(label)
+        self.get_pitch(pitch)
         self.get_descriptors(descriptors)
         self.get_duration(duration)
+        self.get_date(date)
         self.transfo_functions.get_functions()
         self.get_rep(rep)
 
@@ -45,8 +55,10 @@ class Object:
         self.id = obj.id
         self.signal = obj.signal
         self.label = obj.label
+        self.pitch = obj.pitch
         self.descriptors.copy(obj.descriptors)
         self.duration = obj.duration
+        self.date = obj.date
         self.transfo_functions = obj.transfo_functions
         self.obj_rep.copy(obj.rep)
 
@@ -61,8 +73,10 @@ class ObjRep:
     def __init__(self):
         self.signal = []
         self.label = ""
+        self.pitch = []
         self.descriptors = Descriptors()
         self.duration = 0
+        self.first_date = 0
         self.nb = 0
 
     def init_signal(self, signal):
@@ -71,20 +85,28 @@ class ObjRep:
     def init_label(self, label):
         self.label += label
 
+    def init_pitch(self, pitch):
+        self.pitch.extend(pitch)
+
     def init_descriptors(self, descriptors):
         self.descriptors.copy(descriptors)
 
     def init_duration(self, duration):
         self.duration = duration
 
+    def init_first_date(self, date):
+        self.first_date = date
+
     def init_nb(self):
         self.nb = 1
 
-    def init(self, signal, label, descriptors, duration):
+    def init(self, signal, label, pitch, descriptors, duration, date):
         self.init_signal(signal)
         self.init_label(label)
+        self.init_pitch(pitch)
         self.init_descriptors(descriptors)
         self.init_duration(duration)
+        self.init_first_date(date)
         self.init_nb()
 
     # TODO: jcalandra 20/09/2021 update function obj_rep.update_signal()
@@ -94,6 +116,9 @@ class ObjRep:
 
     def update_label(self, label):
         self.label = label
+
+    def update_pitch(self, pitch):
+        self.pitch = pitch
 
     def update_descriptors(self, descriptors):
         for i in range(self.descriptors.nb_descriptors):
@@ -113,22 +138,29 @@ class ObjRep:
                         
     def update_duration(self, duration):
         self.duration = (self.nb * self.duration + duration)/(self.nb + 1)
-                         
+
+    def update_first_date(self, date):        
+        pass
+
     def update_nb(self):
         self.nb += 1
 
-    def update(self, signal, label, descriptors, duration):
+    def update(self, signal, label, pitch, descriptors, duration, date):
         self.update_signal(signal)
         self.update_label(label)
+        self.update_pitch(pitch)
         self.update_descriptors(descriptors)
         self.update_duration(duration)
+        self.update_first_date(date)
         self.update_nb()
 
     def copy(self, rep):
         self.signal = rep.signal
         self.label = rep.label
+        self.pitch = rep.pitch
         self.descriptors.copy(rep.descriptors)
         self.duration = rep.duration
+        self.first_date = rep.first_date
         self.nb = rep.nb
 
 

@@ -50,6 +50,8 @@ if FORMAT == ".wav" or FORMAT == ".mp3":
    processing = "signal"
 elif FORMAT == ".npy":
    processing = "vectors"
+elif FORMAT == ".mid":
+   processing = "midi"
 else:
    processing = "symbols"
 to_transpose = data["to_transpose"]
@@ -79,6 +81,13 @@ ALIGNMENT = data["ALIGNMENT"]
 if STRICT_EQUALITY + ALIGNMENT != 1:
    STRICT_EQUALITY = 0
    ALIGNMENT = 1
+
+MEAN_PITCHES = data["MEAN_PITCHES"]
+ALIGNMENT_PITCHES = data["ALIGNMENT_PITCHES"]
+
+if MEAN_PITCHES + ALIGNMENT_PITCHES != 1:
+   MEAN_PITCHES = 0
+   ALIGNMENT_PITCH = 1
 
 # -------SYMBOLS SEGMENTATION RULES -------
 # Rules that are activated or not and their
@@ -161,7 +170,7 @@ GRAPH_COMPARISON = data["GRAPH_COMPARISON"]
 
 SR = data["SR"]
 HOP_LENGTH = data["HOP_LENGTH"]
-if processing == 'symbols' or processing == 'vectors':
+if processing == 'symbols' or processing == 'vectors' or processing == 'midi':
    SR = 1
    HOP_LENGTH = 1
 

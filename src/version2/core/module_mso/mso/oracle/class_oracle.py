@@ -615,6 +615,20 @@ class MO(FactorOracle):
             similarity_fun = csc.compute_signal_similarity
             similarity_fun_rep = csc.compute_signal_similarity_rep
             new_data = new_data_all.descriptors.mean_descriptors
+        elif prm.processing == "midi":
+            similarity_fun = csc.compute_midi_similarity
+            similarity_fun_rep = csc.compute_midi_similarity_rep
+            if level == 0:
+                new_data = new_data_all.pitch
+            else:
+                new_data = new_data_all.concat_pitches
+        elif prm.processing == "symbol":
+            similarity_fun = csc.compute_symbol_similarity
+            similarity_fun_rep = csc.compute_symbol_similarity_rep
+            if level == 0:
+                new_data = new_data_all.label
+            else:
+                new_data = new_data_all.concat_labels
         else:
             similarity_fun = csc.compute_symbol_similarity
             similarity_fun_rep = csc.compute_symbol_similarity_rep
@@ -660,11 +674,14 @@ class MO(FactorOracle):
                 sim_tab.append(1)
                 #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                 new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
+                new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                 actual_object_descriptor = class_object.Descriptors()
                 actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
                 duration = ms_oracle.levels[level - 1].concat_obj.durations
+                date = ms_oracle.levels[level - 1].concat_obj.date
+
                 new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
+                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
 
                 concat_obj = class_concatObj.ConcatObj()
                 concat_obj.init(ms_oracle.levels[level].actual_obj)
@@ -689,12 +706,14 @@ class MO(FactorOracle):
                 sim_tab.append(1)
                 #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                 new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
+                new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                 actual_object_descriptor = class_object.Descriptors()
                 actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
                 duration = ms_oracle.levels[level - 1].concat_obj.durations
+                date = ms_oracle.levels[level - 1].concat_obj.date
 
                 new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
+                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
                 concat_obj = class_concatObj.ConcatObj()
                 concat_obj.init(ms_oracle.init_objects[i - 1])
                 descriptors = ms_oracle.init_objects[i - 1].descriptors
@@ -747,7 +766,7 @@ class MO(FactorOracle):
                     cost_clas_sim += (1 - fss)
                     card_o += 1
                     dvec.append(fss)
-                    if dvec[j] > self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
+                    if dvec[j] >= self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
                         I.append(j)
 
                 # S'il n'y a pas de transition en avant du suffixe similaire à l'état actuel
@@ -827,7 +846,7 @@ class MO(FactorOracle):
                         card_o += 1
                         comp_rep.append(fss)
                         sim_tab.append(fss)
-                        if j != 0 and comp_rep[j] > self.params['threshold']:
+                        if j != 0 and comp_rep[j] >= self.params['threshold']:
                             J.append(j)
 
                     comp_rep_sc = []
@@ -871,7 +890,7 @@ class MO(FactorOracle):
                                 sec_mat_rep = np.argmax(new_comp_rep[1:]) + 1
                                 if mat_rep < sec_mat_rep:
                                     sec_mat_rep = sec_mat_rep + 1
-                                if sec_mat_value > self.params['threshold']:
+                                if sec_mat_value >= self.params['threshold']:
                                     mat_rep = sec_mat_rep
                             if (method == 'complete' and len(sorted_suffix_candidates) > 0 and
                                 mat_rep != self.data[sorted_suffix_candidates[0][0]]) or \
@@ -883,7 +902,7 @@ class MO(FactorOracle):
                                     fss = similarity_fun(ms_oracle, level, actual_compared - 1, i - 1)
                                     cost_clas_sim += (1 - fss)
                                     card_o += 1
-                                    if fss > self.params['threshold']:
+                                    if fss >= self.params['threshold']:
                                         if method == 'complete':
                                             cost_sfx_candidate_parcours += 1
                                             suffix_candidate.append((actual_compared, 1))
@@ -912,12 +931,15 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
+                    print("new char", new_char)
+                    new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
                     duration = ms_oracle.levels[level - 1].concat_obj.durations
+                    date = ms_oracle.levels[level - 1].concat_obj.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].concat_signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
+                    new_rep.init(ms_oracle.init_objects[i-1].concat_signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
 
                     concat_obj = class_concatObj.ConcatObj()
                     concat_obj.init(ms_oracle.levels[level].actual_obj)
@@ -961,12 +983,15 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
+                    print("new char", new_char)
+                    new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
                     duration = ms_oracle.levels[level - 1].concat_obj.durations
+                    date = ms_oracle.levels[level - 1].concat_obj.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, ms_oracle.init_objects[i-1].descriptors, duration)
+                    new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
                     concat_obj = class_concatObj.ConcatObj()
                     concat_obj.init(ms_oracle.init_objects[i - 1])
                     descriptors = ms_oracle.init_objects[i - 1].descriptors
