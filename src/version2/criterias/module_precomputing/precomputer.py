@@ -150,10 +150,8 @@ def open_midi(midi_path, remove_drums):
 
 def list_instruments(midi):
     partStream = midi.parts.stream()
-    print("List of instruments found on MIDI file:")
     for p in partStream:
         aux = p
-        print (p.partName)
     return partStream
 
 def extract_notes(midi_part):
@@ -171,7 +169,7 @@ def extract_notes(midi_part):
     return ret, parent_element
 
 def parse_midi(pre_data):
-    #TODO: @jcalandra 30/01/25 - modelise silences
+    #TODO: @jcalandra 30/01/25 - modeliser les silences
     midi_stream = open_midi(pre_data, 0)
     partStream = list_instruments(midi_stream)
     for instrument in partStream:
@@ -189,13 +187,11 @@ def parse_midi(pre_data):
             velocity.append(parent_element[i].volume.velocity)
             dat = int(parent_element[i].offset*12)
             date.append(dat)
-            print("date", date)
 
     pre_data = [pitch, duration, descriptors, velocity, date]
     return pre_data
 
 def precompute_midi(pre_data):
-    print("oui")
     input_data = parse_midi(pre_data)
     audio = 0
     v_tab = input_data[3]

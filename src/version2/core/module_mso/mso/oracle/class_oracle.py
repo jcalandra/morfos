@@ -931,7 +931,6 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                    print("new char", new_char)
                     new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
@@ -983,7 +982,6 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                    print("new char", new_char)
                     new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
                     actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
