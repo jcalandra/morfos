@@ -100,15 +100,18 @@ def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
         obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].descriptors
         actual_obj = ms_oracle.levels[level - 1].concat_obj.descriptors
 
-    desc_compared = obj_compared.mean_descriptors[0][0]
-    actual_desc = actual_obj.mean_descriptors[0][0]
+    desc_compared_mean = obj_compared.mean_descriptors[0][0]
+    actual_desc_mean = actual_obj.mean_descriptors[0][0]
+
+    desc_compared_concat= obj_compared.concat_descriptors[0]
+    actual_desc_concat = actual_obj.concat_descriptors[0]
 
     if parameters.DIFF_CONCORDANCE:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
+        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
     elif parameters.EUCLID_DISTANCE:
-        sim_digit_label, sim_value = sim_sig.euclid_distance(desc_compared, actual_desc)
+        sim_digit_label, sim_value = sim_sig.euclid_distance(desc_compared_mean, actual_desc_mean)
     else:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
+        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
 
     return sim_value
 

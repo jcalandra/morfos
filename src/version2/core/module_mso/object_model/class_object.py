@@ -120,21 +120,25 @@ class ObjRep:
     def update_pitch(self, pitch):
         self.pitch = pitch
 
-    def update_descriptors(self, descriptors):
+    def update_concat_descriptors(self, concat_descriptors):
         for i in range(self.descriptors.nb_descriptors):
-            '''for j in range(len(self.descriptors.concat_descriptors[i])):
-                for k in range(len(self.descriptors.concat_descriptors[i][j])):
-                    self.descriptors.concat_descriptors[i][j][k] = \
-                        ((self.nb)*self.descriptors.concat_descriptors[i][j][k] +
-                         descriptors.concat_descriptors[i][j][k])/(self.nb + 1)'''
-            for j in range(len(self.descriptors.mean_descriptors[i])):
-                for k in range(len(self.descriptors.mean_descriptors[i][j])):
-                    if self.nb <= borders:
-                        self.descriptors.mean_descriptors[i][j][k] = descriptors.mean_descriptors[i][j][k]
-                    else:
-                        self.descriptors.mean_descriptors[i][j][k] = \
-                            ((self.nb - borders)*self.descriptors.mean_descriptors[i][j][k] + descriptors.mean_descriptors[i][j][k]) / \
-                            (self.nb - borders + 1)
+            self.descriptors.concat_descriptors[i].extend(concat_descriptors[i])
+
+    def update_mean_descriptors(self, mean_descriptors):
+        new_mean_descriptor = []
+        for i in range(self.descriptors.nb_descriptors):
+            new_mean_descriptor.append([])
+            new_mean_descriptor[i].append([0 for _ in range(len(mean_descriptors[i][0]))])
+            for j in range(len(mean_descriptors[i])):
+                    for k in range(len(mean_descriptors[i][j])):
+                        if self.nb <= borders:
+                            self.descriptors.mean_descriptors[i][0][k] = mean_descriptors[i][j][k]/len(mean_descriptors[0])
+                        else:
+                            self.descriptors.mean_descriptors[i][0][k] += mean_descriptors[i][j][k]/(len(mean_descriptors[0])*2)
+                        
+    def update_descriptors(self, descriptors):
+        self.update_concat_descriptors(descriptors.concat_descriptors)
+        self.update_mean_descriptors(descriptors.mean_descriptors)
                         
     def update_duration(self, duration):
         self.duration = (self.nb * self.duration + duration)/(self.nb + 1)
@@ -184,21 +188,23 @@ class Descriptors:
         self.init_mean_descriptors(mean_descriptors)
         self.init_nb_descriptors()
 
-    def update_concat_descriptors(self, concat_descriptors):
 
-        for i in range(self.concat_descriptors):
-            for j in range(len(self.concat_descriptors[i])):
-                self.concat_descriptors[i].append(concat_descriptors[i])
+    def update_concat_descriptors(self, concat_descriptors):
+        for i in range(self.descriptors.nb_descriptors):
+            self.descriptors.concat_descriptors[i].extend(concat_descriptors[i])
+        
 
     def update_mean_descriptors(self, mean_descriptors):
-        for i in range(self.mean_descriptors):
-            for j in range(len(self.mean_descriptors[i])):
-                if len(self.concat_descriptors[0]) <= borders + 1:
-                    self.mean_descriptors[i][j] = mean_descriptors[j]
-                else:
-                    self.mean_descriptors[i][j] = \
-                        ((len(self.concat_descriptors[0]) - 1) * self.mean_descriptors[i][j] +
-                         mean_descriptors[j]) / (len(self.concat_descriptors[0]) - borders)
+        for i in range(self.descriptors.nb_descriptors):
+            for j in range(len(self.descriptors.mean_descriptors[i])):
+                for k in range(len(self.descriptors.mean_descriptors[i][j])):
+                    if self.nb <= borders:
+                        self.descriptors.mean_descriptors[i][j][k] = mean_descriptors[i][j][k]
+                    else:
+                        self.descriptors.mean_descriptors[i][j][k] = \
+                            ((self.nb - borders)*self.descriptors.mean_descriptors[i][j][k] + mean_descriptors[i][j][k]) / \
+                            (self.nb - borders + 1)
+        
 
     def get_empty_descriptors(self, nb_descriptors):
         for i in range(nb_descriptors):

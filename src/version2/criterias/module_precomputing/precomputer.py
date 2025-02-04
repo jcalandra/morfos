@@ -35,13 +35,20 @@ def compute_data_signal(data):
     length = len(s_tab[0])
     new_date = 0
     for i in range(length):
-        stab_i = [[s_tab[0][i]]]
+        stab_i_concat = [[s_tab[0][i]]]
+        stab_i_mean = []
+        for i in range(len(stab_i_concat)):
+            stab_i_mean.append([])
+            stab_i_mean[i].append([0 for _ in range(len(stab_i_concat[i][0]))])
+            for j in range(len(stab_i_concat[i])):
+                for k in range(len(stab_i_concat[i][j])):
+                    stab_i_mean[i][0][k] += stab_i_concat[i][j][k]/len(stab_i_concat[0])
         new_rep = class_object.ObjRep()
         new_signal = [audio[i*HOP_LENGTH:(i+1)*HOP_LENGTH]]
         new_label = "a" # default label
         new_pitch = [0] # default pitch
         new_descriptors = class_object.Descriptors()
-        new_descriptors.init(stab_i, stab_i)
+        new_descriptors.init(stab_i_concat, stab_i_mean)
         new_duration = int((HOP_LENGTH)/HOP_LENGTH)
 
         new_rep.init(new_signal, new_label, new_pitch, new_descriptors, new_duration, new_date)
