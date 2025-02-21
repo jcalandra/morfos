@@ -19,14 +19,26 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 def _compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
-    desc_compared = obj_compared[1].descriptors.mean_descriptors[0][0]
-    actual_desc = actual_obj.concat_obj.descriptors.mean_descriptors[0][0]
+    desc_compared_mean = obj_compared[1].descriptors.mean_descriptors[0][0]
+    actual_desc_mean = actual_obj.concat_obj.descriptors.mean_descriptors[0][0]
+    desc_compared_concat = obj_compared[1].descriptors.concat_descriptors[0]
+    actual_desc_concat = actual_obj.concat_obj.descriptors.concat_descriptors[0]
     if parameters.DIFF_CONCORDANCE:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
+        sim_digit_label_mean, sim_value_mean = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
     elif parameters.EUCLID_DISTANCE:
-        sim_digit_label, sim_value = sim_sig.euclid_distance(desc_compared, actual_desc)
+        sim_digit_label_mean, sim_value_mean = sim_sig.euclid_distance(desc_compared_mean, actual_desc_mean)
     else:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared, actual_desc)
+        sim_digit_label_mean, sim_value_mean = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
+    #if level > 0:
+    #    sim_digit_label_concat, sim_value_concat = sim_sig.diff_dtw(desc_compared_concat, actual_desc_concat)
+    #else:
+    #    sim_digit_label_concat, sim_value_concat = sim_digit_label_mean, sim_value_mean
+    #sim_value = (sim_value_mean + sim_value_concat)/2
+    sim_value = sim_value_mean
+    if sim_value >= parameters.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
     return sim_digit_label, sim_value
 
 def _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
@@ -58,6 +70,7 @@ def compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     #sim_digit_label_symb, sim_value_symb = _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level)
     #sim_digit_label_midi, sim_value_midi = _compute_midi_similarity_rep(obj_compared, actual_obj, mat, level)
     #sim_value = (sim_value_sig + sim_value_symb + sim_value_midi)/3
+    #sim_value = (sim_value_sig + sim_value_symb)/2
     sim_value = sim_value_sig
     if sim_value  >= parameters.teta:
         sim_digit_label = 1
@@ -107,11 +120,17 @@ def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
     actual_desc_concat = actual_obj.concat_descriptors[0]
 
     if parameters.DIFF_CONCORDANCE:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
+        sim_digit_label_mean, sim_value_mean = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
     elif parameters.EUCLID_DISTANCE:
-        sim_digit_label, sim_value = sim_sig.euclid_distance(desc_compared_mean, actual_desc_mean)
+        sim_digit_label_mean, sim_value_mean = sim_sig.euclid_distance(desc_compared_mean, actual_desc_mean)
     else:
-        sim_digit_label, sim_value = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
+        sim_digit_label_mean, sim_value_mean = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
+    #if level > 0:
+    #    sim_digit_label_concat, sim_value_concat = sim_sig.diff_dtw(desc_compared_concat, actual_desc_concat)
+    #else:
+    #    sim_digit_label_concat, sim_value_concat = sim_digit_label_mean, sim_value_mean
+    #sim_value = (sim_value_mean + sim_value_concat)/2
+    sim_value = sim_value_mean
 
     return sim_value
 
@@ -159,7 +178,6 @@ def _compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
         sim_digit_label, sim_value = sim_midi.alignment_pitches(obj_compared, actual_obj)
     else:
         sim_digit_label, sim_value = sim_midi.mean_pitches(obj_compared, actual_obj)
-    print("sim_value", sim_value)
     return sim_value
 
 def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
@@ -167,6 +185,7 @@ def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind
     #sim_value_symb = _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
     #sim_value_midi = _compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
     #sim_value = (sim_value_sig + sim_value_symb + sim_value_midi)/3
+    #sim_value = (sim_value_sig + sim_value_symb)/2
     sim_value = sim_value_sig
     return sim_value
 
@@ -220,7 +239,7 @@ def char_next_level_similarity(ms_oracle, level):
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""
     new_rep, sim_digit = similarity(ms_oracle, level)
-
+    print("level", level)
     # new_obj update
     new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signals
     new_pitch = ms_oracle.levels[level - 1].concat_obj.concat_pitches

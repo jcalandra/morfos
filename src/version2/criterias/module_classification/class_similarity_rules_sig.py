@@ -1,6 +1,7 @@
 import math
 from matplotlib.pyplot import *
 from module_parameters import parameters as prm
+import dtw
 
 # In sim_function.py are computed distances in many ways.
 # Functions that returns if two materials are the same or not are also provided as 'comparison functions'
@@ -115,6 +116,36 @@ def euclid_distance(id_hop_a, id_hop_b):
         sim_value = 1
     else:
         sim_value = 1 / (e_distance + 1)
+    if sim_value > prm.teta:
+        sim_digit_label = 1
+    else:
+        sim_digit_label = 0
+    return sim_digit_label, sim_value
+
+def diff_dtw(id_hop_a, id_hop_b):
+    """ Compute the dynamic time warping distance between two frames."""
+    la = len(id_hop_a)
+    lb = len(id_hop_b)
+    vec_size = int(len(id_hop_a[0])*2/3)
+    sim_value = 0
+    #sim_values = []
+    for k in range(vec_size):
+        compared_lin = []
+        actual_lin = []
+        for l in range(la):
+            compared_lin.append(id_hop_a[l][k])
+        for l in range(lb):
+            actual_lin.append(id_hop_b[l][k])
+
+        ## Find the best match with the canonical recursion formula
+        alignment = dtw.dtw(actual_lin, compared_lin, keep_internals=True)
+        sim_val = 1/ (1 + alignment.distance/10000)
+        print("distance", alignment.distance)
+        print("sim_val", sim_val)
+        
+        sim_value += sim_val
+    sim_value = sim_value/vec_size
+
     if sim_value > prm.teta:
         sim_digit_label = 1
     else:
