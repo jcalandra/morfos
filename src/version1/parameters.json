@@ -6,8 +6,8 @@
    "PATH_RESULT":"/../results/Geisslerlied/",
 
    "teta_mfcc": 0.15,
-   "teta":0.974,
-   "d_threshold":100,
+   "teta":0.975,
+   "d_threshold":50,
 
    "POLYPHONY":0,
 
@@ -29,7 +29,7 @@
    "RULE_1":1,
    "RULE_2":1,
    "RULE_3":0,
-   "RULE_4":0,
+   "RULE_4":1,
    "RULE_5":0,
    "RULE_6":1,
    "RULE_7":0,
