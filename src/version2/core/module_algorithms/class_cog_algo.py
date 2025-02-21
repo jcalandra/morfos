@@ -88,7 +88,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
         iterator = ms_oracle.levels[level].iterator
         if level == 0 and ms_oracle.end_mk == 0:
             ms_oracle.levels[level].volume = ms_oracle.volume
-            print("level", level)
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_obj = objects[iterator]
         #print("level", level, "actual obj", ms_oracle.levels[level].actual_object.label)

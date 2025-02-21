@@ -62,11 +62,14 @@ def compute_data_vector(vector):
     return 0
 
 def compute_data_symbol(data):
-    if len(data[1]) != 2:
+    if len(data) != 4:
         raise ValueError("The data is not well formatted")
     name = data[1][0]
+    print("name",name)
     duration = data[1][1]
+    print("duratoin", duration)
     descriptors = data[1][2]
+    print("desc", descriptors)
     if len(duration) != len(name):
         duration = [1 for i in range(len(name))]
     

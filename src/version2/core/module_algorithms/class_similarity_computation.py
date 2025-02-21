@@ -239,7 +239,6 @@ def char_next_level_similarity(ms_oracle, level):
     the strings have to be the exact sames to be considered as similar. The history_next tab is modified according to
     the results and the new string of upper level new_char is returned."""
     new_rep, sim_digit = similarity(ms_oracle, level)
-    print("level", level)
     # new_obj update
     new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signals
     new_pitch = ms_oracle.levels[level - 1].concat_obj.concat_pitches

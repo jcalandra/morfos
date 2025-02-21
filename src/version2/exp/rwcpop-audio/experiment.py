@@ -1,21 +1,20 @@
-import rwcpop_parser_ref as rwcpp_ref
-import rwcpop_parser_est as rwcpp_est
-import module_parameters.parameters as prm
+import compute_all
+import parser_ref
+import parser_est
+
 import mir_eval
 import csv
 import os
 
 
 TO_WRITE = 1
-test_path = rwcpp_est.project_root + '/../../data/rwcpop/csv'
-result_path = rwcpp_est.project_root + '/../../results/exp_rwcpop/version3'
+test_path = compute_all.test_path
+result_path = compute_all.result_path
 
-def rwcpop_compute_scores():
+def compute_scores():
     min_val = 1
     max_val = 100
-    tab_error = [6, 34, 36, 53, 94]
-    # 6, 34 36, 53: all interval durations must be strictly positive
-    # 18, 49, 66, 68, 69, 72 : alignment computation error
+    tab_error = []
     nb_samples = max_val - min_val - len(tab_error) + 1
     means = {'Precision@0.5': 0, 'Recall@0.5': 0, 'F-measure@0.5': 0,
              'Precision@3.0': 0, 'Recall@3.0': 0, 'F-measure@3.0': 0,
@@ -39,14 +38,15 @@ def rwcpop_compute_scores():
         if i in tab_error:
             continue
         print("ANALYSIS NUMBER " + str(number))
-        test_path_pop = test_path + '/Pop ' + number + ' (grid).csv'
+        test_path_pop = '/Pop ' + number
         result_path_pop = result_path + '/Pop ' + number + '/'
-        ref_labels, ref_intervals = rwcpp_ref.rwcpop_parse_ref_sec(test_path_pop)
-        est_labels_all, est_intervals_all = rwcpp_est.rwcpop_parse_est(test_path_pop, result_path_pop)
-        print("est_labels_all = ", est_labels_all)
-        print("est_intervals_all = ", est_intervals_all)
-        print("ref_labels = ", ref_labels)
-        print("ref_intervals = ", ref_intervals)
+        if i < 100:
+            ref_path = test_path + 'aist-chorus/RM-P0'+ number +'.CHORUS.TXT'
+        else:
+            ref_path = test_path + 'aist-chorus/RM-P' + number + '.CHORUS.TXT'
+        ref_labels, ref_intervals = parser_ref.parse_ref(ref_path)
+        est_labels_all, est_intervals_all = parser_est.parse_est(test_path_pop, result_path_pop)
+        
 
         if TO_WRITE:
             if not os.path.exists(result_path_pop):
@@ -54,18 +54,19 @@ def rwcpop_compute_scores():
             file_scores = open(result_path_pop + "scores.txt", "w")
             csvfile_scores = open(result_path_pop + "scores.csv", 'w', newline='')
             csvwriter_scores = csv.writer(csvfile_scores, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
         best_scores = 0
         best_scores_line = "no best score"
         best_level = 0
 
         for level in range(len(est_labels_all)):
+            print("yes")
             est_labels = est_labels_all[level]
             est_intervals = est_intervals_all[level]
             scores = mir_eval.segment.evaluate(ref_intervals, ref_labels, est_intervals, est_labels)
             # 'Pairwise F-measure' or
             # 'F-measure@0.5' or
             # 'Recall@0.5'
+            print("evaluate")
             if scores['F-measure@3.0'] > best_scores:
                 best_scores = scores['F-measure@3.0']
                 best_scores_line = scores
@@ -77,7 +78,7 @@ def rwcpop_compute_scores():
                 if level == 0:
                     csvwriter_scores.writerow(['file number'] + ['level'] + [i for i,j in best_scores_line.items()])
                 csvwriter_scores.writerow([number] + [level] + [round(j, 2) for i,j in best_scores_line.items()])
-                # print(scores)
+                print("scores", scores)
 
         for key, value in means.items():
             means[key] = means[key] + best_scores_line[key]
@@ -101,6 +102,7 @@ def rwcpop_compute_scores():
         csvwriter_all_scores.writerow(["mean"] + ["none"] + [round(j, 2) for i,j in means.items()])
         file_all_scores.close()
         csvfile_all_scores.close()
+        print("score saved")
 
 
-rwcpop_compute_scores()
+compute_scores()

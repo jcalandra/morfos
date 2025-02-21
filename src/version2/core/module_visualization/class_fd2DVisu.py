@@ -12,7 +12,6 @@ class FormalDiagram:
 
     def _formal_diagram_init(self, mso, level):
         """Initialize the formal diagram 'formal_diagram' at level 'level'."""
-        print("nb hop", mso.nb_hop)
         global color_nb
         color_nb = 0
         if processing == 'signal' or processing == 'midi':

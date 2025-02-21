@@ -50,7 +50,8 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     # initialisation of the structures
     prm.mk_rule3 = 0
     start_time = time.time()
-    path = path_sound + name + format
+    if format != ".txt":
+        path = path_sound + name + format
     pre_data = None
     costs.init_cost()
 
@@ -115,7 +116,7 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     somax_marker.produce_file(obj_s.objects, path_result)
 
 
-    plt.pause(3000)
+    #plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
@@ -135,5 +136,5 @@ def example():
     main(name=Mozart)
 
 
-main()
+#main()
 

@@ -1,12 +1,12 @@
 {
-   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
-   "FORMAT":".txt",
+   "NAME":"Pop 01",
+   "FORMAT":".wav",
 
-   "PATH_SOUND":"/../../../data/Geisslerlied/",
-   "PATH_RESULT":"/../../../results/Mozart/allseg/",
+   "PATH_SOUND":"/../../../data/rwcpop/",
+   "PATH_RESULT":"/../../../results/rwcpop/pop01/test1/",
 
-   "teta":0.976,
-   "d_threshold":150,
+   "teta":0.97,
+   "d_threshold":100,
 
    "lvl0notcompute": 0,
    "POLYPHONY":0,
@@ -25,15 +25,18 @@
    "STRICT_EQUALITY":0,
    "ALIGNMENT":1,
 
+   "MEAN_PITCHES":1,
+   "ALIGNMENT_PITCHES":0,
+
    "RULE_1":1,
    "RULE_2":1,
    "RULE_3":0,
    "RULE_4":1,
-   "RULE_5":1,
+   "RULE_5":0,
    "RULE_5b":0,
    "RULE_6":1,
    "RULE_7":0,
-   "RULE_8":1,
+   "RULE_8":0,
    "RULE_9": 0,
 
    "RULE1_DISSIMILARITY":1,
@@ -42,8 +45,8 @@
 
    "ALIGNEMENT_rule3":0,
    "ALIGNEMENT_rule4":0,
-   "lower_bound_rule6":2,
-   "higher_bound_rule6":4,
+   "lower_bound_rule6":30,
+   "higher_bound_rule6":300,
    "compute_level0": 1,
 
    "QUOTIENT":100,
@@ -52,7 +55,7 @@
 
    "LETTER_DIFF":97,
 
-   "GAP_VALUE":-1,
+   "GAP_VALUE":-3,
    "EXT_GAP_VALUE":-1,
 
    "GAP":0,
@@ -105,11 +108,11 @@
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":0,
-   "TO_SAVE_FINAL":0,
+   "TO_SAVE_FINAL":1,
 
    "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":1,
+   "EVOL_PRINT":0,
 
    "SHOW_MSO_CONTENT":0,
 
