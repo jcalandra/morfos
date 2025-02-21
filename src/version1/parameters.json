@@ -1,9 +1,9 @@
 {
-   "NAME":"3_BWV244",
+   "NAME":"Geisslerlied",
    "FORMAT":".wav",
 
-   "PATH_SOUND":"/../data/Analyses_Elia/",
-   "PATH_RESULT":"/../results/Somax/3_BWV244/",
+   "PATH_SOUND":"/../data/Geisslerlied/",
+   "PATH_RESULT":"/../results/Geisslerlied/",
 
    "teta_mfcc": 0.15,
    "teta":0.974,
@@ -13,7 +13,7 @@
 
    "min_matrix":0.999,
 
-   "processing":"symbol",
+   "processing":"symbols",
    "to_transpose":0,
    "is_micro": 0,
 
@@ -28,7 +28,7 @@
 
    "RULE_1":1,
    "RULE_2":1,
-   "RULE_3":1,
+   "RULE_3":0,
    "RULE_4":0,
    "RULE_5":0,
    "RULE_6":1,
