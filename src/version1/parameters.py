@@ -307,7 +307,6 @@ SUFFIX_METHOD = data["SUFFIX_METHOD"] # 'inc' ou 'complete'
 SYNTHESIS = data["SYNTHESIS"]
 
 # COSTS
-# TODO: le calcul des coûts n'est pas encore finalisé.
 COMPUTE_COSTS = data["COMPUTE_COSTS"]
 # 0 for time related to state,
 # 1 for time related to actual computing time,

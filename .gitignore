@@ -1,2 +1,7 @@
 __pycache__
+__init__.py
+.*
 materials.json
+results/
+data/
+parameters_*.json

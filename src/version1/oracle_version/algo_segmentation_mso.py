@@ -216,7 +216,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             cs.cost_oracle_add_element(level, time_t)
             alpha_or_delta_t = prm.cost_total  # prm.cost_total or prm.cost_oracle_acq
             if new_mat:
-                alpha_t = cost_maj_df + cost_maj_historique + cost_maj_autosim #TODO: à mettre dans alpha_or_delta_t et faire une variable qui dépend de nouveau mat ou non
+                alpha_t = cost_maj_df + cost_maj_historique + cost_maj_autosim 
                 delta_t = 0
             else:
                 alpha_t = 0
@@ -336,7 +336,6 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 diff = 0
             structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
             if prm.COMPUTE_HYPOTHESIS:
-                # TODO: fix bug at level 0
                 if i + k > 0:
                     hs.phases_add_element(level, new_mat, diff, time_t, cost)
             if prm.verbose == 1:

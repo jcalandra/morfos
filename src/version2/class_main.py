@@ -8,6 +8,7 @@ from pathlib import Path
 
 import time
 import matplotlib.pyplot as plt
+import oracle.plot
 import module_parameters.parameters as prm
 import module_visualization.class_fd2DVisu as fd2D
 import os
@@ -56,9 +57,9 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     costs.init_cost()
 
     if format == ".txt":
-        pre_data = name
+        pre_data = name #TODO : create a text file with the string and other info and link pre_data to path
     elif format == ".npy":
-        pass
+        pass #TODO : to implement
     elif format == ".mid":
         pre_data = path
     elif format == ".wav" or format == ".mp3":
@@ -66,19 +67,19 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     else:
         pre_data = path
 
-    data = pc.precompute_data(pre_data)
-
-    obj_tab = pc.compute_data(data)
-
-    mso = class_mso.MSO(name)
-    obj_s.data_init(data)
-    mso.dims = data[3]
-    mso.volume = data[2]
-    mso.get_data(pre_data, obj_tab)
+    cdata = pc.precompute_data(pre_data)
+    obj_tab = pc.compute_data(cdata)
+    obj_s.data_init(cdata)
+   
+    mso = class_mso.mso_init(name, cdata)
     class_cog_algo.fun_segmentation(mso, obj_tab)
 
     end_time = time.time()
     print("Temps d execution de l'algorithme : %s secondes ---" % (end_time - start_time))
+
+    if prm.SHOW_MSO_CONTENT:
+        for i in range(len(mso.levels)):
+                mso.levels[i].print()
 
 
     if prm.TO_SAVE_FINAL:
@@ -115,8 +116,12 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
 
     somax_marker.produce_file(obj_s.objects, path_result)
 
+    if prm.PLOT_ORACLE:
+        for i in range(len(mso.levels)):
+                im = oracle.plot.start_draw(mso.levels[i].oracle, size=(900 * 4, 400 * 4))
+                im.show()
 
-    #plt.pause(3000)
+    plt.pause(3000)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
@@ -136,5 +141,5 @@ def example():
     main(name=Mozart)
 
 
-#main()
+main()
 

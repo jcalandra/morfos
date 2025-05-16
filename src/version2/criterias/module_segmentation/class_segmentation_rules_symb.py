@@ -202,7 +202,7 @@ def rule_3_recomputed_object(ms_oracle, level):
         return 0
     ms_oracle.reset_levels()
     ms_oracle.update_segmentation(seg)
-    obj_tab = ms_oracle.init_objects
+    obj_tab = ms_oracle.levels[0].objects
     class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
     ms_oracle.update_out(1)
 
@@ -226,7 +226,7 @@ def rule_9_prerepetition_seg(ms_oracle, level):
 
         ms_oracle.reset_levels()
         ms_oracle.update_segmentation(seg)
-        obj_tab = ms_oracle.init_objects
+        obj_tab = ms_oracle.levels[0].objects
         class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
         ms_oracle.update_out(1)
         return 1

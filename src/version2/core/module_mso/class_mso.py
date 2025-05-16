@@ -10,7 +10,15 @@ import criterias.module_precomputing.precomputer as pc
 
 from module_parameters.parameters import SR, HOP_LENGTH, teta, NB_VALUES
 
-from module_precomputing.data_computing import get_data
+
+def mso_init(name, cdata):
+    """ Initialise the MSO """
+
+    mso = MSO(name)
+    mso.set_data_from_cdata(cdata)
+    mso.set_metadata_from_cdata(cdata)
+
+    return mso
 
 
 class MSO:
@@ -22,82 +30,55 @@ class MSO:
         self.level_max = -1
         self.levels = []
 
-        self.init_objects = []
-        self.audio = []
-        self.symbol = ""
-        self.midi = []
-        self.volume = []
-        self.rate = SR
-        self.data_length = 0
-        self.data_size = 0
-        self.nb_hop = 0
-        self.dims = 1
-        self.end_mk = 0
+        self.data = Data()
+        self.metadata = Metadata()
+        self.end_mk = 0 
         self.out = 0
         self.segmentations = []
-
         self.matrix = class_materialsMemory.Materials()
 
+# setters
     def set_name(self, name):
         self.name = name
 
+    def set_level_max(self, level_max):
+        self.level_max = level_max
 
-    def get_audio(self, audio_path):
-        data, rate, data_size, data_length = get_data(audio_path)
-        for i in range(prm.NB_SILENCE):
-            self.audio.append(0)
-        for i in range(len(data)):
-            self.audio.append(data[i])
-        self.rate = rate
-        self.data_size = data_size + prm.NB_SILENCE
-        #self.nb_hop = math.ceil(data_size/HOP_LENGTH + prm.NB_SILENCE/HOP_LENGTH)
-        #self.data_length = (data_size + prm.NB_SILENCE)/rate
-        self.nb_hop = math.ceil(data_size/HOP_LENGTH)
-        self.data_length = data_size/rate
+    def set_data(self, data):
+        self.data = data
 
-
-    def get_symbol(self, symbol):
-        self.symbol = symbol
-        self.nb_hop = len(symbol[0])
-
-    def get_midi(self, midi):
-        midi_stream = pc.open_midi(midi, 0)
-        partStream = pc.list_instruments(midi_stream)
-        for instrument in partStream:
-            y, parent_element = pc.extract_notes(instrument.flat.notes)
-            pitch = []
-            duration = []
-            descriptors = []
-            velocity = []
-            date = []
-            for i in range(len(y)):
-                pitch.append(y[i])
-                dur = int(parent_element[i].duration.quarterLength*12)
-                duration.append(dur)
-                descriptors.append(([[[1,2,3]]],[[[1,2,3]]]))
-                velocity.append(parent_element[i].volume.velocity)
-                dat = int(parent_element[i].offset*12)
-                date.append(dat)
-
-        self.midi = [pitch, duration, descriptors, velocity, date]
-        #self.nb_hop = date[-1] + duration[-1]
-        sum_duration = 0
-        for i in range(len(duration)):
-            sum_duration += duration[i]
-        print("sum duration", sum_duration)
-        self.nb_hop = sum_duration
-
-    def get_objects(self, obj):
-        self.init_objects = obj
-
-    def get_data(self, data, obj):
+    def set_metadata(self, metadata):
+        self.metadata = metadata
+    
+    def set_data_from_cdata(self, cdata):
         if prm.processing == "signal":
-            self.get_audio(data)
+            self.data.set_audio_from_cdata(cdata)
         if prm.processing == "symbols":
-            self.get_symbol(data)
+            self.data.set_symbol_from_cdata(cdata)
         if prm.processing == "midi":
-            self.get_midi(data)
-        self.get_objects(obj)
+            self.data.set_midi_from_cdata(cdata)
+
+    def set_metadata_from_cdata(self, cdata):
+        if prm.processing == "signal":
+            self.metadata.set_audio_from_cdata(cdata)
+        if prm.processing == "symbols":
+            self.metadata.set_symbol_from_cdata(cdata)
+        if prm.processing == "midi":
+            self.metadata.set_midi_from_cdata(cdata)
+    
+    def set_end_mk(self, end_mk):
+        self.end_mk = end_mk
+
+    def set_out(self, out):
+        self.out = out
+    
+    def set_segmentation(self, seg):
+        self.segmentation = seg
+
+    def set_matrix(self, matrix):
+        self.matrix = matrix
+
+# getters
 
     def get_segmentation(self, seg):
         self.segmentations = [seg]
@@ -117,58 +98,177 @@ class MSO:
     def update_out(self, bool):
         self.out = bool
 
-    def reset_levels(self):
+    def reset_levels(self): #TODO: simplify the code
         plt.close('all')
         self.name = ""
         self.set_name(self.name)
         self.level_max = -1
         self.levels = []
 
-        self.init_objects = self.init_objects
-        self.audio = self.audio
-        self.volume = []
-        self.symbol = self.symbol
-        self.rate = self.rate
-        self.data_length = self.data_length
-        self.data_size = self.data_size
-        self.nb_hop = self.nb_hop
-        self.dims = self.dims
+        self.data = self.data
+        self.metadata = self.metadata
         self.end_mk = 0
         self.out = 0
-
         self.matrix = class_materialsMemory.Materials()
 
-    def reset(self, name):
+    def reset(self, name):  #TODO: simplify the code
         plt.close('all')
         self.name = ""
         self.set_name(name)
         self.level_max = -1
         self.levels = []
 
-        self.init_objects = []
-        self.init_objects = []
-        self.audio = []
-        self.volume = []
-        self.symbol = ""
-        self.rate = SR
-        self.data_length = 0
-        self.data_size = 0
-        self.nb_hop = 0
-        self.dims = 1
+        self.data = self.data.reset()
+        self.metadata = self.metadata.reset()
         self.end_mk = 0
         self.segmentations = []
-
         self.matrix = class_materialsMemory.Materials()
 
     def print(self):
         print("name", self.name)
         print("level max", self.level_max)
         # print levels
-        print("init objects", [obj.label for obj in self.init_objects])
+        self.data.print()
+        self.metadata.print()
+        print("segmentations", self.segmentations)
+
+
+class Data:
+    """ Data of the MSO """
+
+    def __init__(self):
+        self.audio = []
+        self.symbol = ""
+        self.midi = []
+
+# setters
+    def set_audio(self, audio):
+        self.audio = audio
+
+    def set_symbol(self, symbol):
+        self.symbol = symbol
+
+    def set_midi(self, midi):
+        self.midi = midi
+
+    def set_audio_from_cdata(self, cdata):
+        audio = cdata.input_data.elements.audio
+        for i in range(prm.NB_SILENCE):
+            self.audio.append(0)
+        for i in range(len(audio)):
+            self.audio.append(audio[i]) 
+
+    def set_symbol_from_cdata(self, cdata):
+        symbol = cdata.input_data
+        self.set_symbol(symbol)
+
+    def set_midi_from_cdata(self, cdata):
+        self.set_midi(cdata.input_data)
+
+# getters
+    def get_audio(self):
+        return self.audio
+    
+    def get_symbol(self):
+        return self.symbol
+    
+    def get_midi(self):
+        return self.midi
+    
+# printing
+    def print(self):
         print("audio", self.audio)
         print("symbol", self.symbol)
-        print("rate", self.rate, "data_length", self.data_length, "data size", self.data_size, "nb hop", self.nb_hop)
-        print("segmentations", self.segmentations)
+        print("midi", self.midi)
+
+# reset
+    def reset(self):
+        self.audio = []
+        self.symbol = ""
+        self.midi = []
+
+
+class Metadata:
+    """ Metadata of the MSO """
+
+    def __init__(self):
+        self.rate = 0
+        self.data_length = 0
+        self.data_size = 0
+        self.nb_hop = 0
+        self.dims = 1
+
+# setters
+    def set_rate(self, rate):
+        self.rate = rate
+
+    def set_data_length(self, data_length):
+        self.data_length = data_length
+
+    def set_data_size(self, data_size):
+        self.data_size = data_size
+
+    def set_nb_hop(self, nb_hop):
+        self.nb_hop = nb_hop
+
+    def set_dims(self, dims):
+        self.dims = dims
+
+    def set_audio_from_cdata(self, cdata):
+        audio = cdata.input_data.elements.audio
+        data_size = len(audio)
+        self.set_rate(prm.SR)
+        self.set_data_size(data_size + prm.NB_SILENCE)
+        self.set_nb_hop(math.ceil(data_size/HOP_LENGTH))
+        self.set_data_length(data_size/self.rate)
+        self.set_dims(cdata.dim)
+
+    def set_symbol_from_cdata(self, cdata):
+        symbol = cdata.input_data
+        self.set_nb_hop(cdata.input_data.length)
+        self.set_dims(cdata.dim)
+
+
+    def set_midi_from_cdata(self, cdata):
+        duration = cdata.input_data.duration
+        sum_duration = 0
+        for i in range(len(duration)):
+            sum_duration += duration[i] #TODO: add silences, in the visualisation too
+        self.set_nb_hop(sum_duration)
+        self.set_dims(cdata.dim)
+
+
+# getters
+    def get_rate(self):
+        return self.rate
+    
+    def get_data_length(self):
+        return self.data_length 
+
+    def get_data_size(self):
+        return self.data_size
+    
+    def get_nb_hop(self):
+        return self.nb_hop
+    
+    def get_dims(self):
+        return self.dims
+
+# printing
+    def print(self):
+        print("rate", self.rate)
+        print("data_length", self.data_length)
+        print("data_size", self.data_size)
+        print("nb_hop", self.nb_hop)
+        print("dims", self.dims)
+
+# reset
+    def reset(self):
+        self.rate = 0
+        self.data_length = 0
+        self.data_size = 0
+        self.nb_hop = 0
+        self.dims = 1      
 
 
 class MSOLevel:
@@ -201,7 +301,7 @@ class MSOLevel:
         self.objects.append(obj)
 
     def update_oracle(self, ms_oracle, level):
-        self.volume.append(1)
+        self.volume.append(1) #TODO: update with the correct values
         self.oracle.add_state(ms_oracle, level)
         self.actual_char = self.oracle.data[self.shift + self.iterator + 1]
         self.actual_char_ind = self.shift + self.iterator + 1
@@ -230,9 +330,9 @@ class MSOLevel:
             stab[2].append(obj.label)
         return stab
 
+# printing
     def print(self):
         print("formal diagram", self.formal_diagram)
         print("link", self.link)
         print("history next", self.materials.history)
         print("matrix_next",  self.materials.sim_matrix)
-

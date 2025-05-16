@@ -62,7 +62,6 @@ def rule_1_similarity_word(oracles, level, actual_char):
 
 # RULE 2: (ab)(a + b => (ab)(ab
 def validated_hypothesis(f_oracle, link, actual_char, actual_char_ind):
-    # TODO: modifier de telle sorte à prendre en compte toutes les hypothèses et non pas seulement le +1 du sfx ?
     """ Compare the concatenated object concat_obj of unstructured char in the actual level plus the actual_char, with
     the already seen objects in the past that begins with the same concat_obj. If the strings are equals, hypothesis
      from the past are validated and there should be no structuration right now because this is middle of the creation
@@ -376,11 +375,6 @@ def rule_5a_regathering_after(concat_obj):
     return 0
 
 
-def rule_5b_regathering_before():
-    # TODO: à implémenter
-    return 1
-
-
 # NEW RULES
 # RULE 6a (lower boundary) : |(a...b + a| < low_bound => (a...ba
 # RULE 6b (higher boundary) : |(a...b + c| > high_bound => (a...b)(c
@@ -399,11 +393,6 @@ def rule_6b_high_bound(concat_obj, high_bound=higher_bound_rule6):
 # RULE 7 (mean word length) : with A the length of the first concatenated word
 # RULE 7a: |(a...b + a| < A/2 => (a...ba
 # RULE 7b: |(a...b + c| > A + A/2 => (a...b)(c
-def compute_length(f_oracle):
-    a = f_oracle
-    # TODO: à implémenter
-    return 2
-
 
 def rule_7a_mean_word_length_low(f_oracle, concat_obj):
     length = compute_length(f_oracle)

@@ -160,7 +160,7 @@ def print_click_results_nb_mean(cpcms, path_figs):
         plt.show()
 
 
-def print_click_results_time_mean(cpcms, path_figs): #todo: change by tpc
+def print_click_results_time_mean(cpcms, path_figs):
     for songs in range(len(cpcms)):
         plt.figure(figsize=figure_size)
 

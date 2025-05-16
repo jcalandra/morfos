@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 
 BACKGROUND = (255, 255, 255)
 
-# TODO : modifier de telle sorte à ce que ce soit fonctionnel pour des matrices numpy
-# TODO : finir l'implémentation
-
 
 def compute_replace(matrix_midi, matrix_audio):
     """ replace the frames in audio matrix according to the MIDI matrix."""

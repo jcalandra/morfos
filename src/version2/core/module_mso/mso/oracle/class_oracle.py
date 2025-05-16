@@ -656,71 +656,6 @@ class MO(FactorOracle):
         else:
             suffix_candidate = 0
 
-        '''if prm.processing == "signal" and level == 0 and i > 1:
-            fss = similarity_fun(ms_oracle, level, i-2, i - 1)
-            if fss <= self.params['threshold'] :#and self.data[self.trn[k][j]] != 0:
-                if method == 'inc':
-                    suffix_candidate = 0
-                elif method == 'complete':
-                    suffix_candidate = []
-                else:
-                    suffix_candidate = 0
-                self.sfx[i] = suffix_candidate
-                self.lrs[i] = 0
-                self.latent.append([i])
-                self.data.append(len(self.latent) - 1)
-
-                sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
-                sim_tab.append(1)
-                #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
-                new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
-                actual_object_descriptor = class_object.Descriptors()
-                actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
-                duration = ms_oracle.levels[level - 1].concat_obj.durations
-                date = ms_oracle.levels[level - 1].concat_obj.date
-
-                new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
-
-                concat_obj = class_concatObj.ConcatObj()
-                concat_obj.init(ms_oracle.levels[level].actual_obj)
-                descriptors = ms_oracle.levels[level].actual_obj.descriptors
-                ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
-                ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
-
-            else:
-                if method == 'inc':
-                    suffix_candidate = i-1
-                elif method == 'complete':
-                    suffix_candidate = [i-1]
-                else:
-                    suffix_candidate = i-1
-                self.sfx[i] = suffix_candidate
-                self.lrs[i] = self._len_common_suffix(pi_1, self.sfx[i] - 1) + 1
-                self.latent[self.data[self.sfx[i]]].append(i)
-                self.data.append(self.data[self.sfx[i]])
-
-
-                sim_tab = [0 for ind_vec in range(len(ms_oracle.matrix.sim_matrix.values))]
-                sim_tab.append(1)
-                #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
-                new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
-                actual_object_descriptor = class_object.Descriptors()
-                actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
-                duration = ms_oracle.levels[level - 1].concat_obj.durations
-                date = ms_oracle.levels[level - 1].concat_obj.date
-
-                new_rep = class_object.ObjRep()
-                new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
-                concat_obj = class_concatObj.ConcatObj()
-                concat_obj.init(ms_oracle.init_objects[i - 1])
-                descriptors = ms_oracle.init_objects[i - 1].descriptors
-                ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
-                ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
-            return 1'''
-
 
         # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
         # un silence
@@ -938,7 +873,7 @@ class MO(FactorOracle):
                     date = ms_oracle.levels[level - 1].concat_obj.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].concat_signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
+                    new_rep.init(ms_oracle.levels[0].objects[i-1].concat_signal, new_char, new_pitches, ms_oracle.levels[0].objects[i-1].descriptors, duration, date)
 
                     concat_obj = class_concatObj.ConcatObj()
                     concat_obj.init(ms_oracle.levels[level].actual_obj)
@@ -989,10 +924,11 @@ class MO(FactorOracle):
                     date = ms_oracle.levels[level - 1].concat_obj.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.init_objects[i-1].signal, new_char, new_pitches, ms_oracle.init_objects[i-1].descriptors, duration, date)
+                    new_rep.init(ms_oracle.levels[0].objects[i-1].signal, new_char, new_pitches, ms_oracle.levels[0].objects[i-1].descriptors, duration, date)
+                    
                     concat_obj = class_concatObj.ConcatObj()
-                    concat_obj.init(ms_oracle.init_objects[i - 1])
-                    descriptors = ms_oracle.init_objects[i - 1].descriptors
+                    concat_obj.init(ms_oracle.levels[0].objects[i - 1])
+                    descriptors = ms_oracle.levels[0].objects[i - 1].descriptors
                     ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
                     ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
                 if level >= 1:

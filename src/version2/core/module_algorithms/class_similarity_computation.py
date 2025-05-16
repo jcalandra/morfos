@@ -97,7 +97,7 @@ def compute_midi_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     sim_digit_label_midi, sim_value_midi = _compute_midi_similarity_rep(obj_compared, actual_obj, mat, level)
     #sim_value = (sim_value_sig + sim_value_symb + sim_value_midi)/3
     sim_value = sim_value_midi
-    if sim_value >= parameters.threshold:
+    if sim_value >= parameters.teta:
         sim_digit_label = 1
     else:
         sim_digit_label = 0

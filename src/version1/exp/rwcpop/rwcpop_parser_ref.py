@@ -23,7 +23,6 @@ def rwcpop_list2section(poplist):
 
 
 def rwcpop_list2barsection(poplist):
-    # TODO: à implémenter
     section_mesure = []
     section_mesure_timer = np.zeros((len(poplist), 2))
     for row in poplist:

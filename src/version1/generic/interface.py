@@ -15,9 +15,6 @@ TO_SHOW_BMP = prm.TO_SHOW_BMP
 TO_SAVE_PYP = prm.TO_SAVE_PYP
 TO_SHOW_PYP = prm.TO_SHOW_PYP
 
-# TODO : linker avec unity pour un affichage en 3D de la structure
-
-
 def graph_algo_cogn(path, path_results, matrix, nb_mfcc, data_length, teta, hop_length, init):
     """ Plot/Save the picture of the formal diagram given by 'matrix'."""
     name = path.split('/')[-1]

@@ -28,7 +28,7 @@ def gestion_level(ms_oracle,level):
         if verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         class_mso.MSOLevel(ms_oracle)
-        ms_oracle.levels[level].init_oracle('a', dim=ms_oracle.dims)
+        ms_oracle.levels[level].init_oracle('a', dim=ms_oracle.metadata.dims)
 
         if level == 0:
             ms_oracle.matrix.sim_matrix.init(chr(LETTER_DIFF), [1])
@@ -74,8 +74,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
             print("init cost")
             costs.init_cost()
         gestion_level(ms_oracle, level)
-        #print(ms_oracle.volume)
-        ms_oracle.levels[level].volume = ms_oracle.volume
     rules = ta.Rules()
     ms_oracle.levels[level].objects = objects
     if verbose == 1:
@@ -87,7 +85,6 @@ def fun_segmentation(ms_oracle, objects, level=0):
     while ms_oracle.levels[level].iterator < len(objects) :
         iterator = ms_oracle.levels[level].iterator
         if level == 0 and ms_oracle.end_mk == 0:
-            ms_oracle.levels[level].volume = ms_oracle.volume
             ms_oracle.levels[level].update_oracle(ms_oracle, level)
         ms_oracle.levels[level].actual_obj = objects[iterator]
         #print("level", level, "actual obj", ms_oracle.levels[level].actual_object.label)

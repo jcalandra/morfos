@@ -18,7 +18,7 @@ class FormalDiagram:
             factor = 1
         else:
             factor = global_factor
-        new_mat = [1 for i in range(mso.nb_hop*factor)]
+        new_mat = [1 for i in range(mso.metadata.nb_hop*factor)]
         self.material_lines.append(new_mat)
         k_end_link = 1
         if level == 0:
@@ -47,7 +47,7 @@ class FormalDiagram:
         for i in range(k_end_link):
             links.append(i)
         if processing == 'signal':
-            sound = obj_s.data[0:n*prm.HOP_LENGTH]
+            sound = obj_s.data.elements.audio[0:n*prm.HOP_LENGTH]
         else:
             # No sound when character string analysis
             sound = [0]
@@ -103,7 +103,7 @@ class FormalDiagram:
         color = 0.7
         color_nb += 1
         if actual_char > len(self.material_lines):
-            new_mat = [1 for i in range(mso.nb_hop*factor)]
+            new_mat = [1 for i in range(mso.metadata.nb_hop*factor)]
             self.material_lines.append(new_mat)
             first_occ_mat = (k_init)*(prm.HOP_LENGTH/prm.SR)
             obj_s.first_occ_add_obj(level, first_occ_mat)
@@ -117,7 +117,7 @@ class FormalDiagram:
         for i in range(k_init_link - 1, k_end_link):
             links.append(i)
         if processing == 'signal':
-            sound = obj_s.data[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
+            sound = obj_s.data.elements.audio[k_init*prm.HOP_LENGTH:(k_init + n)*prm.HOP_LENGTH] # remarque: il manque les derniers 1024 échantillons
         else:
             # No sound when character string analysis
             sound = [0]
@@ -177,13 +177,13 @@ class FormalDiagramGraph:
         formal_diagram = mso.levels[level].formal_diagram.material_lines
         for i in range(len(formal_diagram)):
             string += chr(i + LETTER_DIFF + 1)
-        #plt.imshow(formal_diagram, extent=[0, mso.data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
+        #plt.imshow(formal_diagram, extent=[0, mso.metadata.data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
         if processing == 'symbols':
-            plt.imshow(formal_diagram, extent=[0, mso.nb_hop, len(formal_diagram), 0])
+            plt.imshow(formal_diagram, extent=[0, mso.metadata.nb_hop, len(formal_diagram), 0])
         elif processing == 'midi':
-            plt.imshow(formal_diagram, extent=[0, mso.nb_hop/120, len(formal_diagram), 0])
+            plt.imshow(formal_diagram, extent=[0, mso.metadata.nb_hop/120, len(formal_diagram), 0])
         elif processing == 'signal':
-            plt.imshow(formal_diagram, extent=[0, mso.data_length, len(formal_diagram), 0])
+            plt.imshow(formal_diagram, extent=[0, mso.metadata.data_length, len(formal_diagram), 0])
         if EVOL_PRINT == 1:
             plt.pause(0.1)
             # name = self.path + self.name + str(
@@ -218,9 +218,9 @@ def final_save_one4all(mso, path_result):
                 plt.xlabel("time in seconds (formal memory)")
             plt.ylabel("material (material memory)")
             plt.yticks(np.arange(0, len_formal_diagram, 5))
-            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
+            plt.xticks(np.arange(0, mso.metadata.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
 
-            plt.imshow(formal_diagram, extent=[0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
+            plt.imshow(formal_diagram, extent=[0, mso.metadata.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
             plt.savefig(path_result + file_name_pyplot, transparent=True, dpi=1000)
             print("file saved as " + path_result + file_name_pyplot)
             plt.close()
@@ -241,8 +241,8 @@ def final_save_all4one(mso, path_result):
                 plt.xlabel("time in seconds (formal memory)")
             plt.ylabel("material (material memory)")
             plt.yticks(np.arange(0, len_formal_diagram, 5))
-            plt.xticks(np.arange(0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
-            plt.imshow(formal_diagram, extent=[0, mso.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
+            plt.xticks(np.arange(0, mso.metadata.nb_hop/prm.SR * prm.HOP_LENGTH, 10))
+            plt.imshow(formal_diagram, extent=[0, mso.metadata.nb_hop/prm.SR * prm.HOP_LENGTH, len_formal_diagram, 0], cmap='gray')
 
         file_name_pyplot = 'FD_all.png'
         plt.savefig(path_result + file_name_pyplot, transparent=False, dpi=1000)

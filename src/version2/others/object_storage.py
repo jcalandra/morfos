@@ -5,7 +5,7 @@ global first_occ
 
 def data_init(local_data):
     global data
-    data = local_data
+    data = local_data.input_data
     return 0
 
 def objects_init():

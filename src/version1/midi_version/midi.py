@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 import os
 
+# This file is outdated
 # This file contains an implementation of formal diagram computation from a MIDI file (non-hierarchical implementation)
 
 SR = prm.SR
@@ -19,13 +20,6 @@ NB_SILENCE = prm.NB_SILENCE
 AUDIBLE_THRESHOLD = prm.AUDIBLE_THRESHOLD
 
 PATH_RESULT = "../../../results/"
-
-
-# TODO : mettre ce code dans le dossier src et modifier les tests en conséquence
-# TODO : changer les matrices en numpy array
-# TODO : modifier l'affichage en fonction du type de matrice obtenu
-# TODO : enregistrer une image bmp juste du diagramme
-# TODO : ne pas diviser à la sous-frame, garder la note comme niveau de matériau
 
 
 # =================================================== DATA COMPUTING ===================================================
