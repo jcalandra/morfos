@@ -136,7 +136,7 @@ def plot_midi_frame(midi_data, beat_positions, frame_ind):
                 if (n.start >= beat_start) & (n.start < beat_end) \
                         or (n.end >= beat_start) & (n.end < beat_end) \
                         or (n.start <= beat_start) & (n.end > beat_end):
-                    note = n.pitch  # TODO : change pitch number by note name
+                    note = n.pitch  
                     if not note in n_list:
                         n_list.append(note)
 
@@ -148,7 +148,7 @@ def plot_chroma_as_chord(chroma_frame, n_pitch=3):
     pitch_rank = np.argsort(chroma_frame)
     n_list = []
     for p in pitch_rank[-n_pitch:]:
-        note = p + 60  # TODO : change pitch number by note name
+        note = p + 60  
         n_list.append(note)
     chroma = music21.chord.Chord(n_list)
 

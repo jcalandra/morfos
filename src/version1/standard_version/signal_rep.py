@@ -8,10 +8,6 @@ import cv2
 # In this file are implemented functions for the cognitive algorithm at level 0: the signal scale, with a representant
 # for each material
 
-# TODO !!! : changer tous les del et toutes les modifications de matrices pour les faire passer en numpy array
-# TODO : intégrer le timbre dans la représentation
-# TODO : intégrer une hiérarchisation
-
 # note : matrices are created in HSV
 D_THRESHOLD = prm.D_THRESHOLD
 BASIC_FRAME = prm.BASIC_FRAME

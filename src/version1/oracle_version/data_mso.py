@@ -17,8 +17,6 @@ import phases_storage as hs
 
 # In this file are implemented functions for the cognitive algorithm  with the oracle as the main structure
 
-# TODO : intégrer le timbre dans la représentation
-
 # note : matrices are created in HSV
 D_THRESHOLD = prm.D_THRESHOLD
 BASIC_FRAME = prm.BASIC_FRAME
@@ -206,7 +204,6 @@ def build_oracle(flag, teta, nb_values, nb_hop, s_tab, v_tab):
 # ================================================ MATRIX CORRECTION ===================================================
 def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
     """ Modify the similarity matrix according the the corrected frames."""
-    # TODO: regarder les ajouts et suppression dans oracle_t.vec
     blank_ind = 0
     while mtx[prev_mat][blank_ind][0] == BACKGROUND[0] and mtx[prev_mat][blank_ind][1] == BACKGROUND[1] \
             and mtx[prev_mat][blank_ind][2] == BACKGROUND[2]:
@@ -255,7 +252,7 @@ def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
             print("[RESULT] audio length = ", nb_hop)
 
     if prm.processing == 'vectors':
-        nb_sil_frames = nb_points #TODO: modify the value eventually
+        nb_sil_frames = nb_points
         nb_hop = data_length + nb_sil_frames
 
     new_mat = np.ones((1, nb_hop, 3), np.uint8)
@@ -613,7 +610,6 @@ def algo_cog(path, oracles, end_mk=0):
                 history_next[-1] = (history_next[-1][0], new_history_next_element, history_next[-1][2])
             concat_obj = chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) + \
                          chr(fd_mso.letter_diff + oracle_t.data[i_hop] + 1)
-            # TODO: corriger la valeur dans la matrice
 
         if len(concat_obj) >= 3:
             concat_obj = concat_obj[:len(concat_obj) - 2] + chr(fd_mso.letter_diff + oracle_t.data[i_hop - 1] + 1) \

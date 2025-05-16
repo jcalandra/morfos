@@ -23,13 +23,6 @@ CLEAN_SPECTRUM = prm.CLEAN_SPECTRUM
 
 
 # =============================================== DATA COMPUTING =======================================================
-# TODO : dans la partie GET DATA, inclure le traitement des fichiers MIDI
-
-# TODO : dans getdata() gérer les fichiers stéréo
-# TODO : dans getdata() faire en sorte de passer les forrmat wav 16, 24 (et 32 déjà ok) bits
-# TODO : dans get_frequency, enregistrer les spectres et et fréquences correspondantes enregistrées pour ne pas avoir à
-#  les recalculer lorsque l'on modifie uniquement d'autres paramètres ultérieurs.
-#  les recalculer lorsque l'on modifie uniquement d'autres paramètres ultérieurs.
 
 
 # --------------- GET DATA : WAVEFORM (volume) AND SPECTRUM COMPUTING -------------------
