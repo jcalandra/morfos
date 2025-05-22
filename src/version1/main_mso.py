@@ -72,7 +72,7 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
     if prm.SHOW_TIME:
         print("Temps d execution de l'algorithme entier : %s secondes ---" % (time.time() - start_time_full))
 
-    data_length = len(mso_oracle[1][0][1])
+    data_duration_in_s = len(mso_oracle[1][0][1])
     new_fd = []
 
     # printing the results in the shell
@@ -107,8 +107,8 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
     if prm.TO_SAVE_FINAL:
         if not os.path.exists(result_path):
             os.makedirs(result_path)
-        final_save_one4all(mso_oracle, data_length, result_path)
-        final_save_all4one(mso_oracle, data_length, result_path)
+        final_save_one4all(mso_oracle, data_duration_in_s, result_path)
+        final_save_all4one(mso_oracle, data_duration_in_s, result_path)
         shutil.copy2(src_path +
                      '/version1/parameters.json', prm.PATH_RESULT+'/parameters.txt')
         print('file saved as ' + prm.PATH_RESULT+ '/parameters.txt')

@@ -35,7 +35,7 @@ def print_formal_diagram_init(level):
         return 0
 
 
-def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
+def print_formal_diagram_update(fig_number, level, formal_diagram, data_duration_in_s):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     #print("PRINT formal diagram update")
     if prm.TO_SHOW_PYP:
@@ -51,12 +51,12 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.yticks(np.arange(0, len(formal_diagram), 5))
-        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 20))
+        plt.xticks(np.arange(0, data_duration_in_s/SR * HOP_LENGTH, 20))
         string = ""
         for i in range(len(formal_diagram)):
             string += chr(i + letter_diff + 1)
         # plt.yticks([i for i in range(len(string))], string)
-        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0])
+        plt.imshow(formal_diagram, extent=[0, data_duration_in_s/SR * HOP_LENGTH, len(formal_diagram), 0])
         if TO_SAVE_PYP:
             plt.savefig(path_results + file_name_pyplot)
         if EVOL_PRINT == 1:
@@ -70,10 +70,10 @@ def print_formal_diagram_update(fig_number, level, formal_diagram, data_length):
         return 0
 
 
-def formal_diagram_init_nobound(formal_diagram, data_length, oracles, level):
+def formal_diagram_init_nobound(formal_diagram, data_duration_in_s, oracles, level):
     """Initialize the formal diagram 'formal_diagram' at level 'level'."""
     #print("formal diagram init nobound")
-    new_mat = [1 for i in range(data_length)]
+    new_mat = [1 for i in range(data_duration_in_s)]
     formal_diagram.append(new_mat)
     if level == 0:
         n = k_end_link = 1
@@ -114,7 +114,7 @@ def formal_diagram_init_nobound(formal_diagram, data_length, oracles, level):
     return 1
 
 
-def formal_diagram_update_nobound(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
+def formal_diagram_update_nobound(formal_diagram, data_duration_in_s, actual_char, actual_char_ind, oracles, level):
     """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
     'actual_char'."""
     print("formal diagram update nobound")
@@ -145,7 +145,7 @@ def formal_diagram_update_nobound(formal_diagram, data_length, actual_char, actu
         n = k_end - k_init + 1
     color = (actual_char_ind % 4 + 0.1)/4
     if actual_char > len(formal_diagram):
-        new_mat = [1 for i in range(data_length)]
+        new_mat = [1 for i in range(data_duration_in_s)]
         formal_diagram.append(new_mat)
         first_occ_mat = (k_init - 1)*(prm.HOP_LENGTH/prm.SR)
         obj_s.first_occ_add_obj(level, first_occ_mat)
@@ -181,7 +181,7 @@ def side_materials(oracles, level, formal_diagram, actual_char, n, k_init):
             formal_diagram[i][k_init + j - 1] = min((1 - matrix_values[actual_char - 1][i])/(1 - prm.min_matrix), 1)
 
 
-def final_save_one4all(oracles, data_length, result_path):
+def final_save_one4all(oracles, data_duration_in_s, result_path):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
     for level in range(len(oracles[1])):
@@ -199,14 +199,14 @@ def final_save_one4all(oracles, data_length, result_path):
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.yticks(np.arange(0, len(formal_diagram), 5))
-        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 5))
-        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
+        plt.xticks(np.arange(0, data_duration_in_s/SR * HOP_LENGTH, 5))
+        plt.imshow(formal_diagram, extent=[0, data_duration_in_s/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
         plt.savefig(result_path + file_name_pyplot, transparent=True, dpi=1000)
         print("file saved as " + result_path + file_name_pyplot)
         plt.close()
     return 1
 
-def final_save_all4one(oracles, data_length, result_path):
+def final_save_all4one(oracles, data_duration_in_s, result_path):
     """ Print the updated formal diagram  'formal_diagram' at level 'level' in the window 'fig_number'."""
     # print("PRINT formal diagram update")
     f = plt.figure(figsize=[12,30])
@@ -220,8 +220,8 @@ def final_save_all4one(oracles, data_length, result_path):
             plt.xlabel("time in seconds (formal memory)")
         plt.ylabel("material (material memory)")
         plt.yticks(np.arange(0, len(formal_diagram), 5))
-        plt.xticks(np.arange(0, data_length/SR * HOP_LENGTH, 5))
-        plt.imshow(formal_diagram, extent=[0, data_length/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
+        plt.xticks(np.arange(0, data_duration_in_s/SR * HOP_LENGTH, 5))
+        plt.imshow(formal_diagram, extent=[0, data_duration_in_s/SR * HOP_LENGTH, len(formal_diagram), 0], cmap='gray')
 
     file_name_pyplot = 'FD_all.png'
     plt.savefig(result_path + file_name_pyplot, transparent=False, dpi=1000)
@@ -230,14 +230,14 @@ def final_save_all4one(oracles, data_length, result_path):
     return 1
 
 
-def formal_diagram_init(formal_diagram, data_length, oracles, level):
+def formal_diagram_init(formal_diagram, data_duration_in_s, oracles, level):
     """Initialize the formal diagram 'formal_diagram' at level 'level'."""
     # print("formal diagram init")
     if processing == 'signal' and level==0:
         factor = 1
     else:
         factor = global_factor
-    new_mat = [1 for i in range(data_length*factor)]
+    new_mat = [1 for i in range(data_duration_in_s*factor)]
     formal_diagram.append(new_mat)
     if level == 0:
         n = k_end_link = 1
@@ -279,7 +279,7 @@ def formal_diagram_init(formal_diagram, data_length, oracles, level):
     return 1
 
 
-def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level):
+def formal_diagram_update(formal_diagram, data_duration_in_s, actual_char, actual_char_ind, oracles, level):
     """Update the formal diagram 'formal_diagram' at level 'level' at instant 'actual_char_ind' with material
     'actual_char'."""
     # print("formal diagram update")
@@ -314,7 +314,7 @@ def formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_
         n = k_end - k_init + 1
     color = 0.7
     if actual_char > len(formal_diagram):
-        new_mat = [1 for i in range(data_length*factor)]
+        new_mat = [1 for i in range(data_duration_in_s*factor)]
         formal_diagram.append(new_mat)
         first_occ_mat = (k_init - 1)*(prm.HOP_LENGTH/prm.SR)
         obj_s.first_occ_add_obj(level, first_occ_mat)

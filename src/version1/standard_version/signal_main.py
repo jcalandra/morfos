@@ -32,15 +32,15 @@ def main():
     level_max = -1
     tab_f_oracle = []
     mso_oracle = [level_max, tab_f_oracle]
-    matrix = data_length = None
+    matrix = data_duration_in_s = None
     if ALGO_VMO:
-        matrix, data_length, data_size, distance, t = sig_mso.algo_cog(path, mso_oracle)
+        matrix, data_duration_in_s, data_size, distance, t = sig_mso.algo_cog(path, mso_oracle)
     elif ALGO_REP:
-        matrix, data_length, data_size, distance, t = sig_r.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
+        matrix, data_duration_in_s, data_size, distance, t = sig_r.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
     elif ALGO_USUAL:
-        matrix, data_length, data_size, distance, t = sig.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
+        matrix, data_duration_in_s, data_size, distance, t = sig.algo_cog(path, HOP_LENGTH, NB_VALUES, TETA, INIT)
     print("Temps d execution de l'algorithme entier : %s secondes ---" % (time_manager.time() - start_time_full))
-    ui.graph_algo_cogn(NAME, PATH_RESULT, matrix, NB_VALUES, data_length, TETA, HOP_LENGTH, INIT)
+    ui.graph_algo_cogn(NAME, PATH_RESULT, matrix, NB_VALUES, data_duration_in_s, TETA, HOP_LENGTH, INIT)
 
 
 main()

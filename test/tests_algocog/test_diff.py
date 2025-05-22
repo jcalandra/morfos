@@ -27,7 +27,7 @@ def del_column(mtx_err, mtx, fd):
     return mtx_err, mtx
 
 
-def clear_matrix(mtx_audio, mtx_midi, data_size, data_length, hop_length):
+def clear_matrix(mtx_audio, mtx_midi, data_size, data_duration_in_s, hop_length):
     """ Function that clear matrices by deleting the lines in mtx_audio that contains frames considered as
     non-representative of a material and delete the columns of the corresponding non representative frames in mtx_audio
     and mtx_midi. Not that useful now because we created in algo_cog an algorithm that replace the non-representative
@@ -40,7 +40,7 @@ def clear_matrix(mtx_audio, mtx_midi, data_size, data_length, hop_length):
     # il faut changer ça car on a ajouté du silence. nb_hop = len(mtx_audio[0])
     nb_hop = int(data_size / hop_length) + 1
     to_remove = []
-    nb_hop_sec = data_size / (data_length * hop_length)  # nb_hop_sec = nb_hop/frame_rate ?
+    nb_hop_sec = data_size / (data_duration_in_s * hop_length)  # nb_hop_sec = nb_hop/frame_rate ?
     audio_length_min = nb_hop_sec / 10  # nb hop corresponding to 1/20sec
     window = int(nb_hop_sec / 4)  # nb hop corresponding to 1/4sec
 
@@ -85,9 +85,9 @@ def clear_matrix(mtx_audio, mtx_midi, data_size, data_length, hop_length):
     return mtx_audio_clean, mtx_midi_clean, ns_lines
 
 
-def df_comparison(diag_midi, diag_audio, data_size, data_length, hop_length):
+def df_comparison(diag_midi, diag_audio, data_size, data_duration_in_s, hop_length):
     """ The function clear_matrix is applied, then the discovery front are computed. From that """
-    copy_diag_audio, copy_diag_midi, ns_lines = clear_matrix(diag_audio, diag_midi, data_size, data_length, hop_length)
+    copy_diag_audio, copy_diag_midi, ns_lines = clear_matrix(diag_audio, diag_midi, data_size, data_duration_in_s, hop_length)
 
     df_midi = dfront.discovery_front_computing(copy_diag_midi, BACKGROUND)
     df_audio = dfront.discovery_front_computing(copy_diag_audio, BACKGROUND)
@@ -207,13 +207,13 @@ def compute_diff(mtx_midi, mtx_audio):
     return diff, mat_diff
 
 
-def print_diff(mat_diff, name, data_length, hop_length, teta):
+def print_diff(mat_diff, name, data_duration_in_s, hop_length, teta):
     plt.figure(figsize=(15, 5))
     plt.title("Matrice différentielle " + name + " hoplength" + str(hop_length) + " teta" + str(teta))
     plt.gray()
     plt.xlabel("temps (mémoire forme)")
     plt.ylabel("matériau (mémoire matériau)")
-    plt.imshow(mat_diff, extent=[0, data_length, len(mat_diff), 0])
+    plt.imshow(mat_diff, extent=[0, data_duration_in_s, len(mat_diff), 0])
     path_results = "../results/" + name + "/test_diff/"
     plt.savefig(path_results + "mtxdiff_" + name + "_hoplength" + str(hop_length) + "_teta" + str(teta) + ".png")
     plt.show()
@@ -228,23 +228,23 @@ def test_diff(name, hop_length, nb_values, teta, tempo, init):
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
     start_time = time_manager.time()
-    matrix_audio, data_length, data_size, distance, t = sig.algo_cog(path_wav, hop_length, nb_values, teta, init)
+    matrix_audio, data_duration_in_s, data_size, distance, t = sig.algo_cog(path_wav, hop_length, nb_values, teta, init)
     print("[INFO] Execution time audio : %s secondes ---" % (time_manager.time() - start_time))
-    ui.graph_algo_cogn(name + "-audio", "", matrix_audio, nb_values, data_length, teta, hop_length, init)
+    ui.graph_algo_cogn(name + "-audio", "", matrix_audio, nb_values, data_duration_in_s, teta, hop_length, init)
 
     start_time = time_manager.time()
     matrix_midi = md.interface(path_midi, tempo)
     print("[INFO] Execution time midi : %s secondes ---" % (time_manager.time() - start_time))
 
     copy_matrix_midi, copy_matrix_audio, ns_lines, inf_lines, sup_lines = df_comparison(matrix_midi, matrix_audio,
-                                                                                        data_size, data_length,
+                                                                                        data_size, data_duration_in_s,
                                                                                         hop_length)
 
-    ui.graph_algo_cogn(name + "-midi-clean", "", copy_matrix_midi, nb_values, data_length, teta, hop_length, init)
-    ui.graph_algo_cogn(name + "-audio-clean", "", copy_matrix_audio, nb_values, data_length, teta, hop_length, init)
+    ui.graph_algo_cogn(name + "-midi-clean", "", copy_matrix_midi, nb_values, data_duration_in_s, teta, hop_length, init)
+    ui.graph_algo_cogn(name + "-audio-clean", "", copy_matrix_audio, nb_values, data_duration_in_s, teta, hop_length, init)
 
     diff, mat_diff = compute_diff(copy_matrix_midi, copy_matrix_audio)
-    print_diff(mat_diff, name, data_length, hop_length, teta)
+    print_diff(mat_diff, name, data_duration_in_s, hop_length, teta)
     nb_mat = len(matrix_midi)
     return ns_lines, inf_lines, sup_lines, diff, nb_mat
 

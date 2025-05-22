@@ -118,7 +118,7 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
 
     if prm.PLOT_ORACLE:
         for i in range(len(mso.levels)):
-                im = oracle.plot.start_draw(mso.levels[i].oracle, size=(900 * 4, 400 * 4))
+                im = oracle.plot.start_draw(mso.levels[i].voices[0].oracle, size=(900 * 4, 400 * 4))
                 im.show()
 
     plt.pause(3000)

@@ -28,7 +28,8 @@ def gestion_level(ms_oracle,level):
         if verbose == 1:
             print("[INFO] CREATION OF NEW FO : LEVEL " + str(level) + "...")
         class_mso.MSOLevel(ms_oracle)
-        ms_oracle.levels[level].init_oracle('a', dim=ms_oracle.metadata.dims)
+        class_mso.Voice(ms_oracle.levels[level])
+        ms_oracle.levels[level].voices[0].init_oracle('a', dim=ms_oracle.metadata.dims)
 
         if level == 0:
             ms_oracle.matrix.sim_matrix.init(chr(LETTER_DIFF), [1])
@@ -47,14 +48,14 @@ def structure(ms_oracle, level):
         new_obj_tab = add_obj_level_up(ms_oracle,level+1)
 
         if len(ms_oracle.levels) > level + 1:
-            node = max(ms_oracle.levels[level].link) + 1
+            node = max(ms_oracle.levels[level].voices[0].link) + 1
         else:
             node = 1
-        for ind in range(ms_oracle.levels[level].concat_obj.size):
-            ms_oracle.levels[level].link.append(node)
+        for ind in range(ms_oracle.levels[level].voices[0].concat_obj.nb):
+            ms_oracle.levels[level].voices[0].link.append(node)
         label = ""
         for obj in new_obj_tab:
-            label += obj.label
+            label += obj.extNotes[0].note.label
         # send to the next f_oracle the node corresponding to concat_obj
         fun_segmentation(ms_oracle, new_obj_tab, level + 1)
     return 0
@@ -75,19 +76,18 @@ def fun_segmentation(ms_oracle, objects, level=0):
             costs.init_cost()
         gestion_level(ms_oracle, level)
     rules = ta.Rules()
-    ms_oracle.levels[level].objects = objects
+    ms_oracle.levels[level].voices[0].objects = objects
     if verbose == 1:
         print("[INFO] Process in level " + str(level) + "...")
 
     # Every new character is analysed.
-    ms_oracle.levels[level].shift = len(ms_oracle.levels[level].oracle.data) - 1
-    ms_oracle.levels[level].iterator = 0
-    while ms_oracle.levels[level].iterator < len(objects) :
-        iterator = ms_oracle.levels[level].iterator
+    ms_oracle.levels[level].voices[0].shift = len(ms_oracle.levels[level].voices[0].oracle.data) - 1
+    ms_oracle.levels[level].voices[0].iterator = 0
+    while ms_oracle.levels[level].voices[0].iterator < len(objects) :
+        iterator = ms_oracle.levels[level].voices[0].iterator
         if level == 0 and ms_oracle.end_mk == 0:
-            ms_oracle.levels[level].update_oracle(ms_oracle, level)
-        ms_oracle.levels[level].actual_obj = objects[iterator]
-        #print("level", level, "actual obj", ms_oracle.levels[level].actual_object.label)
+            ms_oracle.levels[level].voices[0].update_oracle(ms_oracle, level)
+        ms_oracle.levels[level].voices[0].actual_obj = objects[iterator]
 
         if level == 0:
             # CHECKPOINT #
@@ -96,41 +96,41 @@ def fun_segmentation(ms_oracle, objects, level=0):
             # en compte certaines spécificités de comportement de l'algorithme possible aux niveaux supérieurs).
             # Envoi beaucoup d'information (autant que d'éléments au niveau 0), on peut donc choisir de filtrer seulement
             # certaines valeurs
-            cp = (ms_oracle.levels[level].shift + ms_oracle.levels[level].iterator)/(ms_oracle.levels[level].shift + len(objects))*100
+            cp = (ms_oracle.levels[level].voices[0].shift + ms_oracle.levels[level].voices[0].iterator)/(ms_oracle.levels[level].voices[0].shift + len(objects))*100
             if checkpoint == 1:
                 print("CHECKPOINT: ", cp)
                 sys.stdout.flush()
             # END CHECKPOINT #
 
-            ms_oracle.levels[level].oracle.objects.append(ms_oracle.levels[level].actual_obj)
-            ms_oracle.levels[level].actual_objects.append(ms_oracle.levels[level].actual_obj)
-            ms_oracle.levels[level].total_duration += ms_oracle.levels[level].actual_obj.duration
+            ms_oracle.levels[level].voices[0].oracle.objects.append(ms_oracle.levels[level].voices[0].actual_obj)
+            ms_oracle.levels[level].voices[0].actual_objects.append(ms_oracle.levels[level].voices[0].actual_obj)
+            ms_oracle.levels[level].voices[0].total_duration += ms_oracle.levels[level].voices[0].actual_obj.extNotes[0].duration
         # formal diagram is updated with the new char
 
-        if ms_oracle.levels[level].actual_char_ind == 1:
-            ms_oracle.levels[level].formal_diagram.init(ms_oracle, level)
+        if ms_oracle.levels[level].voices[0].actual_char_ind == 1:
+            ms_oracle.levels[level].voices[0].VoiceFD.FormalDiagram.init(ms_oracle, level)
         else:
-            ms_oracle.levels[level].formal_diagram.update(ms_oracle, level)
+            ms_oracle.levels[level].voices[0].VoiceFD.FormalDiagram.update(ms_oracle, level)
 
-        ms_oracle.levels[level].formal_diagram_graph.update(ms_oracle, level)
+        ms_oracle.levels[level].voices[0].VoiceFD.FormalDiagramGraph.update(ms_oracle, level)
 
-        objects = ms_oracle.levels[level].objects
-        iterator = ms_oracle.levels[level].iterator
+        objects = ms_oracle.levels[level].voices[0].objects
+        iterator = ms_oracle.levels[level].voices[0].iterator
 
-        if (level == 0 and ms_oracle.levels[level].actual_char_ind == len(objects)):
+        if (level == 0 and ms_oracle.levels[level].voices[0].actual_char_ind == len(objects)):
             ms_oracle.end_mk = 1
 
         if prm.COMPUTE_COSTS:
             costs.compute_cost(ms_oracle, level)
 
         # If the tests are positives, there is structuration.
-        if ((ms_oracle.levels[level].iterator > 0 and level ==0 or level > 0) and ms_oracle.end_mk == 0 and ta.segmentation_test(ms_oracle, level, rules)):
+        if ((ms_oracle.levels[level].voices[0].iterator > 0 and level ==0 or level > 0) and ms_oracle.end_mk == 0 and ta.segmentation_test(ms_oracle, level, rules)):
             if ms_oracle.out:
                 return 1
             # print("segmentation 1")
             if len(ms_oracle.levels) > level + 1:
-                ms_oracle.levels[level + 1].shift = len(ms_oracle.levels[level + 1].oracle.data) - 1
-                ms_oracle.levels[level + 1].iterator = 0
+                ms_oracle.levels[level + 1].voices[0].shift = len(ms_oracle.levels[level + 1].voices[0].oracle.data) - 1
+                ms_oracle.levels[level + 1].voices[0].iterator = 0
             if prm.COMPUTE_HYPOTHESIS:
                 bit_seg = 1
                 hypothesis.bit_seg_add(level, bit_seg)
@@ -139,13 +139,13 @@ def fun_segmentation(ms_oracle, objects, level=0):
             structure(ms_oracle, level)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-            ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
-            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
+            ms_oracle.levels[level].voices[0].concat_obj = class_concatObj.ConcatObj()
+            ms_oracle.levels[level].voices[0].concat_obj.init(ms_oracle.levels[level].voices[0].actual_obj)
         else:
             if ms_oracle.out:
                 return 1
             # print("no segmentation")
-            if level == 0 and ms_oracle.levels[level].iterator == len(objects):
+            if level == 0 and ms_oracle.levels[level].voices[0].iterator == len(objects):
                 break
             if prm.COMPUTE_HYPOTHESIS:
                 bit_seg = 0
@@ -157,10 +157,10 @@ def fun_segmentation(ms_oracle, objects, level=0):
                     hypothesis.bit_seg_add(level, bit_seg)
                     if len(prm.bit_class[level]) > 1:
                         hypothesis.compute_phases(level, ms_oracle.end_mk)
-            if ms_oracle.levels[level].concat_obj.size == 0:
-                ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
+            if ms_oracle.levels[level].voices[0].concat_obj.nb == 0:
+                ms_oracle.levels[level].voices[0].concat_obj.init(ms_oracle.levels[level].voices[0].actual_obj)
             else:
-                ms_oracle.levels[level].concat_obj.update(ms_oracle.levels[level].actual_obj)
+                ms_oracle.levels[level].voices[0].concat_obj.update(ms_oracle.levels[level].voices[0].actual_obj)
 
         # Automatically structuring if this is the End Of String
         if ms_oracle.end_mk == 1 and ms_oracle.level_max > level:
@@ -168,18 +168,18 @@ def fun_segmentation(ms_oracle, objects, level=0):
                 return 1
             # print("segmentation 2")
             if ms_oracle.level_max > level:
-                ms_oracle.levels[level + 1].iterator -= 1
+                ms_oracle.levels[level + 1].voices[0].iterator -= 1
             if prm.COMPUTE_HYPOTHESIS:
                 bit_seg = 1
                 hypothesis.bit_seg_add(level, bit_seg)
                 if len(prm.bit_class[level]) > 1:
                     hypothesis.compute_phases(level, ms_oracle.end_mk)
             structure(ms_oracle, level)
-            ms_oracle.levels[level].concat_obj = class_concatObj.ConcatObj()
-            ms_oracle.levels[level].concat_obj.init(ms_oracle.levels[level].actual_obj)
+            ms_oracle.levels[level].voices[0].concat_obj = class_concatObj.ConcatObj()
+            ms_oracle.levels[level].voices[0].concat_obj.init(ms_oracle.levels[level].voices[0].actual_obj)
             if verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
-        ms_oracle.levels[level].iterator += 1
+        ms_oracle.levels[level].voices[0].iterator += 1
         if verbose == 1:
             print("state number ", iterator, " in level ", level)
 

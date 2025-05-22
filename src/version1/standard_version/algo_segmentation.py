@@ -245,14 +245,14 @@ def algo_cog(char):
     return mtx, len(char)
 
 
-def graph_algo_cogn(char, matrix, data_length):
-    """ plot the picture of formal diagram matrix according to its length data_length. The picture is named ofter the
+def graph_algo_cogn(char, matrix, data_duration_in_s):
+    """ plot the picture of formal diagram matrix according to its length data_duration_in_s. The picture is named ofter the
     string char."""
     name = char
     plt.figure(figsize=(15, 5))
     plt.title("Diagramme formel de " + name)
     plt.gray()
-    plt.imshow(matrix, extent=[0, data_length, len(matrix), 0])
+    plt.imshow(matrix, extent=[0, data_duration_in_s, len(matrix), 0])
     plt.show()
 
 # ================================================= EXEMPLES ===========================================================

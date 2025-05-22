@@ -41,7 +41,7 @@ cost_level_up = prm.cost_level_up
 
 
 # ============================================ SEGMENTATION FUNCTION ===================================================
-def structure(concat_obj, oracles, level, link, data_length, level_max, end_mk):
+def structure(concat_obj, oracles, level, link, data_duration_in_s, level_max, end_mk):
     """ Function for the structuring operation and therfore the update of the structures at this level and next level"""
     # Labelling upper level string and updating the different structures
     new_char = similarity_rules.char_next_level_similarity(oracles, level)
@@ -53,12 +53,12 @@ def structure(concat_obj, oracles, level, link, data_length, level_max, end_mk):
         link.append(node)
 
     # send to the next f_oracle the node corresponding to concat_obj
-    fun_segmentation(oracles, new_char, data_length, level + 1, level_max, end_mk)
+    fun_segmentation(oracles, new_char, data_duration_in_s, level + 1, level_max, end_mk)
     return 0
 
 
 # ================================= MAIN COGNITIVE ALGORITHM AT SYMBOLIC SCALE =========================================
-def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_mk=0):
+def fun_segmentation(oracles, str_obj, data_duration_in_s, level=0, level_max=-1, end_mk=0):
     """This function browses the string char and structure it at the upper level according to the rules that are applied
     by the extern user."""
     # end of the recursive loop
@@ -188,9 +188,9 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
 
         # formal diagram is updated with the new char
         if actual_char_ind == 1:
-            fd_mso.formal_diagram_init(formal_diagram, data_length, oracles, level)
+            fd_mso.formal_diagram_init(formal_diagram, data_duration_in_s, oracles, level)
         else:
-            fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
+            fd_mso.formal_diagram_update(formal_diagram, data_duration_in_s, actual_char, actual_char_ind, oracles, level)
 
         if prm.TIME_TYPE == prm.STATE_TIME:
             time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
@@ -233,7 +233,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             alpha_or_delta_t += cost_print_df
 
         oracles[1][level][5] = fd_mso.print_formal_diagram_update(
-            formal_diagram_graph, level, formal_diagram, data_length)
+            formal_diagram_graph, level, formal_diagram, data_duration_in_s)
 
         # First is the parametrisation of the rules according to the external settings.
         test_1, test_2, test_3, test_4, test_5, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \
@@ -256,7 +256,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             # or (end_mk == 1 and len(concat_obj) != 0):
             if prm.verbose == 1:
                 print("[INFO] structure in level " + str(level) + "...")
-            structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(concat_obj, oracles, level, link, data_duration_in_s, level_max, end_mk)
             if prm.verbose == 1:
                 print("[INFO] Process in level " + str(level) + "...")
             concat_obj = ''
@@ -334,7 +334,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
                 diff = 1
             else:
                 diff = 0
-            structure(concat_obj, oracles, level, link, data_length, level_max, end_mk)
+            structure(concat_obj, oracles, level, link, data_duration_in_s, level_max, end_mk)
             if prm.COMPUTE_HYPOTHESIS:
                 if i + k > 0:
                     hs.phases_add_element(level, new_mat, diff, time_t, cost)

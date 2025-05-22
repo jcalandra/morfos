@@ -86,23 +86,23 @@ def costs_add_level():
 
 ## compute costs
 
-def cost_compute_seg(ms_oracle, level):
+def cost_compute_seg(ms_oracle, level): #TODO: @jcalandra 20/05/2025 loop for each voices
     global cost_segmentation_sim
-    history_next = ms_oracle.levels[level].materials.history
-    actual_char = ms_oracle.levels[level].actual_char
-    concat_obj_lab = ms_oracle.levels[level].concat_obj.concat_labels
+    history_next = ms_oracle.levels[level].voices[0].VoiceMaterials.history
+    actual_char = ms_oracle.levels[level].voices[0].actual_char
+    concat_obj_lab = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
     if level == 0:
         matrix = ms_oracle.matrix.sim_matrix
     else:
-        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+        matrix = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix
 
     cost_seg_sim_1 = 0
     cost_seg_sim_2 = 0
     card_memory = len(history_next)
 
     for element in history_next:
-        cost_seg_sim_1 += (1 - sim_symb.compute_alignment(chr(actual_char + prm.LETTER_DIFF), element[1].concat_labels[0], matrix)[1])
-        cost_seg_sim_2 += (1 - sim_symb.compute_alignment(concat_obj_lab, element[1].concat_labels, matrix)[1])
+        cost_seg_sim_1 += (1 - sim_symb.compute_alignment(chr(actual_char + prm.LETTER_DIFF), element[1].extConcatNote.concatNote.concat_labels[0], matrix)[1])
+        cost_seg_sim_2 += (1 - sim_symb.compute_alignment(concat_obj_lab, element[1].extConcatNote.concatNote.concat_labels, matrix)[1])
     if card_memory == 0:
         cost_segmentation_sim = 0
     else:
@@ -112,13 +112,13 @@ def cost_compute_seg(ms_oracle, level):
 
 def cost_compute_org(ms_oracle, level):
     global cost_organisation_sim
-    actual_char = ms_oracle.levels[level].actual_char
-    concat_obj_lab = ms_oracle.levels[level].concat_obj.concat_labels
+    actual_char = ms_oracle.levels[level].voices[0].actual_char
+    concat_obj_lab = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
 
     if level == 0:
         matrix = ms_oracle.matrix.sim_matrix
     else:
-        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+        matrix = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix
 
     cost_org_sim = 0
     card_history = len(concat_obj_lab)

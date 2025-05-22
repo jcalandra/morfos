@@ -31,7 +31,7 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
     here_time = time_manager.time()
 
-    data, rate, data_size, data_length = dc.get_data(audio_path)
+    data, rate, data_size, data_duration_in_s = dc.get_data(audio_path)
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))
@@ -40,7 +40,7 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     nb_mat = 1  # number of materials
     nb_sil_frames = nb_points/hop_length
     nb_hop = int(data_size/hop_length + nb_sil_frames) + 1  # nb of hop, not supposed to be known it in realtime
-    data_length = data_length + nb_points/rate
+    data_duration_in_s = data_duration_in_s + nb_points/rate
     if data_size % hop_length < init:
         nb_hop = int(data_size/hop_length)
     print("[RESULT] audio length = ", nb_hop)
@@ -182,4 +182,4 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     print("class error =", class_error)
     t = time_manager.time() - here_time
     print("temps total :", t)
-    return mtx, data_length, data_size, distance, t
+    return mtx, data_duration_in_s, data_size, distance, t

@@ -43,7 +43,7 @@ def update_mat_rep(mat_rep, j_mat, i_hop, s_tab, v_tab):
 def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
     """ Compute the formal diagram of the audio at audio_path with threshold teta and size of frame hop_length."""
     print("[INFO] Computing the cognitive algorithm of the audio extract...")
-    data, rate, data_size, data_length = dc.get_data(audio_path)
+    data, rate, data_size, data_duration_in_s = dc.get_data(audio_path)
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))
@@ -249,4 +249,4 @@ def algo_cog(audio_path, hop_length, nb_mfcc, teta, init, fmin=FMIN):
                    "\ndistance = " + str(distance) + "\n")
         file.close()
 
-    return mtx, data_length, data_size, distance
+    return mtx, data_duration_in_s, data_size, distance

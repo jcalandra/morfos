@@ -79,8 +79,8 @@ def test_init_cond_graph(name, teta, hop_length, tabs_distances):
     factor = HOP_LENGTH_MAX/hop_length
     while init < hop_length:
         print("[INFO] INIT = " + str(init) + "\nHOP_LENGTH = " + str(hop_length) + ", TETA = " + str(teta))
-        matrix, data_length, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, init)
-        ui.graph_algo_cogn(name, path_result1, matrix, NB_MFCC, data_length, teta, hop_length, init)
+        matrix, data_duration_in_s, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, init)
+        ui.graph_algo_cogn(name, path_result1, matrix, NB_MFCC, data_duration_in_s, teta, hop_length, init)
         file = open(PATH_RESULTS + "time.txt", "a")
         file.write(str(t) + " " + str(teta) + " " + str(hop_length) + " " + str(init) + "\n")
         file.close()
@@ -103,8 +103,8 @@ def test_tempo_graph(name, teta, hop_length, tabs_distances):
     label_x = "tempo"
     while actual_tempo < TEMPO_MAX + TEMPO_STEP:
         print("[INFO] TEMPO = " + str(actual_tempo) + "\nHOP_LENGTH = " + str(hop_length) + ", TETA = " + str(teta))
-        matrix, data_length, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, INIT)
-        ui.graph_algo_cogn(actual_name, path_result1, matrix, NB_MFCC, data_length, teta, hop_length, INIT)
+        matrix, data_duration_in_s, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, INIT)
+        ui.graph_algo_cogn(actual_name, path_result1, matrix, NB_MFCC, data_duration_in_s, teta, hop_length, INIT)
         file = open(PATH_RESULTS + "time.txt", "a")
         file.write(str(t) + " " + str(teta) + " " + str(hop_length) + " " + str(actual_tempo) + "\n")
         file.close()
@@ -143,8 +143,8 @@ def test_transpose_graph(name, teta, hop_length, tabs_distances):
         if actual_transpo_note < 12:
             print("[INFO] TRANSPOSITION = " + str(actual_transpo_octave) + "-" + note +
                   "\nHOP_LENGTH = " + str(hop_length) + ", TETA = " + str(teta))
-            matrix, data_length, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, INIT, str_fmin)
-            ui.graph_algo_cogn(actual_name, path_result1, matrix, NB_MFCC, data_length, teta, hop_length, INIT)
+            matrix, data_duration_in_s, data_size, distance, t = sig.algo_cog(path, hop_length, NB_MFCC, teta, INIT, str_fmin)
+            ui.graph_algo_cogn(actual_name, path_result1, matrix, NB_MFCC, data_duration_in_s, teta, hop_length, INIT)
             file = open(PATH_RESULTS + "time.txt", "a")
             file.write(str(t) + " " + str(teta) + " " + str(hop_length) + " "
                        + str(actual_transpo_octave) + "-" + str(actual_transpo_note) + "\n")

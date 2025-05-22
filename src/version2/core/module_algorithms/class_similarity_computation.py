@@ -19,10 +19,10 @@ NPO = parameters.NOTES_PER_OCTAVE
 fmin = parameters.NOTE_MIN
 
 def _compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
-    desc_compared_mean = obj_compared[1].descriptors.mean_descriptors[0][0]
-    actual_desc_mean = actual_obj.concat_obj.descriptors.mean_descriptors[0][0]
-    desc_compared_concat = obj_compared[1].descriptors.concat_descriptors[0]
-    actual_desc_concat = actual_obj.concat_obj.descriptors.concat_descriptors[0]
+    desc_compared_mean = obj_compared[1].extConcatNote.concatNote.descriptors.mean_descriptors[0][0]
+    actual_desc_mean = actual_obj.concat_obj.extConcatNote.concatNote.descriptors.mean_descriptors[0][0]
+    desc_compared_concat = obj_compared[1].extConcatNote.concatNote.descriptors.concat_descriptors[0]
+    actual_desc_concat = actual_obj.concat_obj.extConcatNote.concatNote.descriptors.concat_descriptors[0]
     if parameters.DIFF_CONCORDANCE:
         sim_digit_label_mean, sim_value_mean = sim_sig.diff_concordance(desc_compared_mean, actual_desc_mean)
     elif parameters.EUCLID_DISTANCE:
@@ -42,8 +42,8 @@ def _compute_signal_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
     return sim_digit_label, sim_value
 
 def _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
-    string_compared = obj_compared[1].concat_labels
-    actual_string = actual_obj.concat_obj.concat_labels
+    string_compared = obj_compared[1].extConcatNote.concatNote.concat_labels
+    actual_string = actual_obj.concat_obj.extConcatNote.concatNote.concat_labels
     if level == 0:
         actual_string = actual_string[-1]
     if parameters.STRICT_EQUALITY:
@@ -55,8 +55,8 @@ def _compute_symbol_similarity_rep(obj_compared, actual_obj, mat, level=0):
     return sim_digit_label, sim_value
 
 def _compute_midi_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
-    pitch_compared = obj_compared[1].concat_pitches
-    actual_pitch = actual_obj.concat_obj.concat_pitches
+    pitch_compared = obj_compared[1].extConcatNote.concatNote.concat_pitches
+    actual_pitch = actual_obj.concat_obj.extConcatNote.concatNote.concat_pitches
     if parameters.MEAN_PITCHES:
         sim_digit_label, sim_value = sim_midi.mean_pitches(pitch_compared, actual_pitch)
     elif parameters.ALIGNMENT_PITCHES:
@@ -106,12 +106,12 @@ def compute_midi_similarity_rep(obj_compared, actual_obj, mat=None, level=0):
 
 def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level == 0:
-        obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].descriptors
-        actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].descriptors
+        obj_compared = ms_oracle.levels[level].voices[0].objects[obj_compared_ind].extNotes[0].note.descriptors
+        actual_obj = ms_oracle.levels[level].voices[0].objects[actual_obj_ind].extNotes[0].note.descriptors
     else:
-        label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
-        obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].descriptors
-        actual_obj = ms_oracle.levels[level - 1].concat_obj.descriptors
+        label = ms_oracle.levels[level].voices[0].oracle.data[obj_compared_ind + 1]
+        obj_compared = ms_oracle.levels[level- 1].voices[0].VoiceMaterials.history[label][1].extConcatNote.concatNote.descriptors
+        actual_obj = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.descriptors
 
     desc_compared_mean = obj_compared.mean_descriptors[0][0]
     actual_desc_mean = actual_obj.mean_descriptors[0][0]
@@ -137,19 +137,19 @@ def _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
 
 def _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level == 0:
-        obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].label
-        actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].label
+        obj_compared = ms_oracle.levels[level].voices[0].objects[obj_compared_ind].extNotes[0].note.label
+        actual_obj = ms_oracle.levels[level].voices[0].objects[actual_obj_ind].extNotes[0].note.label
     else:
-        label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
-        obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].concat_labels
-        actual_obj = ms_oracle.levels[level - 1].concat_obj.concat_labels
+        label = ms_oracle.levels[level].voices[0].oracle.data[obj_compared_ind + 1]
+        obj_compared = ms_oracle.levels[level- 1].voices[0].VoiceMaterials.history[label][1].extConcatNote.concatNote.concat_labels
+        actual_obj = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
     if level > 1:
-        matrix = ms_oracle.levels[level - 2].materials.sim_matrix
+        matrix = ms_oracle.levels[level - 2].voices[0].VoiceMaterials.sim_matrix
     else:
         matrix = ms_oracle.matrix.sim_matrix
 
     if parameters.STRICT_EQUALITY:
-        #concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+        #concat_obj = ms_oracle.levels[level].concat_obj.extConcatNote.concatNote.concat_labels
         sim_digit_label, sim_value = sim_symb.compute_strict_equality(obj_compared,
                                                              actual_obj, matrix, level)
     elif parameters.ALIGNMENT:
@@ -164,12 +164,12 @@ def _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_in
 
 def _compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     if level == 0:
-        obj_compared = ms_oracle.levels[level].objects[obj_compared_ind].pitch
-        actual_obj = ms_oracle.levels[level].objects[actual_obj_ind].pitch
+        obj_compared = ms_oracle.levels[level].voices[0].objects[obj_compared_ind].extNotes[0].note.pitch
+        actual_obj = ms_oracle.levels[level].voices[0].objects[actual_obj_ind].extNotes[0].note.pitch
     else:
-        label = ms_oracle.levels[level].oracle.data[obj_compared_ind + 1]
-        obj_compared = ms_oracle.levels[level- 1].materials.history[label][1].concat_pitches
-        actual_obj = ms_oracle.levels[level - 1].concat_obj.concat_pitches
+        label = ms_oracle.levels[level].voices[0].oracle.data[obj_compared_ind + 1]
+        obj_compared = ms_oracle.levels[level- 1].voices[0].VoiceMaterials.history[label][1].extConcatNote.concatNote.concat_pitches
+        actual_obj = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.concat_pitches
 
 
     if parameters.MEAN_PITCHES:
@@ -208,27 +208,27 @@ def compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
 
 def similarity(ms_oracle, level):
     actual_object_descriptor = class_object.Descriptors()
-    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
-    len_av = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
-    ms_oracle.levels[level].update_oracle(ms_oracle, level)
-    len_ap = len(ms_oracle.levels[level - 1].materials.sim_matrix.labels)
+    actual_object_descriptor.copy(ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.descriptors)
+    len_av = len(ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix.labels)
+    ms_oracle.levels[level].voices[0].update_oracle(ms_oracle, level)
+    len_ap = len(ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix.labels)
     if len_av == 0 or len_ap > len_av:
         digit = 0
     else:
         digit = 1
-        indice = ms_oracle.levels[level].oracle.data[-1]
-        window = ms_oracle.levels[level - 1].concat_obj.concat_signals
-        new_rep = ms_oracle.levels[level - 1].materials.history[indice][0]
-        duration = ms_oracle.levels[level - 1].concat_obj.durations
-        date = ms_oracle.levels[level - 1].concat_obj.date
-        new_rep.update(window, new_rep.label, new_rep.pitch, actual_object_descriptor, duration, date)
+        indice = ms_oracle.levels[level].voices[0].oracle.data[-1]
+        window = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.concat_audio
+        new_rep = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.history[indice][0]
+        duration = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.durations
+        date = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.date
+        new_rep.update(window, new_rep.extNotesRep[0].note.label, new_rep.extNotesRep[0].note.pitch, actual_object_descriptor, duration, date)
         return new_rep, digit
 
-    new_signal = ms_oracle.levels[level].concat_obj.concat_signals
-    new_char = chr(letter_diff + ms_oracle.levels[level].oracle.data[-1])
-    new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
-    duration = ms_oracle.levels[level - 1].concat_obj.durations
-    date = ms_oracle.levels[level - 1].concat_obj.date
+    new_signal = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_audio
+    new_char = chr(letter_diff + ms_oracle.levels[level].voices[0].oracle.data[-1])
+    new_pitches = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_pitches
+    duration = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.durations
+    date = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.date
     new_rep = class_object.ObjRep()
     new_rep.init(new_signal, new_char, new_pitches, actual_object_descriptor, duration, date)
     return new_rep, digit
@@ -240,23 +240,23 @@ def char_next_level_similarity(ms_oracle, level):
     the results and the new string of upper level new_char is returned."""
     new_rep, sim_digit = similarity(ms_oracle, level)
     # new_obj update
-    new_signal = ms_oracle.levels[level - 1].concat_obj.concat_signals
-    new_pitch = ms_oracle.levels[level - 1].concat_obj.concat_pitches
-    new_descriptors = ms_oracle.levels[level - 1].concat_obj.descriptors
-    new_duration = ms_oracle.levels[level - 1].concat_obj.durations
-    new_date = ms_oracle.levels[level].total_duration
+    new_signal = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.concat_audio
+    new_pitch = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.concat_pitches
+    new_descriptors = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.descriptors
+    new_duration = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.durations
+    new_date = ms_oracle.levels[level].voices[0].total_duration
 
     new_obj = class_object.Object()
-    new_obj.update(new_signal, new_rep.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
-    ms_oracle.levels[level].oracle.objects.append(new_obj)
-    ms_oracle.levels[level].actual_objects.append(new_obj)
+    new_obj.update(new_signal, new_rep.extNotesRep[0].note.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
+    ms_oracle.levels[level].voices[0].oracle.objects.append(new_obj)
+    ms_oracle.levels[level].voices[0].actual_objects.append(new_obj)
 
-    ms_oracle.levels[level].total_duration += new_duration
+    ms_oracle.levels[level].voices[0].total_duration += new_duration
 
     if sim_digit:
         return [new_obj]
 
     # material.history update
-    concat_rep = ms_oracle.levels[level - 1].concat_obj
-    ms_oracle.levels[level - 1].materials.update_history(new_rep, concat_rep, new_rep.descriptors)
+    concat_rep = ms_oracle.levels[level - 1].voices[0].concat_obj
+    ms_oracle.levels[level - 1].voices[0].VoiceMaterials.update_history(new_rep, concat_rep, new_rep.extNotesRep[0].note.descriptors)
     return [new_obj]

@@ -33,7 +33,7 @@ def graph_energy(tab, rate, data_size, name, y_label):
 def compute_dynamics():
     audio_path = prm.PATH_SOUND + prm.NAME + prm.FORMAT
     name = audio_path.split('/')[-1].split('.')[0]
-    data, rate, data_size, data_length = dc.get_data(audio_path)
+    data, rate, data_size, data_duration_in_s = dc.get_data(audio_path)
 
     nb_points = NB_SILENCE
     a = np.zeros(nb_points)

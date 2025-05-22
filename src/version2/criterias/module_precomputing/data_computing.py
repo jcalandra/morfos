@@ -50,10 +50,10 @@ def get_data(audio_path):
     if type(data[0]) == np.ndarray:
         data = librosa.core.to_mono(data)  # we force the signal to be mono
     data_size = data.size
-    data_length = data_size / rate
+    data_duration_in_s = data_size / rate
     if prm.verbose:
-        print("[RESULT] frame rate = ", rate, ", data size =", data_size, ", duration =", data_length)
-    return data, rate, data_size, data_length
+        print("[RESULT] frame rate = ", rate, ", data size =", data_size, ", duration =", data_duration_in_s)
+    return data, rate, data_size, data_duration_in_s
 
 # ------------------------- FROM FFT -----------------------------
 

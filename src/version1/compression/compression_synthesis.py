@@ -17,7 +17,7 @@ def compute_mso(path):
 
 
 def compute_data(path):
-    data, rate, data_size, data_length = dc.get_data(path)
+    data, rate, data_size, data_duration_in_s = dc.get_data(path)
     nb_points = prm.NB_SILENCE
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))

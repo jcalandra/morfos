@@ -189,7 +189,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
     # else, we are in the required conditions and we rebuild the oracles
     # we go back to the new already-seen state
-    data_length = int(len(oracles[1][level][4][0])/factor)
+    data_duration_in_s = int(len(oracles[1][level][4][0])/factor)
     to_struct = 0
     to_struct_obj = ''
 
@@ -240,9 +240,9 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
 
         # formal diagram update
         for j in range(len(oracles[1][level_up][4])):
-            for fd_ind in range(k_init*factor, data_length*factor):
+            for fd_ind in range(k_init*factor, data_duration_in_s*factor):
                 oracles[1][level_up][4][j][fd_ind] = 1
-        print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
+        print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_duration_in_s)
 
         # link update
         if len(oracles[1][level_up][1]) > ind:
@@ -303,7 +303,7 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
                 for j in range(len(oracles[1][level_up][4])):
                     for fd_ind in range(k_init*factor, former_k_init*factor):
                         oracles[1][level_up][4][j][fd_ind] = 1
-                print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_length)
+                print_formal_diagram_update(oracles[1][level_up][5], level_up, oracles[1][level_up][4], data_duration_in_s)
 
                 # str_obj
                 # str_obj = str_obj[ind_to_struct - len(concat_obj):]  # str_obj[(ind_init - ind_fo_init) - 1:]
@@ -344,9 +344,9 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
             oracles[1][level][0].add_state(new_state)
             oracles[1][level][3] += to_struct_obj[j]
             # formal diagram update at initial level
-            formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
-            print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
-        as_mso.structure(to_struct_obj, oracles, level, oracles[1][level][1], data_length, level_max, end_mk)
+            formal_diagram_update(oracles[1][level][4], data_duration_in_s, new_state, char_ind, oracles, level)
+            print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_duration_in_s)
+        as_mso.structure(to_struct_obj, oracles, level, oracles[1][level][1], data_duration_in_s, level_max, end_mk)
         oracles[1][level][3] = ""
 
     # concat_obj update at initial level
@@ -357,8 +357,8 @@ def rule_4_recomputed_object(oracles, matrix, level, actual_char_ind, str_obj, k
         oracles[1][level][3] += element
         oracles[1][level][0].add_state(new_state)
         # formal diagram update at initial level
-        formal_diagram_update(oracles[1][level][4], data_length, new_state, char_ind, oracles, level)
-        print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_length)
+        formal_diagram_update(oracles[1][level][4], data_duration_in_s, new_state, char_ind, oracles, level)
+        print_formal_diagram_update(oracles[1][level][5], level, oracles[1][level][4], data_duration_in_s)
 
     # Then go back to the main loop of the structuring function with the correct structure to rebuilt the oracles
     return 1, str_obj

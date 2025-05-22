@@ -15,7 +15,7 @@ TO_SHOW_BMP = prm.TO_SHOW_BMP
 TO_SAVE_PYP = prm.TO_SAVE_PYP
 TO_SHOW_PYP = prm.TO_SHOW_PYP
 
-def graph_algo_cogn(path, path_results, matrix, nb_mfcc, data_length, teta, hop_length, init):
+def graph_algo_cogn(path, path_results, matrix, nb_mfcc, data_duration_in_s, teta, hop_length, init):
     """ Plot/Save the picture of the formal diagram given by 'matrix'."""
     name = path.split('/')[-1]
     file_name = name + "_hoplength" + str(hop_length) + "_teta" + str(teta) + "_init" + str(init)
@@ -43,7 +43,7 @@ def graph_algo_cogn(path, path_results, matrix, nb_mfcc, data_length, teta, hop_
     plt.title(title)
     plt.xlabel("temps (mémoire forme)")
     plt.ylabel("matériau (mémoire matériau)")
-    plt.imshow(matrix, extent=[0, data_length, len(matrix), 0])
+    plt.imshow(matrix, extent=[0, data_duration_in_s, len(matrix), 0])
     if TO_SAVE_PYP:
         plt.savefig(path_results + file_name_pyplot)
     if TO_SHOW_PYP:

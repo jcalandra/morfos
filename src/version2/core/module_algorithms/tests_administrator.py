@@ -79,7 +79,7 @@ def segmentation_test_noseg(ms_oracle, level, rules):
 def segmentation_test_allseg(ms_oracle, level, rules):
     class_segmentation_rules_symb.rule_1_similarity_word(ms_oracle, level)
     class_segmentation_rules_symb.rule_2_existing_object(ms_oracle, level)
-    if ms_oracle.levels[level].concat_obj.size > 0 :
+    if ms_oracle.levels[level].concat_obj.nb > 0 :
         bool = 1
     else:
         bool = 0
@@ -88,7 +88,7 @@ def segmentation_test_allseg(ms_oracle, level, rules):
 def segmentation_test_maxseg(ms_oracle, level, rules):
     class_segmentation_rules_symb.rule_1_similarity_word(ms_oracle, level)
     class_segmentation_rules_symb.rule_2_existing_object(ms_oracle, level)
-    if ms_oracle.levels[level].concat_obj.size == 2:
+    if ms_oracle.levels[level].concat_obj.nb == 2:
         bool = 1
     else:
         bool = 0
@@ -97,7 +97,7 @@ def segmentation_test_maxseg(ms_oracle, level, rules):
 def segmentation_test_random(ms_oracle, level, rules):
     class_segmentation_rules_symb.rule_1_similarity_word(ms_oracle, level)
     class_segmentation_rules_symb.rule_2_existing_object(ms_oracle, level)
-    if ms_oracle.levels[level].concat_obj.size > 0 :
+    if ms_oracle.levels[level].concat_obj.nb > 0 :
         bool = round(random.random())
     else:
         bool = 0
@@ -106,7 +106,7 @@ def segmentation_test_random(ms_oracle, level, rules):
 def segmentation_test_randomconstraint(ms_oracle, level, rules):
     class_segmentation_rules_symb.rule_1_similarity_word(ms_oracle, level)
     class_segmentation_rules_symb.rule_2_existing_object(ms_oracle, level)
-    if ms_oracle.levels[level].concat_obj.size > 1 and ms_oracle.levels[level].concat_obj.size < 7 :
+    if ms_oracle.levels[level].concat_obj.nb > 1 and ms_oracle.levels[level].concat_obj.nb < 7 :
         bool = round(random.random())
     else:
         bool = 0

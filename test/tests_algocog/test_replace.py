@@ -89,7 +89,7 @@ def compute_replace(matrix_midi, matrix_audio):
     return err, matrix_audio, matrix_midi
 
 
-def print_replace(matrix_audio_mdfy, matrix_midi, name, data_length, hop_length, teta):
+def print_replace(matrix_audio_mdfy, matrix_midi, name, data_duration_in_s, hop_length, teta):
     """ compute and print the difference between the modified audio matrix and the MIDI matrix"""
     mat_diff = []
     diff = 0
@@ -116,7 +116,7 @@ def print_replace(matrix_audio_mdfy, matrix_midi, name, data_length, hop_length,
     plt.gray()
     plt.xlabel("temps (mémoire forme)")
     plt.ylabel("matériau (mémoire matériau)")
-    plt.imshow(mat_diff, extent=[0, data_length, len(mat_diff), 0])
+    plt.imshow(mat_diff, extent=[0, data_duration_in_s, len(mat_diff), 0])
     plt.show()
     plt.close()
     return diff
@@ -130,16 +130,16 @@ def test_replace(name, hop_length, nb_mfcc, teta, init, tempo):
     print("[INFO] Comparing the audio and midi matrices of " + str(name) + "...")
 
     start_time = time_manager.time()
-    matrix_audio, data_length, data_size, distance = sig.algo_cog(path_wav, hop_length, nb_mfcc, teta, init)
+    matrix_audio, data_duration_in_s, data_size, distance = sig.algo_cog(path_wav, hop_length, nb_mfcc, teta, init)
     print("[INFO] Execution time audio : %s secondes ---" % (time_manager.time() - start_time))
-    ui.graph_algo_cogn(name + "-audio", "",  matrix_audio, nb_mfcc, data_length, teta, hop_length, init)
+    ui.graph_algo_cogn(name + "-audio", "",  matrix_audio, nb_mfcc, data_duration_in_s, teta, hop_length, init)
 
     start_time = time_manager.time()
     matrix_midi = md.interface(path_midi, hop_length, tempo)
     print("[INFO] Execution time midi : %s secondes ---" % (time_manager.time() - start_time))
 
     err, mat_audio_mdfy = compute_replace(matrix_midi, matrix_audio)
-    diff = print_replace(mat_audio_mdfy, matrix_midi, name, data_length, hop_length, teta)
+    diff = print_replace(mat_audio_mdfy, matrix_midi, name, data_duration_in_s, hop_length, teta)
     return err, diff
 
 

@@ -31,7 +31,7 @@ def dims_oracle(nb_values, s_tab):
     return s_tab, dim
 
 def parse_signal(pre_data):
-    audio, rate, data_size, data_length = dc.get_data(pre_data)
+    audio, rate, data_size, data_duration_in_s = dc.get_data(pre_data)
     audio_data = []
     for i in range(NB_SILENCE):
         audio_data.append(0)
@@ -53,7 +53,7 @@ def parse_signal(pre_data):
     parsed_signal.set_descriptors(input_data)
     parsed_signal.set_length(len(input_data))
     print("data_size", data_size)
-    print("data_length", data_length)
+    print("data_duration_in_s", data_duration_in_s)
     print("parsed_signal.length", parsed_signal.length)
     return parsed_signal, dim
 
@@ -89,10 +89,9 @@ def compute_data_signal(cdata):
         new_descriptors = class_object.Descriptors()
         new_descriptors.init(stab_i_concat, stab_i_mean)
         new_duration = int((HOP_LENGTH)/HOP_LENGTH)
-
         new_rep.init(new_signal, new_label, new_pitch, new_descriptors, new_duration, new_date)
         new_obj = class_object.Object()
-        new_obj.update(new_signal, new_rep.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
+        new_obj.update(new_signal, new_rep.extNotesRep[0].note.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
         obj_tab.append(new_obj)
         new_date += new_duration
     return obj_tab
@@ -161,6 +160,13 @@ def parse_midi(pre_data):
             velocity.append(parent_element[i].volume.velocity)
             dat = int(parent_element[i].offset*12)
             date.append(dat)
+
+            if i < len(y) - 1 and int(parent_element[i + 1].offset*12) > dat + dur: # modelisation of silence
+                pitch.append(0)
+                duration.append(int((parent_element[i + 1].offset*12) - (dat + dur)))
+                descriptors.append(([[[1,2,3]]],[[[1,2,3]]]))
+                velocity.append(0)
+                date.append(dat + dur)
     
     elements = Elements()
     elements.set_pitch(pitch)
@@ -266,7 +272,7 @@ def compute_data_symbol(cdata):
         new_rep = class_object.ObjRep()
         new_rep.init(new_signal, new_label, new_pitch, new_descriptors, duration[i], new_date)
         new_obj = class_object.Object()
-        new_obj.update( new_signal, new_rep.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
+        new_obj.update( new_signal, new_rep.extNotesRep[0].note.label, new_pitch, new_descriptors, new_duration, new_date, new_rep)
         obj_tab.append(new_obj)
         new_date += new_duration
     return obj_tab

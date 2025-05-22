@@ -51,11 +51,11 @@ import matplotlib.pyplot as plt
 def main(char_ex, result_path=prm.PATH_RESULT):
     """ Main loop for the cognitive algorithm using the MSO and a string describing the audio."""
     # initialisation of the structures
-    data_length = len(char_ex)
+    data_duration_in_s = len(char_ex)
     level_max = -1
     tab_f_oracle = []
     oracles = [level_max, tab_f_oracle]
-    fun_segmentation(oracles, char_ex, data_length)
+    fun_segmentation(oracles, char_ex, data_duration_in_s)
     new_fd = []
 
     # printing the results in the shell
@@ -80,8 +80,8 @@ def main(char_ex, result_path=prm.PATH_RESULT):
     if prm.TO_SAVE_FINAL:
         if not os.path.exists(result_path):
             os.makedirs(result_path)
-        final_save_one4all(oracles, data_length, result_path)
-        final_save_all4one(oracles, data_length, result_path)
+        final_save_one4all(oracles, data_duration_in_s, result_path)
+        final_save_all4one(oracles, data_duration_in_s, result_path)
 
     if prm.COMPUTE_HYPOTHESIS:
         hs.phases_print()

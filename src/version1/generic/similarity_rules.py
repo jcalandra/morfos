@@ -73,10 +73,10 @@ def rules_parametrization(f_oracle, matrix, actual_char, actual_char_ind, link, 
         k = len(f_oracle.data) - len(concat_obj) - 1
         f_oracle.add_state(input_data[i])
         actual_char = f_oracle.data[k + i + 1]
-        data_length = len(formal_diagram[0])
-        fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, k + i + 1, oracles, level)
+        data_duration_in_s = len(formal_diagram[0])
+        fd_mso.formal_diagram_update(formal_diagram, data_duration_in_s, actual_char, k + i + 1, oracles, level)
         oracles[1][level][5] = fd_mso.print_formal_diagram_update(
-            formal_diagram_graph, level, formal_diagram, data_length)
+            formal_diagram_graph, level, formal_diagram, data_duration_in_s)
         formal_diagram_graph = oracles[1][level][5]
 
     return test_1, test_2, test_3, test_4, test_5, test_6a, test_6b, test_7a, test_7b, test_8a, test_8b, \

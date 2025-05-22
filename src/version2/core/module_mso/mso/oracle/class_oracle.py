@@ -451,7 +451,7 @@ class FO(FactorOracle):
         self.rsfx.append([])
         self.trn.append([])
         self.lrs.append(0)
-        new_symbol = ms_oracle.levels[level].actual_obj.label
+        new_symbol = ms_oracle.levels[level].actual_obj.extNotes[0].note.label
         self.data.append(new_symbol)
         self.objects.append(ms_oracle.levels[level].actual_obj)
 
@@ -584,9 +584,9 @@ class MO(FactorOracle):
         self.lrs.append(0)
 
         if level == 0:
-            new_data_all = ms_oracle.levels[level].objects[self.n_states - 1]
+            new_data_all = ms_oracle.levels[level].voices[0].objects[self.n_states - 1]
         else:
-            new_data_all = ms_oracle.levels[level - 1].concat_obj
+            new_data_all = ms_oracle.levels[level - 1].voices[0].concat_obj
 
         # Initialisation des coûts
         cost_init = 0
@@ -614,28 +614,31 @@ class MO(FactorOracle):
         if prm.processing == "signal" or prm.processing == "vectors":
             similarity_fun = csc.compute_signal_similarity
             similarity_fun_rep = csc.compute_signal_similarity_rep
-            new_data = new_data_all.descriptors.mean_descriptors
+            if level == 0:
+                new_data = new_data_all.extNotes[0].note.descriptors.mean_descriptors
+            else:
+                new_data = new_data_all.extConcatNote.concatNote.descriptors.mean_descriptors
         elif prm.processing == "midi":
             similarity_fun = csc.compute_midi_similarity
             similarity_fun_rep = csc.compute_midi_similarity_rep
             if level == 0:
-                new_data = new_data_all.pitch
+                new_data = new_data_all.extNotes[0].note.pitch
             else:
-                new_data = new_data_all.concat_pitches
+                new_data = new_data_all.extConcatNote.concatNote.concat_pitches
         elif prm.processing == "symbol":
             similarity_fun = csc.compute_symbol_similarity
             similarity_fun_rep = csc.compute_symbol_similarity_rep
             if level == 0:
-                new_data = new_data_all.label
+                new_data = new_data_all.extNotes[0].note.label
             else:
-                new_data = new_data_all.concat_labels
+                new_data = new_data_all.extConcatNote.concatNote.concat_labels
         else:
             similarity_fun = csc.compute_symbol_similarity
             similarity_fun_rep = csc.compute_symbol_similarity_rep
             if level == 0:
-                new_data = new_data_all.label
+                new_data = new_data_all.extNotes[0].note.label
             else:
-                new_data = new_data_all.concat_labels
+                new_data = new_data_all.extConcatNote.concatNote.concat_labels
 
         # Experiment with pointer-based
         audible_threshold = prm.AUDIBLE_THRESHOLD
@@ -656,34 +659,6 @@ class MO(FactorOracle):
         else:
             suffix_candidate = 0
 
-
-        # Si le son est inférieur à un certain seuil d'audibilité, alors le suffixe est le premier matériau qui est
-        # un silence
-        if k is not None and ms_oracle.levels[level].volume is not None \
-                and ms_oracle.levels[level].volume[i-1] < audible_threshold and prm.NB_SILENCE > 0:
-            if method == 'inc':
-                suffix_candidate = 1
-            elif method == 'complete':
-                suffix_candidate.append((1, 1))
-            else:
-                suffix_candidate = 1
-
-            self.concat_objects.append(new_data_all)
-            self.rsfx[self.sfx[i]].append(i)
-
-            self.avg_lrs.append(self.avg_lrs[i - 1] * ((i - 1.0) / (self.n_states - 1.0)) +
-                                self.lrs[i] * (1.0 / (self.n_states - 1.0)))
-            cost_last_update += 1
-
-            if prm.COMPUTE_HYPOTHESIS:
-                hypothesis.bit_class_add(level, bit_class)
-            if prm.COMPUTE_COSTS:
-                if card_o == 0:
-                    costs.cost_classification_sim = 0
-                else:
-                    costs.cost_classification_sim = cost_clas_sim
-
-            return 1
 
         # Recherche du suffixe adéquat et calcul des distances
         if method == 'inc' and suffix_candidate == 0 or method == 'complete' and suffix_candidate == []:
@@ -727,8 +702,7 @@ class MO(FactorOracle):
                         else:
                             suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
                         # pour la méthode 'inc', on s'arrête au premier suffixe dont un lien a été trouvé
-                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                                and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE > 0:
+                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH and prm.NB_SILENCE > 0:
                             k = None
                         break
                     elif method == 'complete':
@@ -739,16 +713,14 @@ class MO(FactorOracle):
                     else:  # même comportement que pour 'inc'
                         cost_sfx_candidate += 1
                         suffix_candidate = self.trn[k][I[np.argmax(dvec_sc)]]
-                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                                and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
+                        if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH and prm.NB_SILENCE  > 0:
                             k = None
                         break
 
                 if method == 'complete':  # Pour la methode 'complete', on parcourt tous les suffixes jusque k = None
                     cost_complete += 1
                     k = self.sfx[k]
-            if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                    and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
+            if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH and prm.NB_SILENCE  > 0:
                 k = None
 
 
@@ -758,14 +730,14 @@ class MO(FactorOracle):
                 # Ici, k is None, donc on compare à tous les représentants des matériaux pour être sûr qu'il n'y en a pas un
                 # meilleur que celui trouvé ou que rien du tout.
                 if level > 0:
-                    compare_tab_rep = ms_oracle.levels[level - 1].materials.history
-                    mso = ms_oracle.levels[level - 1]
+                    compare_tab_rep = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.history
+                    mso = ms_oracle.levels[level - 1].voices[0]
                 else:
                     compare_tab_rep = ms_oracle.matrix.history
-                    mso = ms_oracle.levels[level]
+                    mso = ms_oracle.levels[level].voices[0]
 
                 if level > 1:
-                    matrix = ms_oracle.levels[level - 2].materials.sim_matrix
+                    matrix = ms_oracle.levels[level - 2].voices[0].VoiceMaterials.sim_matrix
                 else:
                     matrix = ms_oracle.matrix.sim_matrix
 
@@ -787,7 +759,7 @@ class MO(FactorOracle):
                     comp_rep_sc = []
                     for j in range(len(J)):
                         comp_rep_sc.append(comp_rep[J[j]])
-                    if len(J) != 0 and ms_oracle.levels[level].volume[i-1] > audible_threshold:
+                    if len(J) != 0 :
                         if method == 'inc':
                             cost_sfx_candidate_rep += 1
                             # S'il y en a exactement une seule, alors le suffixe est celle-ci
@@ -846,8 +818,7 @@ class MO(FactorOracle):
                                             suffix_candidate = actual_compared
                                         break
 
-                if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH \
-                        and ms_oracle.levels[level].volume[i-1] > audible_threshold and prm.NB_SILENCE  > 0:
+                if suffix_candidate <= prm.NB_SILENCE/prm.HOP_LENGTH and prm.NB_SILENCE  > 0:
                     k = None
         # Ajout du suffixe dans le poll adéquat ou création du poll et maj des autres structures
         if method == 'complete':  # Si on a un nouveau matériau
@@ -866,24 +837,23 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                    new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
+                    new_pitches = ms_oracle.levels[level].concat_obj.extConcatNote.concatNote.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
-                    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
-                    duration = ms_oracle.levels[level - 1].concat_obj.durations
-                    date = ms_oracle.levels[level - 1].concat_obj.date
+                    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.extConcatNote.concatNote.descriptors)
+                    duration = ms_oracle.levels[level - 1].concat_obj.extConcatNote.durations
+                    date = ms_oracle.levels[level - 1].concat_obj.extConcatNote.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.levels[0].objects[i-1].concat_signal, new_char, new_pitches, ms_oracle.levels[0].objects[i-1].descriptors, duration, date)
+                    new_rep.init(ms_oracle.levels[0].voices[0].objects[i-1].extNote[0].note.audio, new_char, new_pitches, ms_oracle.levels[0].voices[0].objects[i-1].extNotes[0].note.descriptors, duration, date)
 
                     concat_obj = class_concatObj.ConcatObj()
-                    concat_obj.init(ms_oracle.levels[level].actual_obj)
-                    descriptors = ms_oracle.levels[level].actual_obj.descriptors
+                    concat_obj.init(ms_oracle.levels[level].voices[0].actual_obj)
+                    descriptors = ms_oracle.levels[level].voices[0].actual_obj.extNotes[0].note.descriptors
                     ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
                     ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
                 if level >= 1:
                     new_char = chr(prm.LETTER_DIFF + self.data[-1])
-                    #ms_oracle.levels[level - 1].materials.sim_matrix.labels += new_char
-                    ms_oracle.levels[level - 1].materials.sim_matrix.update(new_char, sim_tab)
+                    ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix.update(new_char, sim_tab)
 
             else:  # Si on a un matériau déjà existant
                 # trie avec le 2e élément de chaque couple par ordre décroissant
@@ -917,23 +887,23 @@ class MO(FactorOracle):
                     sim_tab.append(1)
                     #new_char = chr(ms_oracle.levels[level].actual_char + prm.LETTER_DIFF)
                     new_char = chr(prm.LETTER_DIFF + self.data[-1] + 1)
-                    new_pitches = ms_oracle.levels[level].concat_obj.concat_pitches
+                    new_pitches = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_pitches
                     actual_object_descriptor = class_object.Descriptors()
-                    actual_object_descriptor.copy(ms_oracle.levels[level - 1].concat_obj.descriptors)
-                    duration = ms_oracle.levels[level - 1].concat_obj.durations
-                    date = ms_oracle.levels[level - 1].concat_obj.date
+                    actual_object_descriptor.copy(ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.concatNote.descriptors)
+                    duration = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.durations
+                    date = ms_oracle.levels[level - 1].voices[0].concat_obj.extConcatNote.date
 
                     new_rep = class_object.ObjRep()
-                    new_rep.init(ms_oracle.levels[0].objects[i-1].signal, new_char, new_pitches, ms_oracle.levels[0].objects[i-1].descriptors, duration, date)
+                    new_rep.init(ms_oracle.levels[0].voices[0].objects[i-1].extNotes[0].note.audio, new_char, new_pitches, ms_oracle.levels[0].voices[0].objects[i-1].extNotes[0].note.descriptors, duration, date)
                     
                     concat_obj = class_concatObj.ConcatObj()
-                    concat_obj.init(ms_oracle.levels[0].objects[i - 1])
-                    descriptors = ms_oracle.levels[0].objects[i - 1].descriptors
+                    concat_obj.init(ms_oracle.levels[0].voices[0].objects[i - 1])
+                    descriptors = ms_oracle.levels[0].voices[0].objects[i - 1].extNotes[0].note.descriptors
                     ms_oracle.matrix.sim_matrix.update(new_char, sim_tab)
                     ms_oracle.matrix.update_history(new_rep, concat_obj, descriptors)
                 if level >= 1:
                     new_char = chr(prm.LETTER_DIFF + self.data[-1])
-                    ms_oracle.levels[level - 1].materials.sim_matrix.update(new_char, sim_tab)
+                    ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix.update(new_char, sim_tab)
 
             else:
                 bit_class = 1

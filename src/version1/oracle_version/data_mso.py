@@ -226,7 +226,7 @@ def modify_matrix(mtx, prev_mat, matrix, actual_max, temp_max, lim_ind):
 def prep_data(audio_path):
     """ Prepare the signal from continue to discrete values and add silence at the beginning."""
     here_time = time.time()
-    data, rate, data_size, data_length = dc.get_data(audio_path)
+    data, rate, data_size, data_duration_in_s = dc.get_data(audio_path)
     temps_data = time.time() - here_time
     if prm.verbose == 1:
         print("Temps data : %s secondes ---" % temps_data)
@@ -235,17 +235,17 @@ def prep_data(audio_path):
     a = np.zeros(nb_points)
     data = np.concatenate((a, data))
     obj_s.data_init(data)
-    return data, rate, data_size, data_length, nb_points
+    return data, rate, data_size, data_duration_in_s, nb_points
 
 
-def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
+def matrix_init(data_duration_in_s, nb_points=0, rate=1, data_size=0):
     """ Initialize the structure corresponding to the formal diagram of level 0."""
     # initialise matrix of each hop coordinates
 
     if prm.processing == 'signal':
         nb_sil_frames = nb_points / hop_length
         nb_hop = int(data_size / hop_length + nb_sil_frames) + 1
-        data_length = data_length + nb_points / rate
+        data_duration_in_s = data_duration_in_s + nb_points / rate
         if data_size % hop_length < init:
             nb_hop = int(data_size / hop_length)
         if prm.verbose == 1:
@@ -253,7 +253,7 @@ def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
 
     if prm.processing == 'vectors':
         nb_sil_frames = nb_points
-        nb_hop = data_length + nb_sil_frames
+        nb_hop = data_duration_in_s + nb_sil_frames
 
     new_mat = np.ones((1, nb_hop, 3), np.uint8)
     for i in range(nb_hop):
@@ -261,7 +261,7 @@ def matrix_init(data_length, nb_points=0, rate=1, data_size=0):
     mtx = new_mat.copy()
     obj_s.first_occ_add_level()
     obj_s.first_occ_add_obj(0, 0)
-    return mtx, nb_hop, data_length
+    return mtx, nb_hop, data_duration_in_s
 
 
 def algo_cog(path, oracles, end_mk=0):
@@ -281,7 +281,7 @@ def algo_cog(path, oracles, end_mk=0):
 
     # numerisation
     if prm.processing == 'signal':
-        data, rate, data_size, data_length, nb_points = prep_data(path)
+        data, rate, data_size, data_duration_in_s, nb_points = prep_data(path)
         if prm.COMPUTE_COSTS == 1:
             gamma_t += cost_numerisation
     elif prm.processing == 'vectors':
@@ -289,16 +289,16 @@ def algo_cog(path, oracles, end_mk=0):
         data = np.load(f"{path}", allow_pickle=True)
         if prm.to_transpose:
             data = data.T
-        data_length = len(data)
+        data_duration_in_s = len(data)
         nb_points = 0
         rate = 1
         data_size = 0
     else:
-        data, rate, data_size, data_length, nb_points = prep_data(path)
+        data, rate, data_size, data_duration_in_s, nb_points = prep_data(path)
         if prm.COMPUTE_COSTS == 1:
             gamma_t += cost_numerisation
 
-    mtx, nb_hop, data_length = matrix_init(data_length, nb_points, rate, data_size)
+    mtx, nb_hop, data_duration_in_s = matrix_init(data_duration_in_s, nb_points, rate, data_size)
 
     # descriptors
     if prm.verbose == 1:
@@ -309,7 +309,7 @@ def algo_cog(path, oracles, end_mk=0):
         if prm.COMPUTE_COSTS == 1:
             gamma_t += cost_desc_computation
     elif prm.processing == 'vectors':
-        v_tab, s_tab = [(i % 4 + 0.9)/4 for i in range(data_length)], data
+        v_tab, s_tab = [(i % 4 + 0.9)/4 for i in range(data_duration_in_s)], data
         nb_values = len(s_tab[0])
     else:
         nb_values = prm.NB_VALUES
@@ -772,4 +772,4 @@ def algo_cog(path, oracles, end_mk=0):
         print("name : ", name)
         s_mso.synthesis(oracle_t, nb_hop, data, hop_length, rate, name)
 
-    return mtx, data_length, data_size, distance, algocog_time
+    return mtx, data_duration_in_s, data_size, distance, algocog_time

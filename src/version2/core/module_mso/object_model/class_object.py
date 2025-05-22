@@ -1,172 +1,240 @@
 borders = 3
 
-
 class Object:
     def __init__(self):
         self.id = None
-        self.signal = []
-        self.label = ""
-        self.pitch = []
-        self.descriptors = Descriptors()
-        self.duration = 0
-        self.date = 0
+        self.extNotes = []
         self.transfo_functions = TransFunctions()
         self.obj_rep = ObjRep()
 
-    def get_id(self, ind):
+# setters
+    def set_id(self, ind):
         self.id = ind
+    def set_extNotes(self, extNotes):
+        self.extNotes = extNotes
+    def set_transfo_functions(self, transfo_functions):
+        self.transfo_functions = transfo_functions
+    def set_obj_rep(self, obj_rep):
+        self.obj_rep.copy(obj_rep)
 
-    def get_signal(self, signal):
-        self.signal = signal
-
-    def get_label(self, label):
-        self.label = label
-
-    def get_pitch(self, pitch):
-        self.pitch = pitch
-
-    def get_descriptors(self, descriptors):
-        self.descriptors.copy(descriptors)
-
-    def get_duration(self, duration):
-        self.duration = duration
-
-    def get_date(self, date):
-        self.date = date
-
-    def get_rep(self, rep):
-        self.obj_rep.copy(rep)
-        # rep.update(self.signal, self.label, self.descriptors)
-
+# getters
+    def get_id(self):
+        return self.id
+    def get_extNotes(self):
+        return self.extNotes
+    def get_transfo_functions(self):
+        return self.transfo_functions
+    def get_obj_rep(self):
+        return self.obj_rep
+    
+# others
     def get_similarity(self):
         return
 
-    def update(self, signal, label, pitch, descriptors,  duration, date, rep):
-        self.get_signal(signal)
-        self.get_label(label)
-        self.get_pitch(pitch)
-        self.get_descriptors(descriptors)
-        self.get_duration(duration)
-        self.get_date(date)
-        self.transfo_functions.get_functions()
-        self.get_rep(rep)
-
     def copy(self, obj):
         self.id = obj.id
-        self.signal = obj.signal
-        self.label = obj.label
-        self.pitch = obj.pitch
-        self.descriptors.copy(obj.descriptors)
-        self.duration = obj.duration
-        self.date = obj.date
+        self.extNotes.copy(obj.extNotes)
         self.transfo_functions = obj.transfo_functions
         self.obj_rep.copy(obj.rep)
 
+    def update(self, signal, label, pitch, descriptors,  duration, date, rep):
+        extNote = ExtendedNote()
+        extNote.update(signal, label, pitch, descriptors, 0, date, duration)
+        extNotes = [extNote]
+        self.set_id(0)
+        self.set_extNotes(extNotes)
+        self.transfo_functions.get_functions()
+        self.set_obj_rep(rep)
 
+# printing
+    def print(self):
+        print("id", self.id)
+        print("extNotes")
+        for extNote in self.extNotes:
+            extNote.print()
+        print("transfo_functions", self.transfo_functions)
+        print("obj_rep", self.obj_rep)
+
+   
 # TODO: @jcalandra 09/09/2021 trajectoire moyenne
 #  Définir la "trajectoire audio" moyenne à partir de la DTW
 def mean_trajectory(signal_rep, signal):
     return
 
+class ExtendedNote:
+    def __init__(self):
+        self.note = Note()
+        self.date = 0
+        self.duration = 0
+
+# setters
+    def set_note(self, note):
+        self.note = note
+    def set_date(self, date):
+        self.date = date
+    def set_duration(self, duration):
+        self.duration = duration
+# getters
+    def get_note(self):
+        return self.note
+    def get_date(self):
+        return self.date
+    def get_duration(self):
+        return self.duration
+    
+# others
+    def copy(self, extNote):
+        self.note.copy(extNote.note)
+        self.date = extNote.date
+        self.duration = extNote.duration
+
+    def update(self, signal, label, pitch, descriptors, velocity, date, duration):
+        self.note.update(signal, label, pitch, descriptors, velocity)
+        self.date = date
+        self.duration = duration
+
+# printing
+    def print(self):   
+        self.note.print()
+        print("date", self.date)
+        print("duration", self.duration)
+
+class Note:
+
+    def __init__(self):
+        self.audio = []
+        self.label = ""
+        self.pitch = 0
+        self.descriptors = Descriptors()
+        self.velocity = 0
+
+# setters
+    def set_audio(self, audio):
+        self.audio = audio
+    def set_label(self, label):
+        self.label = label
+    def set_pitch(self, pitch): 
+        self.pitch = pitch
+    def set_descriptors(self, descriptors):
+        self.descriptors.copy(descriptors)
+    def set_velocity(self, velocity):
+        self.velocity = velocity
+# getters
+    def get_audio(self):
+        return self.audio
+    def get_label(self):
+        return self.label
+    def get_pitch(self):
+        return self.pitch
+    def get_descriptors(self):
+        return self.descriptors
+    def get_velocity(self):
+        return self.velocity
+
+#others
+    def copy(self, note):
+        self.audio = note.audio
+        self.label = note.label
+        self.pitch = note.pitch
+        self.descriptors.copy(note.descriptors)
+        self.velocity = note.velocity
+
+    def update(self, signal, label, pitch, descriptors, velocity):
+        self.audio = signal
+        self.label = label
+        self.pitch = pitch
+        self.descriptors.copy(descriptors)
+        self.velocity = velocity
+
+# printing
+    def print(self):
+        print("audio", self.audio)
+        print("label", self.label)
+        print("pitch", self.pitch)
+        print("descriptors", self.descriptors)
+        print("velocity", self.velocity)
+        
+## OBJ REP
 
 class ObjRep:
     def __init__(self):
-        self.signal = []
-        self.label = ""
-        self.pitch = []
-        self.descriptors = Descriptors()
-        self.duration = 0
-        self.first_date = 0
+        self.extNotesRep = [] #tab of ExtendedNoteRep()
         self.nb = 0
-
-    def init_signal(self, signal):
-        self.signal.extend(signal)
-
-    def init_label(self, label):
-        self.label += label
-
-    def init_pitch(self, pitch):
-        self.pitch.extend(pitch)
-
-    def init_descriptors(self, descriptors):
-        self.descriptors.copy(descriptors)
-
-    def init_duration(self, duration):
-        self.duration = duration
-
-    def init_first_date(self, date):
-        self.first_date = date
 
     def init_nb(self):
         self.nb = 1
 
     def init(self, signal, label, pitch, descriptors, duration, date):
-        self.init_signal(signal)
-        self.init_label(label)
-        self.init_pitch(pitch)
-        self.init_descriptors(descriptors)
-        self.init_duration(duration)
-        self.init_first_date(date)
+        extnote_rep = ExtendedNoteRep()
+        extnote_rep.init(signal, label, pitch, descriptors, 0, date, duration)
+        self.extNotesRep.append(extnote_rep)
         self.init_nb()
-
-    # TODO: jcalandra 20/09/2021 update function obj_rep.update_signal()
-    def update_signal(self, signal):
-        self.signal = signal
-        # mean_trajectory(self.signal, signal)
-
-    def update_label(self, label):
-        self.label = label
-
-    def update_pitch(self, pitch):
-        self.pitch = pitch
-
-    def update_concat_descriptors(self, concat_descriptors):
-        for i in range(self.descriptors.nb_descriptors):
-            self.descriptors.concat_descriptors[i].extend(concat_descriptors[i])
-
-    def update_mean_descriptors(self, mean_descriptors):
-        new_mean_descriptor = []
-        for i in range(self.descriptors.nb_descriptors):
-            new_mean_descriptor.append([])
-            new_mean_descriptor[i].append([0 for _ in range(len(mean_descriptors[i][0]))])
-            for j in range(len(mean_descriptors[i])):
-                    for k in range(len(mean_descriptors[i][j])):
-                        if self.nb <= borders:
-                            self.descriptors.mean_descriptors[i][0][k] = mean_descriptors[i][j][k]/len(mean_descriptors[0])
-                        else:
-                            self.descriptors.mean_descriptors[i][0][k] += mean_descriptors[i][j][k]/(len(mean_descriptors[0])*2)
-                        
-    def update_descriptors(self, descriptors):
-        self.update_concat_descriptors(descriptors.concat_descriptors)
-        self.update_mean_descriptors(descriptors.mean_descriptors)
-                        
-    def update_duration(self, duration):
-        self.duration = (self.nb * self.duration + duration)/(self.nb + 1)
-
-    def update_first_date(self, date):        
-        pass
 
     def update_nb(self):
         self.nb += 1
 
     def update(self, signal, label, pitch, descriptors, duration, date):
-        self.update_signal(signal)
-        self.update_label(label)
-        self.update_pitch(pitch)
-        self.update_descriptors(descriptors)
-        self.update_duration(duration)
-        self.update_first_date(date)
+        extendednoterep = ExtendedNoteRep()
+        extendednoterep.init(signal, label, pitch, descriptors, 0, date, duration)
+        self.extNotesRep.append(extendednoterep)
         self.update_nb()
 
     def copy(self, rep):
-        self.signal = rep.signal
-        self.label = rep.label
-        self.pitch = rep.pitch
-        self.descriptors.copy(rep.descriptors)
-        self.duration = rep.duration
-        self.first_date = rep.first_date
+        self.extNotesRep = rep.extNotesRep
         self.nb = rep.nb
 
+
+class ExtendedNoteRep:
+    def __init__(self):
+        self.note = Note()
+        self.first_date = 0
+        self.mean_duration = 0
+
+    def init(self, signal, label, pitch, descriptors, velocity, first_date, mean_duration):
+        self.note.update(signal, label, pitch, descriptors, velocity)
+        self.first_date = first_date
+        self.mean_duration = mean_duration
+
+# setters
+    def set_notes(self, note):
+        self.note.copy(note)
+    def set_firs_date(self, first_date):
+        self.first_date = first_date
+    def set_mean_duration(self, mean_duration):
+        self.mean_duration = mean_duration
+# getters
+    def get_notes(self):
+        return self.note
+    def get_first_date(self):
+        return self.first_date
+    def get_mean_duration(self):
+        return self.mean_duration
+    
+# others
+    def copy(self, extNotesRep):
+        self.note.copy(extNotesRep.note)
+        self.first_date = extNotesRep.first_date
+        self.mean_duration = extNotesRep.mean_duration
+
+    def update_mean_duration(self, mean_duration):
+        self.mean_duration = (super.nb * self.mean_duration + mean_duration)/(super.nb + 1)
+
+    def update(self, signal, label, pitch, descriptors, velocity, first_date, mean_duration):
+        note = Note()
+        self.note.update(signal, label, pitch, descriptors, velocity)
+        self.notes.append(note)
+        self.first_date = first_date
+        self.mean_duration = mean_duration
+
+# printing
+    def print(self):   
+        print("notes")
+        for note in self.notes:
+            note.print()
+        print("first_date", self.first_date)
+        print("mean_duration", self.mean_duration)
+      
+## DESCRIPTORS
 
 class Descriptors:
     def __init__(self):
@@ -240,4 +308,3 @@ class TransFunctions:
     #  MAJ les fonctions pour la classe des fonctions de transformation.
     def get_functions(self):
         return
-

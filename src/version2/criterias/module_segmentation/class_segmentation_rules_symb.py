@@ -57,14 +57,14 @@ def rule_1_similarity_word(ms_oracle, level):
     if prm.processing == 'signal'and prm.NB_SILENCE > 0 and \
             level == 0 and actual_char == 1:
         return 1'''
-    concat_obj_lab = ms_oracle.levels[level].concat_obj.concat_labels
-    actual_char = ms_oracle.levels[level].actual_char
-    history_next = ms_oracle.levels[level].materials.history
+    concat_obj_lab = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    actual_char = ms_oracle.levels[level].voices[0].actual_char
+    history_next = ms_oracle.levels[level].voices[0].VoiceMaterials.history
 
     if len(concat_obj_lab) >= 1 and chr(actual_char + letter_diff) == concat_obj_lab[0]:
         return 1
     for element in history_next:
-        if chr(actual_char + letter_diff) == element[1].concat_labels[0]:
+        if chr(actual_char + letter_diff) == element[1].extConcatNote.concatNote.concat_labels[0]:
             return 1
     return 0
 
@@ -74,13 +74,13 @@ def rule_2_existing_object(ms_oracle, level):
     """ This function compare the actual concatenated object concat_obj of unstructured characters of the actual level
     with objects of the upper level stocked in the tab history_next[]. If the strings are similar, returns 1. Otherwise
     the function returns 0."""
-    history_next = ms_oracle.levels[level].materials.history
-    concat_obj_lab = ms_oracle.levels[level].concat_obj.concat_labels
-    actual_char = ms_oracle.levels[level].actual_char
+    history_next = ms_oracle.levels[level].voices[0].VoiceMaterials.history
+    concat_obj_lab = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    actual_char = ms_oracle.levels[level].voices[0].actual_char
     if level == 0:
         matrix = ms_oracle.matrix.sim_matrix
     else:
-        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+        matrix = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix
     if ALIGNEMENT_rule3:
         for i in range(len(history_next)):
             if class_similarity_computation.compute_symbol_similarity_rep(history_next[i][1], concat_obj_lab, matrix)[0] and  \
@@ -89,7 +89,7 @@ def rule_2_existing_object(ms_oracle, level):
                 return 1
     else:
         for i in range(len(history_next)):
-            if history_next[i][1].concat_labels == concat_obj_lab:
+            if history_next[i][1].extConcatNote.concatNote.concat_labels == concat_obj_lab:
                 return 1
     return 0
 
@@ -102,19 +102,19 @@ def rule_3_recomputed_object(ms_oracle, level):
     algorithm goes back to the similar state in the past, structure and recompute the oracles and other structures."""
     # allocation of structures of actual level
     global bool_past
-    actual_char_ind = ms_oracle.levels[level].actual_char_ind
-    f_oracle = ms_oracle.levels[level].oracle
-    link = ms_oracle.levels[level].link
-    history_next = ms_oracle.levels[level].materials.history
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    k = ms_oracle.levels[level].shift
+    actual_char_ind = ms_oracle.levels[level].voices[0].actual_char_ind
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
+    link = ms_oracle.levels[level].voices[0].link
+    history_next = ms_oracle.levels[level].voices[0].VoiceMaterials.history
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    k = ms_oracle.levels[level].voices[0].shift
     nb_elements = len(concat_obj)
     sub_suffix = ""
 
     if level == 0:
         matrix = ms_oracle.matrix.sim_matrix
     else:
-        matrix = ms_oracle.levels[level - 1].materials.sim_matrix
+        matrix = ms_oracle.levels[level - 1].voices[0].VoiceMaterials.sim_matrix
 
     # if there is only one character in concat_obj, that is already seen, it's rule 1
     if nb_elements <= 1:
@@ -201,8 +201,8 @@ def rule_3_recomputed_object(ms_oracle, level):
     if seg in ms_oracle.segmentations:
         return 0
     ms_oracle.reset_levels()
-    ms_oracle.update_segmentation(seg)
-    obj_tab = ms_oracle.levels[0].objects
+    ms_oracle.voices[0].update_segmentation(seg)
+    obj_tab = ms_oracle.levels[0].voices[0].objects
     class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
     ms_oracle.update_out(1)
 
@@ -212,9 +212,9 @@ def rule_3_recomputed_object(ms_oracle, level):
 def rule_9_prerepetition_seg(ms_oracle, level):
     """ If there is repetition of the actual object with it's following object, segment before the actual object"""
     global bool_past
-    f_oracle = ms_oracle.levels[level].oracle
-    actual_char_ind = ms_oracle.levels[level].actual_char_ind
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
+    actual_char_ind = ms_oracle.levels[level].voices[0].actual_char_ind
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
     ind = actual_char_ind - 1
     seg = [level, ind]
     if len(f_oracle.data) > 3 and \
@@ -225,8 +225,8 @@ def rule_9_prerepetition_seg(ms_oracle, level):
             f_oracle.data[actual_char_ind - 1] == f_oracle.data[actual_char_ind]:
 
         ms_oracle.reset_levels()
-        ms_oracle.update_segmentation(seg)
-        obj_tab = ms_oracle.levels[0].objects
+        ms_oracle.voices[0].update_segmentation(seg)
+        obj_tab = ms_oracle.levels[0].voices[0].objects
         class_cog_algo.fun_segmentation(ms_oracle, obj_tab)
         ms_oracle.update_out(1)
         return 1
@@ -241,10 +241,10 @@ def validated_hypothesis(ms_oracle, level):
     the already seen objects in the past that begins with the same concat_obj. If the strings are equals, hypothesis
      from the past are validated and there should be no structuration right now because this is middle of the creation
      of an already known object of upper level. The function returns 1 then, 0 otherwise."""
-    f_oracle = ms_oracle.levels[level].oracle
-    link = ms_oracle.levels[level].link
-    actual_char = ms_oracle.levels[level].actual_char
-    actual_char_ind = ms_oracle.levels[level].actual_char_ind
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
+    link = ms_oracle.levels[level].voices[0].link
+    actual_char = ms_oracle.levels[level].voices[0].actual_char
+    actual_char_ind = ms_oracle.levels[level].voices[0].actual_char_ind
     if len(f_oracle.data) > 2 and f_oracle.sfx[actual_char_ind - 1] != 0 \
             and f_oracle.data[f_oracle.sfx[actual_char_ind - 1] + 1] == actual_char \
             and len(link) > f_oracle.sfx[actual_char_ind - 1] + 1 \
@@ -264,7 +264,7 @@ def rule_5_regathering_after(ms_oracle, level):
     """ The function returns 1 if the length of the string corresponding to  the concatenated object that are not
     structured in the actual level is higher than one. It returns 0 if the length of the string is equal or less than
     one."""
-    if len(ms_oracle.levels[level].concat_obj.concat_labels) > 1:
+    if len(ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels) > 1:
         return 1
     return 0
 
@@ -279,7 +279,7 @@ def rule_5b_regathering_before():
 # RULE 6a (lower boundary) : |(a...b + a| < low_bound => (a...ba
 # RULE 6b (higher boundary) : |(a...b + c| > high_bound => (a...b)(c
 def rule_6a_low_bound(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
     low_bound=lower_bound_rule6
     if len(concat_obj) < low_bound:
         return 0
@@ -287,7 +287,7 @@ def rule_6a_low_bound(ms_oracle, level):
 
 
 def rule_6b_high_bound(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
     high_bound=higher_bound_rule6
     if len(concat_obj) >= high_bound:
         return 1
@@ -298,15 +298,15 @@ def rule_6b_high_bound(ms_oracle, level):
 # RULE 7a: |(a...b + a| < A/2 => (a...ba
 # RULE 7b: |(a...b + c| > A + A/2 => (a...b)(c
 def compute_length(ms_oracle, level):
-    f_oracle = ms_oracle.levels[level].oracle
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
     a = f_oracle
     # TODO: à implémenter
     return 2
 
 
 def rule_7a_mean_word_length_low(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    f_oracle = ms_oracle.levels[level].oracle
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
     length = compute_length(f_oracle)
     if len(concat_obj) < length/2:
         return 0
@@ -314,8 +314,8 @@ def rule_7a_mean_word_length_low(ms_oracle, level):
 
 
 def rule_7b_mean_word_length_high(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    f_oracle = ms_oracle.levels[level].oracle
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
     length = compute_length(f_oracle)
     if len(concat_obj) > (3*length)/2:
         return 1
@@ -323,9 +323,9 @@ def rule_7b_mean_word_length_high(ms_oracle, level):
 
 # (a + a => (aa
 def rule_8a_repetition_paradigm_noseg(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    f_oracle = ms_oracle.levels[level].oracle
-    actual_char_ind = ms_oracle.levels[level].actual_char_ind
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
+    actual_char_ind = ms_oracle.levels[level].voices[0].actual_char_ind
     if len(f_oracle.data) > 2 and len(concat_obj) > 0 and \
             f_oracle.data[actual_char_ind - 1] == f_oracle.data[actual_char_ind]:
         return 0
@@ -333,9 +333,9 @@ def rule_8a_repetition_paradigm_noseg(ms_oracle, level):
 
 # (aa + b => (aa)(b
 def rule_8b_repetition_paradigm_seg(ms_oracle, level):
-    concat_obj = ms_oracle.levels[level].concat_obj.concat_labels
-    f_oracle = ms_oracle.levels[level].oracle
-    actual_char_ind = ms_oracle.levels[level].actual_char_ind
+    concat_obj = ms_oracle.levels[level].voices[0].concat_obj.extConcatNote.concatNote.concat_labels
+    f_oracle = ms_oracle.levels[level].voices[0].oracle
+    actual_char_ind = ms_oracle.levels[level].voices[0].actual_char_ind
     if len(f_oracle.data) > 3 and len(concat_obj) > 1 and \
             f_oracle.data[actual_char_ind - 2] == f_oracle.data[actual_char_ind - 1] and \
             f_oracle.data[actual_char_ind - 1] != f_oracle.data[actual_char_ind]:
