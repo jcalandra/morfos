@@ -182,11 +182,11 @@ def _compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
 
 def compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):
     sim_value_sig = _compute_signal_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
-    #sim_value_symb = _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
+    sim_value_symb = _compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
     #sim_value_midi = _compute_midi_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind)
     #sim_value = (sim_value_sig + sim_value_symb + sim_value_midi)/3
-    #sim_value = (sim_value_sig + sim_value_symb)/2
-    sim_value = sim_value_sig
+    sim_value = (sim_value_sig + sim_value_symb)/2
+    #sim_value = sim_value_sig
     return sim_value
 
 def compute_symbol_similarity(ms_oracle, level, obj_compared_ind, actual_obj_ind):

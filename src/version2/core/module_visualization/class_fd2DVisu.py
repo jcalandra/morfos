@@ -108,7 +108,7 @@ def final_save_all4one(mso, path_result):
         f = plt.figure(figsize=[9,24])
         for level in range(mso.level_max + 1):
             formal_diagram = mso.levels[level].voices[0].VoiceFD.FormalDiagram.material_lines
-            len_formal_diagram = len(mso.levels[level].VoiceFD.FormalDiagram.material_lines)
+            len_formal_diagram = len(mso.levels[level].voices[0].VoiceFD.FormalDiagram.material_lines)
             plt.subplot(mso.level_max + 1, 1, level + 1)
             plt.title("Formal diagram of level " + str(level))
             if processing == 'symbols' or processing == 'vectors':

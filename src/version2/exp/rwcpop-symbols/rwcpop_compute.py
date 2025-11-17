@@ -6,7 +6,7 @@ test_path = rwcpp_est.project_root + '/../../data/rwcpop'
 result_path = rwcpp_est.project_root + '/../../results/exp_rwcpop/version2/fmes3_120bpm/test6/analysis/'
 
 def rwcpop_compute_fd_all():
-    for i in range(21,22):
+    for i in range(11,12):
         if i < 10:
             number = '0' + str(i)
         else:

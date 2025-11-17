@@ -61,8 +61,8 @@ def segmentation_test(ms_oracle, level, rules):
         bool = 1
     else:
         if prm.processing == "signal":
-            bool =  segmentation_str(ms_oracle, level, rules.symbRules) or \
-                    segmentation_audio(ms_oracle, level, rules.sigRules)
+            bool =  segmentation_str(ms_oracle, level, rules.symbRules) #or \
+                    #segmentation_audio(ms_oracle, level, rules.sigRules)
             #bool = segmentation_audio(ms_oracle, level, rules.sigRules)
 
         else:

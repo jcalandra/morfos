@@ -11,7 +11,7 @@ class  FD():
     
     def __init__(self, level):
         self.FormalDiagram = FormalDiagram()
-        self.FormalDiagramGraph = fd2D.FormalDiagramGraph(0, "FD Graph of level "+ str(level))
+        self.FormalDiagramGraph = fd2D.FormalDiagramGraph(level, "FD Graph of level "+ str(level))
 
     def print(self):
         self.FormalDiagram.print()

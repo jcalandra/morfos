@@ -1,12 +1,12 @@
 {
-   "NAME":"Geisslerlied",
+   "NAME":"Something_About_Us-midi",
    "FORMAT":".wav",
 
-   "PATH_SOUND":"/../../../data/Geisslerlied/",
-   "PATH_RESULT":"/../../../results/Geisslerlied/test2/",
+   "PATH_SOUND":"/../../../data/Something-About-Us/",
+   "PATH_RESULT":"/../../../results/Something-About-Us/midiwav/",
 
-   "teta":0.978,
-   "d_threshold":95,
+   "teta":0.98,
+   "d_threshold":998,
 
    "lvl0notcompute": 0,
    "POLYPHONY":0,
@@ -34,9 +34,9 @@
    "RULE_4":1,
    "RULE_5":0,
    "RULE_5b":0,
-   "RULE_6":1,
+   "RULE_6":0,
    "RULE_7":0,
-   "RULE_8":0,
+   "RULE_8":1,
    "RULE_9": 0,
 
    "RULE1_DISSIMILARITY":1,
@@ -65,8 +65,8 @@
 
    "GRAPH_COMPARISON":0,
 
-   "SR":44100,
-   "HOP_LENGTH":1024,
+   "SR":44800,
+   "HOP_LENGTH":2048,
 
    "PRECISION":4,
    "NB_NOTES":48,
@@ -108,11 +108,11 @@
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":1,
-   "TO_SAVE_FINAL":0,
+   "TO_SAVE_FINAL":1,
 
-   "PLOT_ORACLE":1,
+   "PLOT_ORACLE":0,
 
-   "EVOL_PRINT":0,
+   "EVOL_PRINT":1,
 
    "SHOW_MSO_CONTENT":0,
 

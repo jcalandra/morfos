@@ -286,7 +286,7 @@ class MSOLevel:
         #self.actual_objects = [class_object.Object()] #TODO: @jcalandra 20/05/2025 to integrate in the oracle
         #self.total_duration = 0
 
-        self.GeneralFD = class_fd.FD(self.level)
+        #self.GeneralFD = class_fd.FD(self.level) #TODO : @jcalandra 27/06/2025 à décommenter quand oracle multi-voix
         self.GeneralMaterials = class_materialsMemory.Materials()
 
         #self.link = [0] 
