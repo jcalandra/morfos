@@ -44,7 +44,6 @@ import scipy.io.wavfile as wave
 import cost_storage as cs
 import phases_storage as hs
 from formal_diagram_mso import final_save_one4all, final_save_all4one
-import audacity_marker
 # import formal_diagram_mso as fd_mso
 
 # This is the main loop for the whole cognitive algorithm
@@ -113,8 +112,6 @@ def main(path=PATH, result_path=prm.PATH_RESULT):
         shutil.copy2(src_path +
                      '/version1/parameters.json', prm.PATH_RESULT+'/parameters.txt')
         print('file saved as ' + prm.PATH_RESULT+ '/parameters.txt')
-
-    audacity_marker.produce_file(obj_s.objects)
 
     if prm.COMPUTE_HYPOTHESIS:
         hs.phases_print()

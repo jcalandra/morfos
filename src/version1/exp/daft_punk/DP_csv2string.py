@@ -1,6 +1,17 @@
-import csv
-import sys
 from pathlib import Path # if you haven't already done so
+import sys
+
+file = Path(__file__).resolve()
+project_root = str(file.parents[3])
+src_path = project_root
+print("src_path", src_path)
+sys.path.append(src_path)
+version1_path = src_path + '/version1'
+sys.path.append(version1_path)
+
+import csv
+import main_mso_char
+import parameters as prm
 
 file = Path(__file__).resolve()
 project_root = str(file.parents[1])
@@ -56,8 +67,12 @@ def flattsec2acformat(tsec):
 
 
 def parser(path):
-    poplist = DP_csv2list(project_root + '/daft_punk/Something_about_us_DP.csv')
+    poplist = DP_csv2list(path)
     time_section = list2timesection(poplist)
     flat_time_section = timesection_flatten(time_section)
     acformat = flattsec2acformat(flat_time_section)
     return acformat
+
+path = project_root + '/daft_punk/Something_about_us_DP.csv'
+string = parser(parser)
+main_mso_char.main(string, result_path=prm.PATH_RESULT)

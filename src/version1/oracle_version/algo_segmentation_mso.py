@@ -192,7 +192,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
         else:
             fd_mso.formal_diagram_update(formal_diagram, data_length, actual_char, actual_char_ind, oracles, level)
 
-        if prm.TIME_TYPE == prm.STATE_TIME:
+        '''if prm.TIME_TYPE == prm.STATE_TIME:
             time_t = obj_s.objects[level][len(obj_s.objects[level]) - 1]["coordinates"]["x"]
         elif prm.TIME_TYPE == prm.COMPUTING_TIME:
             prm.real_time_t = time.time() - prm.start_time_t
@@ -210,7 +210,7 @@ def fun_segmentation(oracles, str_obj, data_length, level=0, level_max=-1, end_m
             prev_time_t =  prm.time_tab[level][len(prm.time_tab[level]) - 1]
         else:
             prev_time_t = None
-        prm.time_tab[level].append(time_t)
+        prm.time_tab[level].append(time_t)'''
 
         if prm.COMPUTE_COSTS == 1:
             cs.cost_oracle_add_element(level, time_t)

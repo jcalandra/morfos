@@ -1,6 +1,6 @@
 {
-   "NAME":"3_BWV244",
-   "FORMAT":".wav",
+   "NAME":"abacabacdefg",
+   "FORMAT":".txt",
 
    "PATH_SOUND":"/../data/Analyses_Elia/",
    "PATH_RESULT":"/../results/Somax/3_BWV244/",
@@ -44,7 +44,7 @@
 
    "TRANSPOSITION":1,
 
-   "LETTER_DIFF":97,
+   "LETTER_DIFF":0,
 
    "GAP_VALUE":-3,
    "EXT_GAP_VALUE":-1,
