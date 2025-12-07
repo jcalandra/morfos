@@ -1,12 +1,12 @@
 {
-   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
-   "FORMAT":".txt",
+      "NAME":"Something-About-Us_midi",
+   "FORMAT":".wav",
 
-   "PATH_SOUND":"/../../../data/Geisslerlied/",
-   "PATH_RESULT":"/../../../results/daftpunk/",
+   "PATH_SOUND":"/../../../data/Something-About-Us/",
+   "PATH_RESULT":"/../../../results/Something-About-Us/midiwav/origin/",
 
-   "teta":0.976,
-   "d_threshold":150,
+   "teta":0.97,
+   "d_threshold":998,
 
    "lvl0notcompute": 0,
    "POLYPHONY":0,
@@ -22,8 +22,8 @@
    "DIFF_FOURIER":1,
    "DIFF_DYNAMIC":0,
 
-   "STRICT_EQUALITY":1,
-   "ALIGNMENT":0,
+   "STRICT_EQUALITY":0,
+   "ALIGNMENT":1,
 
    "RULE_1":1,
    "RULE_2":1,
@@ -31,7 +31,7 @@
    "RULE_4":1,
    "RULE_5":1,
    "RULE_5b":0,
-   "RULE_6":1,
+   "RULE_6":0,
    "RULE_7":0,
    "RULE_8":1,
    "RULE_9": 0,
@@ -42,15 +42,15 @@
 
    "ALIGNEMENT_rule3":0,
    "ALIGNEMENT_rule4":0,
-   "lower_bound_rule6":8,
-   "higher_bound_rule6":8,
+   "lower_bound_rule6":2,
+   "higher_bound_rule6":4,
    "compute_level0": 1,
 
    "QUOTIENT":100,
 
    "TRANSPOSITION":1,
 
-   "LETTER_DIFF":65,
+   "LETTER_DIFF":97,
 
    "GAP_VALUE":-1,
    "EXT_GAP_VALUE":-1,
@@ -103,7 +103,7 @@
 
    "TO_SAVE_BMP":0,
    "TO_SHOW_BMP":0,
-   "TO_SAVE_PYP":1,
+   "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":0,
    "TO_SAVE_FINAL":1,
 
