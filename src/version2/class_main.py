@@ -134,6 +134,3 @@ def example():
     loop = 'abababcdefghfghfijabklcdehifgmnop'
     main(name=Mozart)
 
-
-main()
-
