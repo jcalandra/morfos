@@ -44,6 +44,7 @@ def rwcpop_list2timesection(list):
                     section_temps[-1].append(el)
                     section_temps[-1].append(el)
                     section_temps[-1].append(el)
+    print("section_temps", section_temps)
     return section_temps
 
 def flatten(t):
@@ -72,4 +73,4 @@ def parser(path):
     acformat = flattsec2acformat(flat_time_section)
     return acformat
 
-# parser(test_path)
+parser('/../../data/rwcpop/Pop01(grid).csv')
