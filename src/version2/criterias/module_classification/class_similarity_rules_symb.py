@@ -1,6 +1,5 @@
 import numpy as np
-from Bio import pairwise2
-from Bio.Align import substitution_matrices
+from Bio import Align
 
 from module_parameters import parameters
 
@@ -55,9 +54,6 @@ def compute_alignment(string_compared, actual_string, mat, level=0):
     else:
         sim_digit_label = 0
     return sim_digit_label, sim_value'''
-
-import numpy as np
-from Bio import Align
 
 def compute_alignment(string_compared, actual_string, mat, level=0, quotient=1, transpo=0, gap_value=-1, extend_gap_value=-0.5, threshold=0.5):
     """
