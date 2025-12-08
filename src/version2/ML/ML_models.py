@@ -17,17 +17,15 @@ from scipy.spatial.distance import euclidean
 #================================================================================================================================================
 # classification model
 #================================================================================================================================================
-def param_to_latent_space():
+def param_to_latent_space(n_mels=128, latent_dim=128):
     sr = prm.SR #16000
-    #frame_duration = 1.0   # duration of the concatenated frames in the lower level
-    n_mels = 128
-    latent_dim = 128
+    frame_duration = 1.0   # duration of the concatenated frames in the lower level
     input_shape = (n_mels, 128, 1)
-    # change_threshold = 1-prm.d_threshold  # seuil pour détecter un changement de segment
-    return input_shape, latent_dim
+    change_threshold = 1-prm.d_threshold
+    return input_shape, latent_dim, change_threshold, sr, frame_duration
 
 
-def build_classification_model(input_shape, latent_dim):
+def build_classification_model(input_shape, latent_dim, change_threshold):
     # -------------------------
     # Encoder
     # -------------------------
@@ -88,8 +86,10 @@ def build_segmentation_model(input_shape, latent_dim):
     return encoder
 
 def build_models():
-    input_shape, latent_dim = param_to_latent_space()
-    build_classification_model(input_shape, latent_dim)
-    build_segmentation_model(input_shape, latent_dim)
+    input_shape, latent_dim, change_threshold, sr, frame_duration  = param_to_latent_space(128, 128)
+    autoencoder, encoder, decoder = build_classification_model(input_shape, latent_dim, change_threshold)
+    egmentation_encoder = build_segmentation_model(input_shape, latent_dim)
+    return autoencoder, encoder, decoder, segmentation_encoder, sr, frame_duration
 
 build_models()
+
