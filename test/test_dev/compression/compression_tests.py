@@ -15,6 +15,8 @@ def compute_mso_char(char):
     char_ex = ''
     for c in range(len(char)):
         char_ex += chr(ord(char[c]) - 96)
+
+
     data_length = len(char_ex)
     oracles = [-1, []]
     fun_segmentation(oracles, char_ex, data_length)

@@ -7,3 +7,4 @@ music21
 numpy>=1.21.6
 matplotlib
 mir_eval
+tensorflow>=2.8.0

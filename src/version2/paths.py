@@ -3,6 +3,7 @@ from pathlib import Path
 file = Path(__file__).resolve()
 
 project_root = str(file.parents[0])
+print("Project root path:", project_root)
 src_path = project_root
 sys.path.append(src_path)
 
@@ -17,6 +18,9 @@ sys.path.append(others_path)
 
 exp_path = src_path + '/exp'
 sys.path.append(exp_path)
+
+mod_ML_path = core_path + '/ML'
+sys.path.append(mod_ML_path)
 
 test_path = src_path + 'test'
 sys.path.append(test_path)
