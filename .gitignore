@@ -11,13 +11,12 @@ materials.json
 # Folders à ignorer
 data/*
 !data/.gitkeep
-results/
+results/*
 !results/.gitkeep
 ML/*
 !ML/.gitkeep
 src/*/exp/
 test/*
-!test/.gitignore
 
 # Les fichiers audio à ne pas suivre
 # data/*.aiff
