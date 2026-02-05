@@ -1,2 +1,19 @@
 __pycache__
 materials.json
+
+# macOS
+.DS_Store
+
+# Temp files
+*.tmp
+*.log
+
+# Folders à ignorer
+data/*
+!data/.gitkeep
+results/*
+!results/.gitkeep
+ML/*
+!ML/.gitkeep
+src/*/exp/
+test/*
