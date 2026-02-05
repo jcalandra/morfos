@@ -17,6 +17,3 @@ ML/*
 !ML/.gitkeep
 src/*/exp/
 test/*
-
-# Les fichiers audio à ne pas suivre
-# data/*.aiff
