@@ -17,3 +17,4 @@ ML/*
 src/*/exp/
 test/*
 version1/*
+.vscode/*
