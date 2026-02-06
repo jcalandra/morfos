@@ -90,5 +90,6 @@ Copy the following lines :
 `pip install -r requirements.txt`
 
 ## run class_main.py
+write
 `python ./src/version2/class_main.py`
-change the parameters by opening `parameters.py` and modify any parameter.
+and change the parameters by opening `parameters.py` and modify any parameter.
