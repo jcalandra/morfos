@@ -118,7 +118,7 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
     dezrann_marker.produce_file(obj_s.objects, path_result)
 
 
-    plt.pause(3000)
+    #plt.pause(300)
 
 
 # Here is a simple example with the analysis of a single string 'abacabacdeabfgabachijklmhinopqabacrsrsttu'
