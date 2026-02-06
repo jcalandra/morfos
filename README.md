@@ -56,7 +56,6 @@ In version 1.0:
  In version 2.0:
 - `class_main.py` to obtain formal diagrams either from signal or character strings.
 
-
 # How to install MORFOS:
 git clone https://github.com/jcalandra/morfos.git
 or download the ZIP package
@@ -89,3 +88,8 @@ Copy the following lines :
 `conda activate morfos_env`
 `conda install -c conda-forge cmake llvm llvmlite numba -y`
 `pip install -r requirements.txt`
+
+## run class_main.py
+write
+`python ./src/version2/class_main.py`
+and change the parameters by opening `parameters.py` and modify any parameter.

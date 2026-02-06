@@ -1,12 +1,12 @@
 {
-   "NAME":"abacabacdeabfgabachijklmhinopqabacrsrsttu",
+   "NAME":"abcdaefgabcdaefg",
    "FORMAT":".txt",
 
-   "PATH_SOUND":"/../../../data/Geisslerlied/",
-   "PATH_RESULT":"/../../../results/Mozart/allseg/",
+   "PATH_SOUND":"/../../../data/Something-About-Us/",
+   "PATH_RESULT":"/../../../../results/Something-About-Us/midiwav/origin/",
 
-   "teta":0.976,
-   "d_threshold":150,
+   "teta":0.97,
+   "d_threshold":998,
 
    "lvl0notcompute": 0,
    "POLYPHONY":0,
@@ -22,8 +22,8 @@
    "DIFF_FOURIER":1,
    "DIFF_DYNAMIC":0,
 
-   "STRICT_EQUALITY":0,
-   "ALIGNMENT":1,
+   "STRICT_EQUALITY":1,
+   "ALIGNMENT":0,
 
    "RULE_1":1,
    "RULE_2":1,
@@ -31,7 +31,7 @@
    "RULE_4":1,
    "RULE_5":1,
    "RULE_5b":0,
-   "RULE_6":1,
+   "RULE_6":0,
    "RULE_7":0,
    "RULE_8":1,
    "RULE_9": 0,
@@ -105,7 +105,7 @@
    "TO_SHOW_BMP":0,
    "TO_SAVE_PYP":0,
    "TO_SHOW_PYP":0,
-   "TO_SAVE_FINAL":0,
+   "TO_SAVE_FINAL":1,
 
    "PLOT_ORACLE":0,
 
