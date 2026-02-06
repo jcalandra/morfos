@@ -76,6 +76,6 @@ Copy the following lines :
 
 ## run class_main.py
 write
-`python ./src/version1/char_main.py` or `python ./src/version2/main.py` for version 1.
+`python ./src/version1/main_mso_char.py` or `python ./src/version2/main_mso.py` for version 1.
 `python ./src/version2/class_main.py` for version 2.
 Change the parameters by opening `parameters.json`. Some informations about the parameters can be found in `parameters.py`
