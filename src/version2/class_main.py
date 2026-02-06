@@ -3,7 +3,8 @@
 # Add python_path to perform relative import
 # class_main.py must stay on src/version2
 import paths
-from pathlib import Path
+from paths import project_root
+#from pathlib import Path
 # ======== IMPORT ===========
 
 import time
@@ -29,7 +30,7 @@ import somax_marker
 NAME = prm.NAME
 FORMAT = prm.FORMAT
 
-PATH_SOUND = prm.PATH_SOUND
+PATH_SOUND =  prm.PATH_SOUND
 PATH_RESULT = prm.PATH_RESULT
 
 HOP_LENGTH = prm.HOP_LENGTH
@@ -86,11 +87,11 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
         if not os.path.exists(path_result):
             os.makedirs(path_result)
         if format == ".txt":
-            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                         '/version2/parameters.json', path_result + '/parameters.json')
+            shutil.copy2(project_root +
+                         '/parameters.json', path_result + '/parameters.json')
         else:
-            shutil.copy2(str(Path(__file__).resolve().parents[1]) +
-                        '/version2/parameters.json', path_result + '/parameters.json')
+            shutil.copy2(project_root +
+                        '/parameters.json', path_result + '/parameters.json')
         print("file saved as " + path_result + '/parameters.json')
 
     if prm.COMPUTE_HYPOTHESIS:

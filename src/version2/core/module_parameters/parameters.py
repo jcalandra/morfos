@@ -4,12 +4,10 @@
 # In the interface, numbers might be changed by virtual potentiometers, colors...
 
 import sys
-from pathlib import Path # if you haven't already done so
-file = Path(__file__).resolve()
-project_root = str(file.parents[1])
+from paths import project_root
 
 import json
-with open(project_root + '/../parameters.json') as json_parameters:
+with open(project_root + '/parameters.json') as json_parameters:
    data=json.load(json_parameters)
 
 # ------------- MAIN -----------------
@@ -18,8 +16,8 @@ with open(project_root + '/../parameters.json') as json_parameters:
 NAME = data["NAME"]
 FORMAT = data["FORMAT"]
 
-PATH_SOUND = project_root + data["PATH_SOUND"]
-PATH_RESULT = project_root + data["PATH_RESULT"]
+PATH_SOUND = project_root + '/../../data/' + data["PATH_SOUND"]
+PATH_RESULT = project_root + '/../../results/' + data["PATH_RESULT"]
 
 # This is the similarity threshold
 teta = data["teta"]
