@@ -2,16 +2,13 @@ Cognitive Algorithm and its Musical Applications
 
 
 - **data/**
-    Contains examples of audio files in .wav.
-- **lib/vmo/master/**
-    Contains files that we need from the Variable Markov Oracle library developped by C. Wang: 
-    https://github.com/wangsix/vmo.
+    Put here your examples of audio files in .wav or .mp3.
 - **src/**
     Contains the main files for the application.
     MORFOS is implemented in two versions 1.0 and 2.0 
     - **version1/**
     The version 1.0 is the version implemented until july 2023. In this version, objects are represented by audio at 
-    level 0 and symbols at superior level. This version is the most stable version for now.
+    level 0 and symbols at superior level. This version is the most stable version for now but will soon be depreciated.
         - **compression/**
             This folder contains encoding and decoding algorithms to study the interest of the cognitive algorithm for 
             compression.
@@ -25,6 +22,8 @@ Cognitive Algorithm and its Musical Applications
         - **oracle_version/**
             Necessary files for the MSO (Multi-Scale Oracle) version of the cognitive algorithm. It also implement a 
             sort of polyphonic representation.
+          -> **lib/vmo/master/** Contains files that we need from the Variable Markov Oracle library developped by C. Wang: 
+    https://github.com/wangsix/vmo.
         - **standard_version/**
             Necessary files for a standard version without MSO. The standard version is not updated and will be deleted.
     - **version2/**
@@ -41,46 +40,23 @@ Cognitive Algorithm and its Musical Applications
         - **others/**
         Other features such as cost and phases computation.
 
-- **tests/**
-    Contains some tests.
-
-In the version you want to try:
-First you should apply the parameters you want in `parameters.json`. 
-Commentary about the different parameters can be found in `parameters.py`.
-Then you can run:
-
-In version 1.0:
- - `main_mso.py` to obtain formal diagrams from signal.
- - `main_mso_char.py` to obtain formal diagrams from character strings.
- 
- In version 2.0:
-- `class_main.py` to obtain formal diagrams either from signal or character strings.
 
 # How to install MORFOS:
 git clone https://github.com/jcalandra/morfos.git
 or download the ZIP package
 
 
-<<<<<<< HEAD
 ## Setup Guide for macOS
 
 This guide will help you set up Morfos on macOS using **Conda**, including all necessary dependencies.
 
 ### Install Miniconda
-=======
-# Setup Guide for macOS
-
-This guide will help you set up Morfos on macOS using **Conda**, including all necessary dependencies.
-
-## Install Miniconda
->>>>>>> 5de4ea6 (Modifications locales au README)
 
 1. Go to the official Miniconda website: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)  
 2. Download the **macOS version with Python 3.11** (avoid 3.12 or 3.13 for compatibility).  
 3. Install following the instructions.  
 4. Open a **new terminal** after installation.
 
-<<<<<<< HEAD
 ### Initialize Conda for your shell
 copy :
 `conda init zsh`
@@ -97,20 +73,9 @@ Copy the following lines :
 `conda activate morfos_env`
 `conda install -c conda-forge cmake llvm llvmlite numba -y`
 `pip install -r requirements.txt`
-=======
-## Initialize Conda for your shell
-copy :
-conda init zsh
-source ~/.zshrc
 
-## unzip MORFOS project in the folder of your choice
-Then type on your shell :
-cd /morfos-project/path/folder/
-where '/morfos-project/path/folder/' is the path to your morfos's project folder
-
-Copy the following lines :
-conda create -n morfos_env python=3.11 -y
-conda activate morfos_env
-conda install -c conda-forge cmake llvm llvmlite numba -y
-pip install -r requirements.txt
->>>>>>> 5de4ea6 (Modifications locales au README)
+## run class_main.py
+write
+`python ./src/version1/char_main.py` or `python ./src/version2/main.py` for version 1.
+`python ./src/version2/class_main.py` for version 2.
+Change the parameters by opening `parameters.json`. Some informations about the parameters can be found in `parameters.py`
