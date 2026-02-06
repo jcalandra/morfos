@@ -55,3 +55,35 @@ In version 1.0:
  
  In version 2.0:
 - `class_main.py` to obtain formal diagrams either from signal or character strings.
+
+How to install MORFOS:
+git clone https://github.com/jcalandra/morfos.git
+or download the ZIP package
+
+
+1. Install Python3.11
+- Check if Python 3.11 is installed 
+python3 --version
+- If it’s not, go to: https://www.python.org/downloads/
+- Download and install Python 3.11 by following the instructions
+
+2. Upgrade pip
+python3 -m pip install --upgrade pip
+
+3. If you are on MacOS
+- Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+- Install CMake via Homebrew
+brew install cmake
+(install cmake with conda for conda's user if not already done)
+
+
+4. Go to the project folder containing requirements.txt
+cd /path/to/your/project
+
+5. Install all required packages
+pip3 install -r requirements.txt
+
+
+
+
