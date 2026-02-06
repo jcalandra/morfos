@@ -21,6 +21,7 @@ import json
 import others.object_storage as obj_s
 import shutil
 import somax_marker
+import dezrann_marker
 
 
 
@@ -114,6 +115,7 @@ def main(name=NAME, format=FORMAT, path_sound=PATH_SOUND, path_result=PATH_RESUL
         print("file saved as " + path_result + '/materials.json')
 
     somax_marker.produce_file(obj_s.objects, path_result)
+    dezrann_marker.produce_file(obj_s.objects, path_result)
 
 
     plt.pause(3000)
