@@ -61,32 +61,33 @@ git clone https://github.com/jcalandra/morfos.git
 or download the ZIP package
 
 
-# Setup Guide for macOS
+## Setup Guide for macOS
 
 This guide will help you set up Morfos on macOS using **Conda**, including all necessary dependencies.
 
-## Install Miniconda
+### Install Miniconda
 
 1. Go to the official Miniconda website: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)  
 2. Download the **macOS version with Python 3.11** (avoid 3.12 or 3.13 for compatibility).  
 3. Install following the instructions.  
 4. Open a **new terminal** after installation.
 
-## Initialize Conda for your shell
+### Initialize Conda for your shell
 copy :
-conda init zsh
-source ~/.zshrc
+`conda init zsh`
+`source ~/.zshrc`
 
-## unzip MORFOS project in the folder of your choice
+### unzip MORFOS project in the folder of your choice
 Then type on your shell :
-cd /morfos-project/path/folder/
+`cd /morfos-project/path/folder/`
 where '/morfos-project/path/folder/' is the path to your morfos's project folder
 
+### Create an environnment and install the dependencies
 Copy the following lines :
-conda create -n morfos_env python=3.11 -y
-conda activate morfos_env
-conda install -c conda-forge cmake llvm llvmlite numba -y
-pip install -r requirements.txt
+`conda create -n morfos_env python=3.11 -y`
+`conda activate morfos_env`
+`conda install -c conda-forge cmake llvm llvmlite numba -y`
+`pip install -r requirements.txt`
 
 
 
