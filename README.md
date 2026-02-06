@@ -56,34 +56,34 @@ In version 1.0:
  In version 2.0:
 - `class_main.py` to obtain formal diagrams either from signal or character strings.
 
-How to install MORFOS:
+# How to install MORFOS:
 git clone https://github.com/jcalandra/morfos.git
 or download the ZIP package
 
 
-1. Install Python3.11
-- Check if Python 3.11 is installed 
-python3 --version
-- If it’s not, go to: https://www.python.org/downloads/
-- Download and install Python 3.11 by following the instructions
+# Setup Guide for macOS
 
-2. Upgrade pip
-python3 -m pip install --upgrade pip
+This guide will help you set up Morfos on macOS using **Conda**, including all necessary dependencies.
 
-3. If you are on MacOS
-- Install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-- Install CMake via Homebrew
-brew install cmake
-(install cmake with conda for conda's user if not already done)
+## Install Miniconda
 
+1. Go to the official Miniconda website: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)  
+2. Download the **macOS version with Python 3.11** (avoid 3.12 or 3.13 for compatibility).  
+3. Install following the instructions.  
+4. Open a **new terminal** after installation.
 
-4. Go to the project folder containing requirements.txt
-cd /path/to/your/project
+## Initialize Conda for your shell
+copy :
+conda init zsh
+source ~/.zshrc
 
-5. Install all required packages
-pip3 install -r requirements.txt
+## unzip MORFOS project in the folder of your choice
+Then type on your shell :
+cd /morfos-project/path/folder/
+where '/morfos-project/path/folder/' is the path to your morfos's project folder
 
-
-
-
+Copy the following lines :
+conda create -n morfos_env python=3.11 -y
+conda activate morfos_env
+conda install -c conda-forge cmake llvm llvmlite numba -y
+pip install -r requirements.txt
