@@ -2,16 +2,13 @@ Cognitive Algorithm and its Musical Applications
 
 
 - **data/**
-    Contains examples of audio files in .wav.
-- **lib/vmo/master/**
-    Contains files that we need from the Variable Markov Oracle library developped by C. Wang: 
-    https://github.com/wangsix/vmo.
+    Put here your examples of audio files in .wav or .mp3.
 - **src/**
     Contains the main files for the application.
     MORFOS is implemented in two versions 1.0 and 2.0 
     - **version1/**
     The version 1.0 is the version implemented until july 2023. In this version, objects are represented by audio at 
-    level 0 and symbols at superior level. This version is the most stable version for now.
+    level 0 and symbols at superior level. This version is the most stable version for now but will soon be depreciated.
         - **compression/**
             This folder contains encoding and decoding algorithms to study the interest of the cognitive algorithm for 
             compression.
@@ -25,6 +22,8 @@ Cognitive Algorithm and its Musical Applications
         - **oracle_version/**
             Necessary files for the MSO (Multi-Scale Oracle) version of the cognitive algorithm. It also implement a 
             sort of polyphonic representation.
+          -> **lib/vmo/master/** Contains files that we need from the Variable Markov Oracle library developped by C. Wang: 
+    https://github.com/wangsix/vmo.
         - **standard_version/**
             Necessary files for a standard version without MSO. The standard version is not updated and will be deleted.
     - **version2/**
@@ -41,20 +40,6 @@ Cognitive Algorithm and its Musical Applications
         - **others/**
         Other features such as cost and phases computation.
 
-- **tests/**
-    Contains some tests.
-
-In the version you want to try:
-First you should apply the parameters you want in `parameters.json`. 
-Commentary about the different parameters can be found in `parameters.py`.
-Then you can run:
-
-In version 1.0:
- - `main_mso.py` to obtain formal diagrams from signal.
- - `main_mso_char.py` to obtain formal diagrams from character strings.
- 
- In version 2.0:
-- `class_main.py` to obtain formal diagrams either from signal or character strings.
 
 # How to install MORFOS:
 git clone https://github.com/jcalandra/morfos.git
@@ -91,5 +76,6 @@ Copy the following lines :
 
 ## run class_main.py
 write
-`python ./src/version2/class_main.py`
-and change the parameters by opening `parameters.py` and modify any parameter.
+`python ./src/version1/main_mso_char.py` or `python ./src/version2/main_mso.py` for version 1.
+`python ./src/version2/class_main.py` for version 2.
+Change the parameters by opening `parameters.json`. Some informations about the parameters can be found in `parameters.py`
