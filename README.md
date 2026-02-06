@@ -57,8 +57,8 @@ In version 1.0:
 - `class_main.py` to obtain formal diagrams either from signal or character strings.
 
 How to install MORFOS:
-git clone 
-or download the zip package
+git clone https://github.com/jcalandra/morfos.git
+or download the ZIP package
 
 
 1. Install Python3.11
